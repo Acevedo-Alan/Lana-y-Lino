@@ -1,0 +1,559 @@
+/* ============================================
+   FRUTIGER AERO — CSS Variables & Base Theme
+   Lana & Lino E-Commerce
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Comfortaa:wght@400;600;700&display=swap');
+
+:root {
+  /* === LIGHT MODE (Frutiger Aero) === */
+  --bg-sky: linear-gradient(160deg, #c8eeff 0%, #a0d8ef 25%, #e8f8e8 60%, #b8e8b8 100%);
+  --bg-body: #d4f0ff;
+
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-strong: rgba(255, 255, 255, 0.70);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 8px 32px rgba(0, 120, 180, 0.18), 0 2px 8px rgba(0,0,0,0.08);
+  --glass-inner: inset 0 1px 0 rgba(255,255,255,0.9);
+  --glass-blur: blur(12px) saturate(160%);
+
+  /* Aero Button */
+  --btn-bg: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(180,230,255,0.8) 45%, rgba(100,195,240,0.9) 50%, rgba(60,170,230,0.95) 100%);
+  --btn-bg-hover: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(200,242,255,0.9) 45%, rgba(120,210,255,1) 50%, rgba(40,160,230,1) 100%);
+  --btn-border: rgba(0, 100, 180, 0.5);
+  --btn-shadow: 0 2px 8px rgba(0,120,200,0.3), inset 0 1px 0 rgba(255,255,255,0.95);
+  --btn-text: #003a6e;
+
+  /* Accent */
+  --accent-blue: #0078d4;
+  --accent-cyan: #00b4d8;
+  --accent-green: #4caf50;
+  --accent-teal: #009688;
+
+  /* Text */
+  --text-primary: #1a3a5c;
+  --text-secondary: #2e6896;
+  --text-muted: #5a8ab0;
+  --text-light: rgba(255,255,255,0.95);
+
+  /* Header */
+  --header-bg: linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(200,235,255,0.65) 100%);
+  --header-border: rgba(255,255,255,0.9);
+  --header-shadow: 0 4px 20px rgba(0,80,160,0.15), 0 1px 0 rgba(255,255,255,0.8);
+
+  /* Cards */
+  --card-bg: rgba(255,255,255,0.55);
+  --card-border: rgba(255,255,255,0.8);
+  --card-shadow: 0 6px 24px rgba(0,100,180,0.12), 0 2px 6px rgba(0,0,0,0.06);
+  --card-hover-shadow: 0 12px 40px rgba(0,100,180,0.22), 0 4px 12px rgba(0,0,0,0.1);
+
+  /* Input */
+  --input-bg: rgba(255,255,255,0.7);
+  --input-border: rgba(100,180,240,0.6);
+  --input-focus-border: #0078d4;
+  --input-shadow: inset 0 2px 4px rgba(0,80,180,0.08);
+
+  /* Footer */
+  --footer-bg: linear-gradient(180deg, rgba(0,80,160,0.85) 0%, rgba(0,50,120,0.95) 100%);
+
+  /* Misc */
+  --badge-bg: linear-gradient(135deg, #43c6ac, #007ec6);
+  --price-color: #006633;
+  --danger: #e53935;
+  --success: #2e7d32;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === DARK MODE === */
+body.dark {
+  --bg-sky: linear-gradient(160deg, #0a1628 0%, #0d2040 30%, #0a2818 70%, #0d1f12 100%);
+  --bg-body: #0a1628;
+
+  --glass-bg: rgba(10, 30, 60, 0.65);
+  --glass-bg-strong: rgba(15, 40, 80, 0.82);
+  --glass-border: rgba(60, 140, 220, 0.3);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0,80,200,0.15);
+  --glass-inner: inset 0 1px 0 rgba(80,160,255,0.15);
+
+  --btn-bg: linear-gradient(180deg, rgba(40,80,160,0.8) 0%, rgba(20,60,130,0.9) 45%, rgba(0,80,180,0.95) 50%, rgba(0,50,140,1) 100%);
+  --btn-bg-hover: linear-gradient(180deg, rgba(60,110,200,0.9) 0%, rgba(40,90,170,1) 45%, rgba(20,100,210,1) 50%, rgba(0,70,170,1) 100%);
+  --btn-border: rgba(80,160,255,0.4);
+  --btn-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(100,180,255,0.2);
+  --btn-text: #c8e8ff;
+
+  --text-primary: #c8e8ff;
+  --text-secondary: #7ab8e8;
+  --text-muted: #4a7a9e;
+  --text-light: rgba(200,230,255,0.95);
+
+  --header-bg: linear-gradient(180deg, rgba(8,20,50,0.9) 0%, rgba(10,25,60,0.85) 100%);
+  --header-border: rgba(60,140,220,0.25);
+  --header-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(60,140,220,0.2);
+
+  --card-bg: rgba(10, 30, 65, 0.65);
+  --card-border: rgba(50, 120, 200, 0.25);
+  --card-shadow: 0 6px 24px rgba(0,0,0,0.4), 0 2px 6px rgba(0,50,120,0.2);
+  --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,80,180,0.3);
+
+  --input-bg: rgba(10, 30, 70, 0.7);
+  --input-border: rgba(60, 140, 220, 0.35);
+  --input-focus-border: #4da6ff;
+  --input-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+
+  --footer-bg: linear-gradient(180deg, rgba(5,12,30,0.95) 0%, rgba(3,8,22,1) 100%);
+
+  --price-color: #4cdb7a;
+  --accent-blue: #4da6ff;
+  --accent-cyan: #00d4ff;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg-sky);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* Frutiger Aero ambient background orbs */
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(150, 230, 255, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  right: -5%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(150, 255, 180, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.dark::before {
+  background: radial-gradient(circle, rgba(0, 80, 200, 0.12) 0%, transparent 70%);
+}
+body.dark::after {
+  background: radial-gradient(circle, rgba(0, 150, 80, 0.1) 0%, transparent 70%);
+}
+
+/* ============================================
+   AERO GLASS UTILITY CLASSES
+   ============================================ */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner);
+}
+
+/* ============================================
+   AERO BUTTON
+   ============================================ */
+.btn-aero {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 20px;
+  box-shadow: var(--btn-shadow);
+  color: var(--btn-text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-aero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.1) 100%);
+  border-radius: 20px 20px 50% 50%;
+  pointer-events: none;
+}
+
+.btn-aero:hover {
+  background: var(--btn-bg-hover);
+  box-shadow: 0 4px 14px rgba(0,120,200,0.4), inset 0 1px 0 rgba(255,255,255,0.95);
+  transform: translateY(-1px);
+}
+
+.btn-aero:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0,120,200,0.3), inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-aero.btn-danger {
+  background: linear-gradient(180deg, rgba(255,200,200,0.9) 0%, rgba(240,120,100,0.9) 50%, rgba(220,50,50,0.95) 100%);
+  border-color: rgba(180,0,0,0.4);
+  color: #5a0000;
+}
+
+.btn-aero.btn-success {
+  background: linear-gradient(180deg, rgba(200,255,200,0.9) 0%, rgba(100,220,100,0.9) 50%, rgba(40,180,60,0.95) 100%);
+  border-color: rgba(0,120,0,0.4);
+  color: #003a00;
+}
+
+.btn-aero.btn-lg {
+  padding: 12px 28px;
+  font-size: 1rem;
+  border-radius: 24px;
+}
+
+.btn-aero:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+.input-aero {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  transition: var(--transition);
+  box-shadow: var(--input-shadow);
+  width: 100%;
+  backdrop-filter: blur(4px);
+}
+
+.input-aero:focus {
+  outline: none;
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px rgba(0,120,212,0.2), var(--input-shadow);
+}
+
+.input-aero::placeholder {
+  color: var(--text-muted);
+}
+
+select.input-aero {
+  cursor: pointer;
+}
+
+/* ============================================
+   CARD
+   ============================================ */
+.card-aero {
+  background: var(--card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow), var(--glass-inner);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.card-aero:hover {
+  box-shadow: var(--card-hover-shadow), var(--glass-inner);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   BADGE / PILL
+   ============================================ */
+.badge-aero {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--badge-bg);
+  border-radius: 20px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* ============================================
+   SECTION TITLE
+   ============================================ */
+.section-title {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green), transparent);
+  border-radius: 2px;
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  min-width: 220px;
+  max-width: 340px;
+  animation: toastIn 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
+  pointer-events: all;
+}
+
+.toast.success { border-left: 4px solid #4caf50; }
+.toast.error   { border-left: 4px solid #e53935; }
+.toast.info    { border-left: 4px solid #0078d4; }
+.toast.fade-out { animation: toastOut 0.3s forwards; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 30, 80, 0.4);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-box {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25), var(--glass-inner);
+  padding: 28px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue));
+  border-radius: 4px;
+}
+
+/* ============================================
+   LAYOUT UTILITIES
+   ============================================ */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 80px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.hidden { display: none !important; }
+
+/* ============================================
+   FORM GROUP
+   ============================================ */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(0, 120, 212, 0.2);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggered children */
+.stagger-children > * {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }

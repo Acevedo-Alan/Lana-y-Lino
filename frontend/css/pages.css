@@ -1,0 +1,408 @@
+/* ============================================
+   CART PAGE
+   ============================================ */
+
+.cart-page, .payment-page, .auth-page,
+.admin-page, .profile-page, .favorites-page {
+  padding: 90px 20px 40px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
+  transition: var(--transition);
+}
+
+.cart-item:last-child { margin-bottom: 0; }
+
+.cart-item:hover {
+  background: rgba(0,120,212,0.05);
+}
+
+.cart-item-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--glass-border);
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.05);
+}
+
+.cart-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-name {
+  font-family: 'Comfortaa', cursive;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-item-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.cart-item-price {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--price-color);
+  flex-shrink: 0;
+}
+
+.cart-item-remove {
+  width: 30px;
+  height: 30px;
+  background: rgba(229,57,53,0.1);
+  border: 1px solid rgba(229,57,53,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--danger);
+  font-size: 0.85rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.cart-item-remove:hover {
+  background: rgba(229,57,53,0.2);
+  transform: scale(1.1);
+}
+
+.cart-summary {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  margin-top: 16px;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.cart-total-row.final {
+  border-top: 1px solid var(--glass-border);
+  padding-top: 14px;
+  margin-top: 6px;
+}
+
+.cart-total-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.cart-total-label.big {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.cart-total-value {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--price-color);
+}
+
+.cart-total-value.big {
+  font-size: 1.6rem;
+}
+
+/* ============================================
+   PAYMENT PAGE
+   ============================================ */
+
+.payment-method-section {
+  margin-top: 20px;
+}
+
+.payment-card-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.payment-card-fields .full {
+  grid-column: 1 / -1;
+}
+
+.payment-success {
+  text-align: center;
+  padding: 48px 24px;
+  animation: fadeInUp 0.5s ease both;
+}
+
+.payment-success .success-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.payment-success h2 {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1.8rem;
+  color: var(--success);
+  margin-bottom: 8px;
+}
+
+.payment-success p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ============================================
+   AUTH PAGES (Login / Register)
+   ============================================ */
+
+.auth-page {
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 64px);
+  padding-top: 80px;
+  padding-bottom: 40px;
+}
+
+.auth-card {
+  padding: 32px;
+  border-radius: var(--radius-xl);
+}
+
+.auth-card h2 {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.auth-card p.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.auth-link a {
+  color: var(--accent-blue);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.auth-link a:hover { text-decoration: underline; }
+
+/* ============================================
+   PROFILE PAGE
+   ============================================ */
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--btn-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--btn-text);
+  border: 3px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  margin: 0 auto 20px;
+}
+
+/* ============================================
+   FAVORITES PAGE
+   ============================================ */
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.fav-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.fav-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.fav-card-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  background: rgba(0,120,212,0.05);
+}
+
+.fav-card-body {
+  padding: 10px 12px;
+}
+
+.fav-card-name {
+  font-family: 'Comfortaa', cursive;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.fav-card-price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--price-color);
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   ADMIN PAGE
+   ============================================ */
+
+.admin-page {
+  max-width: 900px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.admin-tab {
+  padding: 8px 20px;
+  border-radius: 18px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.admin-tab.active {
+  background: var(--btn-bg);
+  border-color: var(--btn-border);
+  color: var(--btn-text);
+  box-shadow: var(--btn-shadow);
+}
+
+.admin-panel {
+  padding: 24px;
+  border-radius: var(--radius-xl);
+}
+
+.admin-panel h3 {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: var(--text-primary);
+}
+
+/* Inventory rows */
+.inventory-entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+  padding: 12px;
+  background: rgba(0,120,212,0.05);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+}
+
+.add-inventory-btn {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+}
+
+/* Search result table */
+.product-search-result {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.product-search-result .result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--glass-border);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.product-search-result .result-item:last-child { border-bottom: none; }
+.product-search-result .result-item:hover {
+  background: rgba(0,120,212,0.07);
+}
+
+.result-item img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.05);
+}
+
+.result-item .r-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.result-item .r-cat {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   PAGE SECTION CONTAINER
+   ============================================ */
+.page-section {
+  padding: 90px 20px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .payment-card-fields { grid-template-columns: 1fr; }
+  .inventory-entry { grid-template-columns: 1fr 1fr; }
+}

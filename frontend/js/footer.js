@@ -1,0 +1,1 @@
+/* Footer is rendered inline in index.html */

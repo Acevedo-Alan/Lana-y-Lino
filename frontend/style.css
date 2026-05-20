@@ -1,0 +1,46 @@
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(#00d2ff 1px, transparent 1px);
+    background-size: 40px 40px, 80px 80px;
+    animation: drift 20s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes drift {
+    from { transform: translateY(0); }
+    to { transform: translateY(40px); }
+} .media-player {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #00d2ff;
+    padding: 10px;
+    font-family: monospace;
+    box-shadow: 0 0 20px #00d2ff;
+}
+
+.loading-shell {
+    width: 300px;
+    height: 20px;
+    border: 1px solid cyan;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.loading-bar {
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, cyan, magenta);
+    animation: load 2s infinite;
+}
+
+@keyframes load {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+} 
