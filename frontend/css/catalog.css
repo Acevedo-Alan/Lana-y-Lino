@@ -591,3 +591,206 @@
   #cat-bar { height: 38px; }
   .cat-bar-item { padding: 0 12px; font-size: 0.72rem; }
 }
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.catalog-hero {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 28px;
+  padding: 48px 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 220px;
+  background:
+    linear-gradient(135deg,
+      rgba(0,120,212,0.12) 0%,
+      rgba(0,180,216,0.08) 50%,
+      rgba(76,175,80,0.08) 100%),
+    var(--glass-bg);
+}
+
+/* Aero shine on hero */
+.catalog-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.5) 0%,
+    rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 50% 50%;
+}
+
+.catalog-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+}
+
+.catalog-hero-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent-cyan);
+  margin-bottom: 10px;
+  padding: 3px 12px;
+  background: rgba(0,180,216,0.12);
+  border: 1px solid rgba(0,180,216,0.28);
+  border-radius: 20px;
+}
+
+.catalog-hero-title {
+  font-family: 'Comfortaa', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.dark .catalog-hero-title {
+  background: linear-gradient(135deg, #c8e8ff 40%, #00d4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.catalog-hero-sub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.catalog-hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+  box-shadow: var(--glass-inner);
+}
+
+.hero-pill:hover {
+  background: rgba(0,180,216,0.15);
+  border-color: rgba(0,180,216,0.4);
+  color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+/* Decorative orbs — Frutiger Aero */
+.catalog-hero-deco {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 45%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+.hero-orb-1 {
+  width: 180px; height: 180px;
+  top: -40px; right: -20px;
+  background: radial-gradient(circle,
+    rgba(0,180,216,0.28) 0%,
+    rgba(0,120,212,0.12) 60%,
+    transparent 100%);
+}
+
+.hero-orb-2 {
+  width: 140px; height: 140px;
+  bottom: -30px; right: 60px;
+  background: radial-gradient(circle,
+    rgba(76,175,80,0.22) 0%,
+    rgba(0,180,216,0.08) 60%,
+    transparent 100%);
+}
+
+.hero-orb-3 {
+  width: 90px; height: 90px;
+  top: 40px; right: 140px;
+  background: radial-gradient(circle,
+    rgba(255,255,255,0.35) 0%,
+    transparent 70%);
+}
+
+.hero-brand-bg {
+  position: absolute;
+  bottom: -20px; right: -10px;
+  font-family: 'Comfortaa', cursive;
+  font-size: 8rem;
+  font-weight: 700;
+  color: rgba(0,120,212,0.06);
+  letter-spacing: -0.05em;
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+}
+
+body.dark .hero-brand-bg {
+  color: rgba(100,180,255,0.06);
+}
+
+/* ── Hero search bar on catalog ──────────── */
+@media (max-width: 640px) {
+  .catalog-hero {
+    padding: 28px 24px;
+    min-height: 160px;
+  }
+  .catalog-hero-deco { width: 35%; }
+  .hero-brand-bg { font-size: 5rem; }
+  .catalog-hero-pills { display: none; }
+}
+
+/* ============================================
+   FLY-TO-CART ANIMATION
+   ============================================ */
+.fly-img {
+  position: fixed;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  border: 2px solid rgba(255,255,255,0.8);
+  transition: none;
+}
+
+@keyframes flyToCart {
+  0%   { transform: scale(1);    opacity: 1; }
+  70%  { transform: scale(0.5);  opacity: 0.9; }
+  100% { transform: scale(0.1);  opacity: 0; }
+}

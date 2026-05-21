@@ -145,6 +145,44 @@ function img(url) { return (url && url.startsWith('http')) ? url : PLACEHOLDER; 
 function el(id)      { return document.getElementById(id); }
 function setHTML(id, html) { const e = el(id); if(e) e.innerHTML = html; }
 
+// Fly-to-cart animation
+function flyToCart(imgSrcUrl) {
+  const cartBtn = el('cart-btn');
+  if (!cartBtn) return;
+
+  const cartRect = cartBtn.getBoundingClientRect();
+  const startX   = window.innerWidth / 2 - 28;
+  const startY   = window.innerHeight / 2 - 28;
+
+  const clone = document.createElement('img');
+  clone.src = imgSrcUrl;
+  clone.className = 'fly-img';
+  clone.style.cssText = `left:${startX}px; top:${startY}px;`;
+  document.body.appendChild(clone);
+
+  // Animate via Web Animations API
+  const endX = cartRect.left + cartRect.width  / 2 - 28;
+  const endY = cartRect.top  + cartRect.height / 2 - 28;
+
+  clone.animate([
+    { left: startX + 'px', top: startY + 'px', transform: 'scale(1)',   opacity: 1   },
+    { left: (startX + endX) / 2 - 60 + 'px', top: (startY + endY) / 2 - 80 + 'px', transform: 'scale(0.7)', opacity: 0.9, offset: 0.5 },
+    { left: endX + 'px',   top: endY + 'px',   transform: 'scale(0.1)', opacity: 0   },
+  ], { duration: 600, easing: 'cubic-bezier(0.4,0,0.2,1)', fill: 'forwards' })
+  .onfinish = () => {
+    clone.remove();
+    // Bounce the cart icon
+    const icon = cartBtn.querySelector('i');
+    if (icon) {
+      icon.animate([
+        { transform: 'scale(1)'   },
+        { transform: 'scale(1.5)' },
+        { transform: 'scale(1)'   },
+      ], { duration: 300, easing: 'cubic-bezier(0.4,0,0.2,1)' });
+    }
+  };
+}
+
 // ============================================================
 // ROUTER
 // ============================================================
@@ -383,6 +421,29 @@ const Catalog = {
 
     el('app').innerHTML = `
       <div class="catalog-page animate-in">
+
+        <!-- ── HERO ───────────────────────────── -->
+        <div class="catalog-hero glass">
+          <div class="catalog-hero-content">
+            <span class="catalog-hero-eyebrow">Nueva Colección</span>
+            <h1 class="catalog-hero-title">Lana &amp; Lino</h1>
+            <p class="catalog-hero-sub">Indumentaria pensada para cada momento.<br/>Estilo, calidad y comodidad en un solo lugar.</p>
+            <div class="catalog-hero-pills">
+              <span class="hero-pill">Remeras</span>
+              <span class="hero-pill">Buzos</span>
+              <span class="hero-pill">Camperas</span>
+              <span class="hero-pill">Pantalones</span>
+              <span class="hero-pill">Calzado</span>
+            </div>
+          </div>
+          <div class="catalog-hero-deco" aria-hidden="true">
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-orb hero-orb-3"></div>
+            <span class="hero-brand-bg">L&amp;L</span>
+          </div>
+        </div>
+
         <div class="filter-bar glass mb-16">
           <span class="filter-label">Filtrar:</span>
           <select class="input-aero" id="fg" style="width:auto">
@@ -409,6 +470,19 @@ const Catalog = {
       </div>`;
 
     if (params.catName) { el('fc').value = params.catName; }
+
+    // Wire hero pills to category filter
+    document.querySelectorAll('.hero-pill').forEach(pill => {
+      pill.onclick = () => {
+        const cat = pill.textContent.trim();
+        // Find matching category (case-insensitive)
+        const sel = el('fc');
+        if (sel) {
+          const opt = [...sel.options].find(o => o.value.toLowerCase().includes(cat.toLowerCase()));
+          if (opt) { sel.value = opt.value; this._draw(this._filter()); }
+        }
+      };
+    });
 
     // Sync cat-bar active state
     const catBarInner = el('cat-bar-inner');
@@ -529,7 +603,29 @@ const Catalog = {
         </div>
       </div>`;
     }).join('');
-    grid.querySelectorAll('[data-goto]').forEach(b => b.onclick = e => { e.stopPropagation(); Router.go('product', { id: b.dataset.goto }); });
+    grid.querySelectorAll('[data-goto]').forEach(b => b.onclick = e => {
+      e.stopPropagation();
+      // Small fly from card image before navigating
+      const card = b.closest('.product-card');
+      const img  = card && card.querySelector('img');
+      if (img) {
+        const r = img.getBoundingClientRect();
+        const clone = document.createElement('img');
+        clone.src = img.src;
+        clone.className = 'fly-img';
+        clone.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;border-radius:var(--radius-lg)`;
+        document.body.appendChild(clone);
+        clone.animate([
+          { opacity:1, transform:'scale(1)' },
+          { opacity:0, transform:'scale(0.95) translateY(-8px)' }
+        ], { duration:220, easing:'ease-in', fill:'forwards' }).onfinish = () => {
+          clone.remove();
+          Router.go('product', { id: b.dataset.goto });
+        };
+      } else {
+        Router.go('product', { id: b.dataset.goto });
+      }
+    });
     grid.querySelectorAll('.product-card').forEach(c => c.onclick = e => { if(!e.target.closest('button')) Router.go('product', { id: c.dataset.pid }); });
     grid.querySelectorAll('.fav-btn').forEach(b => b.onclick = async e => {
       e.stopPropagation();
@@ -644,7 +740,6 @@ const Product = {
       b.classList.add('selected');
       const invId = parseInt(b.dataset.inv);
       const invStock = parseInt(b.dataset.stock);
-      console.log('[size selected] idInventario:', invId, 'stock:', invStock);
       this.selInv = { id: invId, stock: invStock, color: b.dataset.color, talle: b.dataset.talle };
       el('pd-sel-info').innerHTML = `<div class="stock-badge ${this.selInv.stock>0?'in-stock':'out-stock'}">${this.selInv.stock>0?'<i class="ph ph-check-circle"></i> Stock: '+this.selInv.stock+' unidades':'<i class="ph ph-x-circle"></i> Sin stock'}</div>`;
       el('pd-hint').textContent = '';
@@ -669,7 +764,6 @@ const Product = {
       btn.disabled = true;
       btn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Agregando...';
       try {
-        console.log('[addToCart] id_inventario:', this.selInv.id, 'id_usuario:', u.id_usuario, 'qty:', qty);
         let success = 0;
         for (let i = 0; i < qty; i++) {
           const r = await API.addToCart(this.selInv.id, u.id_usuario);
@@ -679,6 +773,9 @@ const Product = {
         if (success > 0) {
           Toast.show(success === 1 ? 'Producto agregado al carrito' : `${success} unidades agregadas al carrito`, 'success');
           Header._cartCount();
+          // Fly-to-cart animation using product image
+          const productImg = document.querySelector('.product-detail-img img');
+          if (productImg) flyToCart(productImg.src);
         }
       } catch(e) { Toast.show('Error de conexion','error'); }
       btn.disabled = false;
