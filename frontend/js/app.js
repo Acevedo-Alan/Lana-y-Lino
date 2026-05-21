@@ -576,17 +576,27 @@ const Catalog = {
   // Loads inventory for all products in background to populate color dropdown
   async _loadAllColors() {
     if (!Session.loggedIn()) return; // getProduct requires auth
+    if (!this.stockMap) this.stockMap = {};
     const toLoad = this.all.filter(p => !this.colorMap[p.idProducto]);
     for (const p of toLoad) {
       try {
         const r = await API.getProduct(p.idProducto);
         if (r.codigo === 200 && r.payload) {
           this.colorMap[p.idProducto] = [...new Set(r.payload.map(i => i.color).filter(Boolean))];
+          // Track stock per product for badges
+          this.stockMap[p.idProducto] = {};
+          r.payload.forEach(inv => {
+            this.stockMap[p.idProducto][inv.idInventario] = inv.stock;
+          });
         }
       } catch(e) {}
       // Small delay to avoid hammering the server
       await new Promise(res => setTimeout(res, 80));
     }
+    // Re-draw grid with stock badges now that we have data
+    const currentList = this._filter();
+    if (currentList && el('pgrid')) this._draw(currentList);
+
     // Refresh color dropdown with newly discovered colors
     const colorSel = el('fcolor');
     if (!colorSel) return;
@@ -626,11 +636,17 @@ const Catalog = {
     if (cnt) cnt.textContent = list.length + ' producto' + (list.length!==1?'s':'');
     if (!list.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon"><i class="ph ph-magnifying-glass" style="font-size:3rem;color:var(--text-muted)"></i></span><p>No se encontraron productos</p></div>'; return; }
     grid.innerHTML = list.map(p => {
-      const fav = this.favs.includes(p.idProducto);
+      const fav       = this.favs.includes(p.idProducto);
+      const stockMap  = this.stockMap && this.stockMap[p.idProducto];
+      const totalInv  = stockMap ? Object.values(stockMap).reduce((a,b)=>a+b,0) : null;
+      const isLow     = totalInv !== null && totalInv > 0 && totalInv <= 5;
+      const noStock   = totalInv !== null && totalInv === 0;
       return `<div class="product-card card-aero" data-pid="${p.idProducto}">
         <div class="product-card-img">
           <img src="${img(p.ulrImagen)}" alt="${esc(p.producto)}" loading="lazy" onerror="this.src=PLACEHOLDER"/>
           <button class="fav-btn ${fav?'active':''}" data-fid="${p.idProducto}"><i class="ph ${fav?'ph-heart-fill fav-active':'ph-heart'}"></i></button>
+          ${noStock ? '<div class="no-stock-badge">Sin stock</div>' : ''}
+          ${isLow   ? '<div class="low-stock-badge"><i class="ph ph-fire"></i> Últimas unidades</div>' : ''}
         </div>
         <div class="product-card-body">
           <div class="product-card-category">${esc(p.categoria||'')}</div>
@@ -743,8 +759,13 @@ const Product = {
                   </div>
                   <div class="sizes-grid">
                     ${citems.map(it => `
-                      <button class="size-btn ${it.stock===0?'no-stock':''}" data-inv="${it.idInventario}" data-stock="${it.stock}" data-color="${esc(color)}" data-talle="${esc(it.talle)}" ${it.stock===0?'disabled':''}>
+                      <button class="size-btn ${it.stock===0?'no-stock':''} ${it.stock>0&&it.stock<3?'low-stock':''}"
+                        data-inv="${it.idInventario}" data-stock="${it.stock}"
+                        data-color="${esc(color)}" data-talle="${esc(it.talle)}"
+                        ${it.stock===0?'disabled':''}
+                        title="${it.stock===0?'Sin stock':it.stock<3?'¡Últimas '+it.stock+' unidades!':''}">
                         ${esc(it.talle)}
+                        ${it.stock>0&&it.stock<3?'<span class="size-low-dot"></span>':''}
                       </button>`).join('')}
                   </div>
                 </div>`).join('')}
@@ -800,6 +821,10 @@ const Product = {
       const invId = parseInt(b.dataset.inv);
       const invStock = parseInt(b.dataset.stock);
       this.selInv = { id: invId, stock: invStock, color: b.dataset.color, talle: b.dataset.talle };
+      // Show low stock warning in hint
+      if (invStock > 0 && invStock < 3) {
+        el('pd-hint').innerHTML = '<span style="color:#e65100;font-weight:800;font-size:.82rem"><i class="ph ph-warning"></i> ¡Últimas ' + invStock + ' unidades!</span>';
+      }
       el('pd-sel-info').innerHTML = `<div class="stock-badge ${this.selInv.stock>0?'in-stock':'out-stock'}">${this.selInv.stock>0?'<i class="ph ph-check-circle"></i> Stock: '+this.selInv.stock+' unidades':'<i class="ph ph-x-circle"></i> Sin stock'}</div>`;
       el('pd-hint').textContent = '';
       // Reset qty and clamp to new stock

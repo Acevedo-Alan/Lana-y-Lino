@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0078d4"/>
+      <stop offset="100%" stop-color="#00b4d8"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.45"/>
+      <stop offset="55%" stop-color="white" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded rect -->
+  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+  <!-- Aero shine overlay -->
+  <rect width="32" height="16" rx="8" fill="url(#shine)"/>
+  <rect width="32" height="8" rx="0" y="8" fill="url(#shine)"/>
+  <!-- L&L text -->
+  <text x="16" y="21" font-family="Georgia,serif" font-size="13" font-weight="700"
+    fill="white" text-anchor="middle"
+    style="text-shadow:0 1px 2px rgba(0,0,0,0.3)">L&amp;L</text>
+</svg>

@@ -794,3 +794,81 @@ body.dark .hero-brand-bg {
   70%  { transform: scale(0.5);  opacity: 0.9; }
   100% { transform: scale(0.1);  opacity: 0; }
 }
+
+/* ============================================
+   STOCK BADGES
+   ============================================ */
+
+/* "Sin stock" — red top-right */
+.no-stock-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(180,0,0,0.82);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+/* "Últimas unidades" — amber bottom-left, animated */
+.low-stock-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: linear-gradient(135deg,
+    rgba(230, 81, 0, 0.92),
+    rgba(245, 124, 0, 0.92));
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: lowStockPulse 2.2s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(230,81,0,0.4);
+}
+
+.low-stock-badge i { font-size: 0.75rem; }
+
+@keyframes lowStockPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(230,81,0,0.4); }
+  50%       { box-shadow: 0 2px 16px rgba(230,81,0,0.7); }
+}
+
+/* Size button — low stock dot indicator */
+.size-btn.low-stock {
+  border-color: rgba(230, 81, 0, 0.5);
+  color: #e65100;
+}
+
+.size-btn.low-stock:hover,
+.size-btn.low-stock.selected {
+  background: linear-gradient(180deg,
+    rgba(255,200,150,0.9),
+    rgba(245,124,0,0.9));
+  border-color: #e65100;
+  color: #fff;
+}
+
+.size-low-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  background: #e65100;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.8);
+}
