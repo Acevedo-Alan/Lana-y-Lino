@@ -1,6 +1,6 @@
 import express from "express";
 import morgan from "morgan";
-
+import cors from "cors";
 
 import usuarioRoutes from "./routes/usuario.routes";
 import loginRoutes from "./routes/login.routes";
@@ -15,6 +15,8 @@ app.set("port", 4000);
 app.use(morgan("dev"));
 
 app.use(express.json());
+
+app.use(cors());
 
 //Routes
 app.use("/api",usuarioRoutes);

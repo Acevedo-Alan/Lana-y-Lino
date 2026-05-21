@@ -241,7 +241,9 @@ function verificarToken(req){
         return {estado: false, error: "Token no proporcionado"}
     }
     try{
-        const payload = jwt.verify(token, secret);
+        // Strip "Bearer " prefix if present
+        const bearerToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+        const payload = jwt.verify(bearerToken, secret);
         if(Date.now() > payload.exp){
             return {estado: false, error: "Token expirado"}
         }
