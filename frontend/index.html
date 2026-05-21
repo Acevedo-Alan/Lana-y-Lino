@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js"></script>
+  <!-- Prevent dark mode flash -->
+  <script>if(localStorage.getItem('ll_theme')==='dark')document.documentElement.classList.add('dark-early');</script>
+  <style>
+    .dark-early body, html.dark-early body { background: #0a1628 !important; }
+    /* Page fade transition */
+    #app { animation: none; }
+    #app.page-enter { animation: pageFade 0.25s cubic-bezier(0.4,0,0.2,1) both; }
+    @keyframes pageFade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  </style>
   <link rel="stylesheet" href="css/aero.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/catalog.css" />

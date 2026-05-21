@@ -406,3 +406,89 @@
   .payment-card-fields { grid-template-columns: 1fr; }
   .inventory-entry { grid-template-columns: 1fr 1fr; }
 }
+
+/* ============================================
+   MOBILE RESPONSIVENESS FIXES
+   ============================================ */
+
+/* Auth pages — don't clip on small screens */
+@media (max-width: 480px) {
+  .auth-page {
+    padding-top: 80px;
+    padding-bottom: 24px;
+    min-height: unset;
+    justify-content: flex-start;
+  }
+  .auth-card {
+    padding: 24px 18px;
+  }
+  .auth-card h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Payment — stack to single column on mobile */
+@media (max-width: 640px) {
+  .payment-page > div[style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .payment-page {
+    padding: 80px 14px 32px;
+  }
+}
+
+/* Product detail — stack on mobile */
+@media (max-width: 640px) {
+  .product-detail-page {
+    padding: 80px 14px 32px;
+  }
+  .product-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .product-detail-info {
+    padding: 18px !important;
+  }
+  .product-detail-name {
+    font-size: 1.4rem !important;
+  }
+}
+
+/* Cart — tighter on mobile */
+@media (max-width: 480px) {
+  .cart-page, .payment-page, .profile-page,
+  .favorites-page, .admin-page {
+    padding: 80px 12px 32px;
+  }
+  .cart-item-img { width: 58px; height: 58px; }
+}
+
+/* Catalog filter bar — wrap nicely */
+@media (max-width: 600px) {
+  .filter-bar {
+    gap: 8px;
+  }
+  .filter-bar select {
+    flex: 1;
+    min-width: 100px;
+  }
+  .filter-bar .btn-aero {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0 !important;
+  }
+}
+
+/* Header — tighten on very small screens */
+@media (max-width: 480px) {
+  .search-wrap { min-width: 120px; }
+  .header-right .btn-aero { padding: 6px 10px; font-size: 0.78rem; }
+  .brand-name { font-size: 1rem; }
+}
+
+/* ============================================
+   PAGE TRANSITION
+   ============================================ */
+#app {
+  transition: none;
+}

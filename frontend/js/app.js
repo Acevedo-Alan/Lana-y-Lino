@@ -153,7 +153,8 @@ const Router = {
     const app = el('app');
     if (!app) return;
     app.innerHTML = '<div class="loading-container" style="min-height:60vh"><div class="spinner"></div><span>Cargando...</span></div>';
-    window.scrollTo({ top: 0 });
+    app.classList.remove('page-enter');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     // Clear search box when navigating away from catalog
     if (this.page !== 'catalog') { const s = el('h-search'); if(s) s.value = ''; }
     Header.render();
@@ -170,7 +171,12 @@ const Router = {
     };
     const fn = pages[this.page];
     if (fn) {
-      Promise.resolve().then(fn).catch(err => {
+      Promise.resolve().then(fn).then(() => {
+        // Trigger enter animation after content is set
+        requestAnimationFrame(() => {
+          if (app) { app.classList.add('page-enter'); }
+        });
+      }).catch(err => {
         console.error(err);
         app.innerHTML = '<div class="page-section"><p style="color:var(--danger)">Error al cargar la pagina. Revisa la consola.</p></div>';
       });
@@ -230,10 +236,15 @@ const Header = {
     el('theme-btn').onclick    = () => Theme.toggle();
     el('h-search-btn').onclick = () => this._search();
     el('h-search').onkeydown   = e => { if (e.key==='Enter') this._search(); };
-    el('h-fav-btn').onclick    = () => { if (!Session.loggedIn()) { Toast.show('Inicia sesion para ver favoritos','error'); return; } Router.go('favorites'); };
+    el('h-fav-btn').onclick    = () => { if (!Session.loggedIn()) { Router.go('login'); return; } Router.go('favorites'); };
     el('cart-btn').onclick     = () => { if (!Session.loggedIn()) { Toast.show('Inicia sesion para ver el carrito','error'); return; } Router.go('cart'); };
     el('profile-btn').onclick  = () => Session.loggedIn() ? Router.go('profile') : Router.go('login');
-    el('auth-btn').onclick     = () => { if (Session.loggedIn()) { Session.clear(); Toast.show('Sesion cerrada','info'); Router.go('catalog'); } else Router.go('login'); };
+    el('auth-btn').onclick     = () => {
+      if (Session.loggedIn()) {
+        if (!confirm('¿Cerrar sesion?')) return;
+        Session.clear(); Toast.show('Sesion cerrada','info'); Header.render(); Router.go('catalog');
+      } else Router.go('login');
+    };
     if (isAdmin) el('admin-btn').onclick = () => Router.go('admin');
     // Dropdown
     el('cat-toggle').onclick = e => { e.stopPropagation(); el('cat-drop').classList.toggle('open'); };
@@ -473,7 +484,7 @@ const Catalog = {
     grid.querySelectorAll('.product-card').forEach(c => c.onclick = e => { if(!e.target.closest('button')) Router.go('product', { id: c.dataset.pid }); });
     grid.querySelectorAll('.fav-btn').forEach(b => b.onclick = async e => {
       e.stopPropagation();
-      if (!Session.loggedIn()) { Toast.show('Inicia sesion para agregar favoritos','error'); return; }
+      if (!Session.loggedIn()) { Toast.show('Inicia sesion para agregar favoritos','error'); Router.go('login'); return; }
       const u = Session.user(); const pid = parseInt(b.dataset.fid);
       const isFav = this.favs.includes(pid);
       try {
@@ -763,16 +774,29 @@ const Payment = {
     ['cn','ce','cv','ck'].forEach(id => { const inp=el(id); if(inp) inp.oninput=validate; });
     el('cn') && (el('cn').oninput = function() { let v=this.value.replace(/\D/g,'').substring(0,16); this.value=v.replace(/(.{4})/g,'$1 ').trim(); validate(); });
     el('ce') && (el('ce').oninput = function() { let v=this.value.replace(/\D/g,'').substring(0,4); if(v.length>=2) v=v.substring(0,2)+'/'+v.substring(2); this.value=v; validate(); });
-    el('pay-btn').onclick = () => {
+    el('pay-btn').onclick = async () => {
+      const btn = el('pay-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Procesando...';
       const u = Session.user();
-      if (u) API.getCart(u.id_usuario).then(r => { if(r.payload) r.payload.forEach(it=>API.removeCart(u.id_usuario,it.idInventario)); }).catch(()=>{});
+      // Clear cart properly — wait for all removals
+      if (u) {
+        try {
+          const cartRes = await API.getCart(u.id_usuario);
+          if (cartRes.payload && cartRes.payload.length) {
+            await Promise.all(cartRes.payload.map(it => API.removeCart(u.id_usuario, it.idInventario)));
+          }
+        } catch(e) {}
+      }
       el('app').innerHTML = `
         <div class="page-section animate-in">
-          <div class="card-aero payment-success" style="max-width:480px;margin:0 auto">
-            <div class="success-icon"><i class="ph ph-check-circle" style="font-size:4rem;color:var(--success)"></i></div>
-            <h2>Pago aprobado con exito!</h2>
-            <p>Gracias por tu compra en Lana &amp; Lino.</p>
-            <button class="btn-aero btn-success btn-lg" id="ps-btn" style="margin-top:24px">Seguir comprando</button>
+          <div class="card-aero payment-success" style="max-width:480px;margin:0 auto;text-align:center;padding:48px 32px">
+            <div class="success-icon" style="margin-bottom:16px"><i class="ph ph-check-circle" style="font-size:5rem;color:var(--success)"></i></div>
+            <h2 style="font-family:'Comfortaa',cursive;color:var(--success);font-size:1.8rem;margin-bottom:8px">Pago aprobado!</h2>
+            <p style="color:var(--text-muted);margin-bottom:24px">Gracias por tu compra en Lana &amp; Lino.<br/>Te enviamos los detalles por email.</p>
+            <button class="btn-aero btn-success btn-lg" id="ps-btn" style="justify-content:center">
+              <i class="ph ph-storefront"></i> Seguir comprando
+            </button>
           </div>
         </div>`;
       el('ps-btn').onclick = () => Router.go('catalog');
@@ -833,7 +857,10 @@ const AuthPages = {
       </div>`;
     el('reg-btn').onclick = async () => {
       const data = { nombre:el('rn').value.trim(), apellido:el('ra').value.trim(), direccion:el('rd').value.trim(), telefono:el('rt').value.trim(), email:el('re').value.trim(), password:el('rp').value, rol:'user' };
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
       if (!data.nombre||!data.apellido||!data.email||!data.password) { Toast.show('Completa los campos obligatorios','error'); return; }
+      if (!emailOk) { Toast.show('El email no tiene un formato valido','error'); return; }
+      if (data.password.length < 6) { Toast.show('La contrasena debe tener al menos 6 caracteres','error'); return; }
       el('reg-btn').disabled=true; el('reg-btn').textContent='Registrando...';
       try {
         const r = await API.register(data);
@@ -876,14 +903,19 @@ const AuthPages = {
         </div>`);
       el('cancel-prof').onclick = showView;
       el('save-prof').onclick = async () => {
+        const saveBtn = el('save-prof');
         const newPw = el('pf-pw').value;
+        const emailVal = el('pf-email') && el('pf-email').value.trim();
+        if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { Toast.show('El email no tiene un formato valido','error'); return; }
         const data = { rol: ud.rol, password: newPw||ud.password };
-        fields.forEach(([k])=>{ data[k]=el('pf-'+k).value.trim(); });
+        fields.forEach(([k])=>{ data[k]=el('pf-'+k) ? el('pf-'+k).value.trim() : ud[k]; });
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Guardando...';
         try {
           const r=await API.updateUser(u.id_usuario, data);
           if (r.codigo===200) { Object.assign(ud,data); localStorage.setItem('ll_user',JSON.stringify({...u,...data})); Toast.show('Datos actualizados','success'); showView(); }
-          else Toast.show(r.mensaje||'Error','error');
-        } catch(e) { Toast.show('Error de conexion','error'); }
+          else { Toast.show(r.mensaje||'Error','error'); saveBtn.disabled=false; saveBtn.innerHTML='<i class="ph ph-floppy-disk"></i> Guardar'; }
+        } catch(e) { Toast.show('Error de conexion','error'); saveBtn.disabled=false; saveBtn.innerHTML='<i class="ph ph-floppy-disk"></i> Guardar'; }
       };
     };
     showView();
@@ -1093,6 +1125,10 @@ const Admin = {
 // BOOT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  // Sync dark class from FOUC-prevention early class
+  if (document.documentElement.classList.contains('dark-early')) {
+    document.body.classList.add('dark');
+  }
   Theme.init();
   Header.render();
   Router.go('catalog');
