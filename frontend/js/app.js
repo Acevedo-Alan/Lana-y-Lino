@@ -162,8 +162,11 @@ const Router = {
     app.innerHTML = '<div class="loading-container" style="min-height:60vh"><div class="spinner"></div><span>Cargando...</span></div>';
     app.classList.remove('page-enter');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Clear search box when navigating away from catalog
-    if (this.page !== 'catalog') { const s = el('h-search'); if(s) s.value = ''; }
+    // Clear search box and hide cat-bar when navigating away from catalog
+    if (this.page !== 'catalog') {
+      const s = el('h-search'); if(s) s.value = '';
+      const bar = el('cat-bar'); if(bar) bar.style.display = 'none';
+    }
     Header.render();
     const pages = {
       catalog:   () => Catalog.render(),
@@ -268,30 +271,32 @@ const Header = {
   },
   async _loadCats() {
     const c = el('cat-items');
-    if (!c) return;
-    // If logged in, fetch from API for accurate category IDs
+    let cats = [];
+
     if (Session.loggedIn()) {
       try {
         const r = await API.getCategories();
         if (r.codigo === 200 && r.payload && r.payload.length) {
-          c.innerHTML = r.payload.map(cat =>
-            `<a data-cname="${esc(cat.nombre)}">${esc(cat.nombre)}</a>`
-          ).join('');
-          c.querySelectorAll('a').forEach(a => a.onclick = () => {
-            Router.go('catalog', { catName: a.dataset.cname });
-            el('cat-drop').classList.remove('open');
-          });
-          return;
+          cats = r.payload.map(cat => cat.nombre);
         }
       } catch(e) {}
     }
-    // Fallback: extract unique categories from already-loaded product list
-    // (works for non-logged-in users too since getProducts is public)
-    try {
-      const r = await API.getProducts();
-      if (r.codigo === 200 && r.payload) {
-        const cats = [...new Set(r.payload.map(p => p.categoria).filter(Boolean))].sort();
-        if (!cats.length) { c.innerHTML = '<span style="padding:8px 16px;font-size:.8rem;color:var(--text-muted);display:block">Sin categorias</span>'; return; }
+
+    // Fallback from products list (works without login)
+    if (!cats.length) {
+      try {
+        const r = await API.getProducts();
+        if (r.codigo === 200 && r.payload) {
+          cats = [...new Set(r.payload.map(p => p.categoria).filter(Boolean))].sort();
+        }
+      } catch(e) {}
+    }
+
+    // Populate header dropdown
+    if (c) {
+      if (!cats.length) {
+        c.innerHTML = '<span style="padding:8px 16px;font-size:.8rem;color:var(--text-muted);display:block">Sin categorias</span>';
+      } else {
         c.innerHTML = cats.map(cat =>
           `<a data-cname="${esc(cat)}">${esc(cat)}</a>`
         ).join('');
@@ -300,7 +305,35 @@ const Header = {
           el('cat-drop').classList.remove('open');
         });
       }
-    } catch(e) { c.innerHTML = ''; }
+    }
+
+    // Populate horizontal category bar
+    this._buildCatBar(cats);
+  },
+
+  _buildCatBar(cats) {
+    const bar    = el('cat-bar');
+    const inner  = el('cat-bar-inner');
+    if (!bar || !inner) return;
+
+    if (!cats.length) { bar.style.display = 'none'; return; }
+
+    bar.style.display = 'flex';
+    inner.innerHTML =
+      `<button class="cat-bar-item active" data-cat="">Todo</button>` +
+      cats.map(cat => `<button class="cat-bar-item" data-cat="${esc(cat)}">${esc(cat)}</button>`).join('');
+
+    // Highlight active on load
+    const activeCat = Router.params && Router.params.catName || '';
+    inner.querySelectorAll('.cat-bar-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.cat === activeCat);
+      btn.onclick = () => {
+        inner.querySelectorAll('.cat-bar-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (btn.dataset.cat) Router.go('catalog', { catName: btn.dataset.cat });
+        else Router.go('catalog', {});
+      };
+    });
   },
   async _cartCount() {
     const u = Session.user();
@@ -376,6 +409,15 @@ const Catalog = {
       </div>`;
 
     if (params.catName) { el('fc').value = params.catName; }
+
+    // Sync cat-bar active state
+    const catBarInner = el('cat-bar-inner');
+    if (catBarInner) {
+      catBarInner.querySelectorAll('.cat-bar-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === (params.catName || ''));
+      });
+    }
+
     // Fix: clear search input when filters change manually
     el('fg').onchange = el('fc').onchange = el('fcolor').onchange = () => {
       Router.params = { ...Router.params, search: '' };
