@@ -7,13 +7,13 @@
 
 const API_BASE = 'http://localhost:4000/api';
 
-// ============================================================
+// =============================================================
 // API
-// ============================================================
+// =============================================================
 const API = {
   _token() { return localStorage.getItem('ll_token') || null; },
   _headers(auth) {
-    const h = { 'Content-Type': 'application/json' };
+    const h = { 'Content-Type': 'application/json'};
     if (auth) { const t = this._token(); if (t) h['Authorization'] = 'Bearer ' + t; }
     return h;
   },
