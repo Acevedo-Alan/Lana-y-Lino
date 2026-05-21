@@ -14,7 +14,7 @@ const API = {
   _token() { return localStorage.getItem('ll_token') || null; },
   _headers(auth) {
     const h = { 'Content-Type': 'application/json' };
-    if (auth) { const t = this._token(); if (t) h['Authorization'] = t; }
+    if (auth) { const t = this._token(); if (t) h['Authorization'] = 'Bearer ' + t; }
     return h;
   },
   async _req(method, path, body, auth = true) {
@@ -130,6 +130,8 @@ const Router = {
     if (!app) return;
     app.innerHTML = '<div class="loading-container" style="min-height:60vh"><div class="spinner"></div><span>Cargando...</span></div>';
     window.scrollTo({ top: 0 });
+    // Clear search box when navigating away from catalog
+    if (this.page !== 'catalog') { const s = el('h-search'); if(s) s.value = ''; }
     Header.render();
     const pages = {
       catalog:   () => Catalog.render(),
@@ -209,23 +211,43 @@ const Header = {
   _search() {
     const q = el('h-search') && el('h-search').value.trim();
     if (q) Router.go('catalog', { search: q });
+    else   Router.go('catalog', {});
   },
   async _loadCats() {
-    if (!Session.loggedIn()) return;
+    const c = el('cat-items');
+    if (!c) return;
+    // If logged in, fetch from API for accurate category IDs
+    if (Session.loggedIn()) {
+      try {
+        const r = await API.getCategories();
+        if (r.codigo === 200 && r.payload && r.payload.length) {
+          c.innerHTML = r.payload.map(cat =>
+            `<a data-cname="${esc(cat.nombre)}">${esc(cat.nombre)}</a>`
+          ).join('');
+          c.querySelectorAll('a').forEach(a => a.onclick = () => {
+            Router.go('catalog', { catName: a.dataset.cname });
+            el('cat-drop').classList.remove('open');
+          });
+          return;
+        }
+      } catch(e) {}
+    }
+    // Fallback: extract unique categories from already-loaded product list
+    // (works for non-logged-in users too since getProducts is public)
     try {
-      const r = await API.getCategories();
+      const r = await API.getProducts();
       if (r.codigo === 200 && r.payload) {
-        const c = el('cat-items');
-        if (!c) return;
-        c.innerHTML = r.payload.map(cat =>
-          `<a data-cid="${cat.id_categoria}" data-cname="${esc(cat.nombre)}">${esc(cat.nombre)}</a>`
+        const cats = [...new Set(r.payload.map(p => p.categoria).filter(Boolean))].sort();
+        if (!cats.length) { c.innerHTML = '<span style="padding:8px 16px;font-size:.8rem;color:var(--text-muted);display:block">Sin categorias</span>'; return; }
+        c.innerHTML = cats.map(cat =>
+          `<a data-cname="${esc(cat)}">${esc(cat)}</a>`
         ).join('');
         c.querySelectorAll('a').forEach(a => a.onclick = () => {
-          Router.go('catalog', { catId: a.dataset.cid, catName: a.dataset.cname });
+          Router.go('catalog', { catName: a.dataset.cname });
           el('cat-drop').classList.remove('open');
         });
       }
-    } catch(e) {}
+    } catch(e) { c.innerHTML = ''; }
   },
   async _cartCount() {
     const u = Session.user();
@@ -247,6 +269,9 @@ const Header = {
 const Catalog = {
   all: [],
   favs: [],
+  // colorMap: idProducto -> [color, ...] — populated as user browses product details
+  colorMap: {},
+
   async render() {
     const params = Router.params;
     try {
@@ -254,6 +279,10 @@ const Catalog = {
       this.all = (r.codigo === 200) ? r.payload : [];
     } catch(e) { this.all = []; }
     this.favs = await this._getFavs();
+
+    // Seed color map from any inventory already loaded in this session
+    const knownColors = [...new Set(Object.values(this.colorMap).flat())].sort();
+
     el('app').innerHTML = `
       <div class="catalog-page animate-in">
         <div class="filter-bar glass mb-16">
@@ -266,7 +295,11 @@ const Catalog = {
           </select>
           <select class="input-aero" id="fc" style="width:auto">
             <option value="">Categoria</option>
-            ${[...new Set(this.all.map(p=>p.categoria))].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}
+            ${[...new Set(this.all.map(p=>p.categoria).filter(Boolean))].sort().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}
+          </select>
+          <select class="input-aero" id="fcolor" style="width:auto">
+            <option value="">Color</option>
+            ${knownColors.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}
           </select>
           <button class="btn-aero" id="fc-clear" style="margin-left:auto">Limpiar filtros</button>
         </div>
@@ -276,31 +309,70 @@ const Catalog = {
         </div>
         <div class="products-grid stagger-children" id="pgrid"></div>
       </div>`;
+
     if (params.catName) { el('fc').value = params.catName; }
-    el('fg').onchange = el('fc').onchange = () => this._draw(this._filter());
+    // Fix: clear search input when filters change manually
+    el('fg').onchange = el('fc').onchange = el('fcolor').onchange = () => {
+      Router.params = { ...Router.params, search: '' };
+      this._draw(this._filter());
+    };
     el('fc-clear').onclick = () => {
-      el('fg').value = ''; el('fc').value = '';
+      el('fg').value = ''; el('fc').value = ''; el('fcolor').value = '';
       if (el('h-search')) el('h-search').value = '';
       Router.params = {};
       el('cat-title').textContent = 'Todos los productos';
       this._draw(this._filter());
     };
     this._draw(this._filter(params.search));
+
+    // Background: load all inventory to populate color filter
+    this._loadAllColors();
   },
+
+  // Loads inventory for all products in background to populate color dropdown
+  async _loadAllColors() {
+    if (!Session.loggedIn()) return; // getProduct requires auth
+    const toLoad = this.all.filter(p => !this.colorMap[p.idProducto]);
+    for (const p of toLoad) {
+      try {
+        const r = await API.getProduct(p.idProducto);
+        if (r.codigo === 200 && r.payload) {
+          this.colorMap[p.idProducto] = [...new Set(r.payload.map(i => i.color).filter(Boolean))];
+        }
+      } catch(e) {}
+      // Small delay to avoid hammering the server
+      await new Promise(res => setTimeout(res, 80));
+    }
+    // Refresh color dropdown with newly discovered colors
+    const colorSel = el('fcolor');
+    if (!colorSel) return;
+    const allColors = [...new Set(Object.values(this.colorMap).flat())].sort();
+    const current = colorSel.value;
+    colorSel.innerHTML = `<option value="">Color</option>` +
+      allColors.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    colorSel.value = current;
+  },
+
   async _getFavs() {
     const u = Session.user();
     if (!u) return [];
     try { const r = await API.getFavorites(u.id_usuario); return r.codigo===200 ? r.payload.map(f=>f.idProducto) : []; }
     catch(e) { return []; }
   },
+
   _filter(search) {
     let list = [...this.all];
-    const g = el('fg') && el('fg').value;
-    const c = el('fc') && el('fc').value;
-    const q = search || (Router.params.search) || '';
-    if (g) list = list.filter(p => p.genero && p.genero.toLowerCase() === g.toLowerCase());
-    if (c) list = list.filter(p => p.categoria && p.categoria.toLowerCase() === c.toLowerCase());
-    if (q) list = list.filter(p => (p.producto||'').toLowerCase().includes(q.toLowerCase()) || (p.descripcion||'').toLowerCase().includes(q.toLowerCase()));
+    const g      = el('fg')     && el('fg').value;
+    const c      = el('fc')     && el('fc').value;
+    const color  = el('fcolor') && el('fcolor').value;
+    const q      = search || (Router.params.search) || '';
+    if (g)     list = list.filter(p => p.genero    && p.genero.toLowerCase()    === g.toLowerCase());
+    if (c)     list = list.filter(p => p.categoria && p.categoria.toLowerCase() === c.toLowerCase());
+    if (color) list = list.filter(p => {
+      const cols = this.colorMap[p.idProducto] || [];
+      return cols.some(col => col.toLowerCase() === color.toLowerCase());
+    });
+    if (q)     list = list.filter(p => (p.producto||'').toLowerCase().includes(q.toLowerCase()) || (p.descripcion||'').toLowerCase().includes(q.toLowerCase()));
     return list;
   },
   _draw(list) {
