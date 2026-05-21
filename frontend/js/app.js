@@ -14,7 +14,14 @@ const API = {
   _token() { return localStorage.getItem('ll_token') || null; },
   _headers(auth) {
     const h = { 'Content-Type': 'application/json' };
-    if (auth) { const t = this._token(); if (t) h['Authorization'] = 'Bearer ' + t; }
+    if (auth) {
+      const t = this._token();
+      if (t) {
+        // Send raw token — backend's verificarToken does jwt.verify(token) directly.
+        // If backend was patched to strip "Bearer ", it also accepts raw tokens.
+        h['Authorization'] = t;
+      }
+    }
     return h;
   },
   async _req(method, path, body, auth = true) {
@@ -593,7 +600,10 @@ const Product = {
     document.querySelectorAll('.size-btn:not([disabled])').forEach(b => b.onclick = () => {
       document.querySelectorAll('.size-btn').forEach(x=>x.classList.remove('selected'));
       b.classList.add('selected');
-      this.selInv = { id: parseInt(b.dataset.inv), stock: parseInt(b.dataset.stock), color: b.dataset.color, talle: b.dataset.talle };
+      const invId = parseInt(b.dataset.inv);
+      const invStock = parseInt(b.dataset.stock);
+      console.log('[size selected] idInventario:', invId, 'stock:', invStock);
+      this.selInv = { id: invId, stock: invStock, color: b.dataset.color, talle: b.dataset.talle };
       el('pd-sel-info').innerHTML = `<div class="stock-badge ${this.selInv.stock>0?'in-stock':'out-stock'}">${this.selInv.stock>0?'<i class="ph ph-check-circle"></i> Stock: '+this.selInv.stock+' unidades':'<i class="ph ph-x-circle"></i> Sin stock'}</div>`;
       el('pd-hint').textContent = '';
       // Reset qty and clamp to new stock
@@ -617,6 +627,7 @@ const Product = {
       btn.disabled = true;
       btn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Agregando...';
       try {
+        console.log('[addToCart] id_inventario:', this.selInv.id, 'id_usuario:', u.id_usuario, 'qty:', qty);
         let success = 0;
         for (let i = 0; i < qty; i++) {
           const r = await API.addToCart(this.selInv.id, u.id_usuario);
