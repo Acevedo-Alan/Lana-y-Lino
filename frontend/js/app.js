@@ -7,13 +7,13 @@
 
 const API_BASE = 'http://localhost:4000/api';
 
-// =============================================================
+// ============================================================
 // API
-// =============================================================
+// ============================================================
 const API = {
   _token() { return localStorage.getItem('ll_token') || null; },
   _headers(auth) {
-    const h = { 'Content-Type': 'application/json'};
+    const h = { 'Content-Type': 'application/json' };
     if (auth) { const t = this._token(); if (t) h['Authorization'] = 'Bearer ' + t; }
     return h;
   },
@@ -93,8 +93,11 @@ const Theme = {
     this._icon();
   },
   _icon() {
-    const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+      const dark = document.body.classList.contains('dark');
+      icon.className = dark ? 'ph ph-sun' : 'ph ph-moon';
+    }
   }
 };
 
@@ -110,7 +113,28 @@ const COLOR_MAP = {
 function colorHex(n) { return n ? (COLOR_MAP[n.toLowerCase().trim()] || '#9e9e9e') : '#9e9e9e'; }
 function price(n)    { return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n); }
 function esc(s)      { const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
-function img(url)    { return (url && url.startsWith('http')) ? url : 'https://placehold.co/400x400/c8e8ff/1a3a5c?text=Sin+Imagen'; }
+// Branded SVG placeholder — Lana & Lino logo style
+const PLACEHOLDER = "data:image/svg+xml," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'>
+  <defs>
+    <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#c8eeff'/>
+      <stop offset='50%' stop-color='#d4f0ff'/>
+      <stop offset='100%' stop-color='#b8e8b8'/>
+    </linearGradient>
+    <linearGradient id='shine' x1='0%' y1='0%' x2='0%' y2='100%'>
+      <stop offset='0%' stop-color='white' stop-opacity='0.6'/>
+      <stop offset='100%' stop-color='white' stop-opacity='0'/>
+    </linearGradient>
+  </defs>
+  <rect width='400' height='400' fill='url(#bg)'/>
+  <rect width='400' height='200' fill='url(#shine)'/>
+  <circle cx='200' cy='165' r='54' fill='none' stroke='rgba(0,100,180,0.25)' stroke-width='3'/>
+  <path d='M172 155 Q200 130 228 155 Q200 175 172 155Z' fill='rgba(0,100,180,0.2)'/>
+  <line x1='200' y1='155' x2='200' y2='195' stroke='rgba(0,100,180,0.3)' stroke-width='2.5'/>
+  <text x='200' y='248' font-family='Comfortaa,sans-serif' font-size='22' font-weight='700' fill='rgba(0,80,160,0.55)' text-anchor='middle'>Lana &amp; Lino</text>
+  <text x='200' y='272' font-family='sans-serif' font-size='13' fill='rgba(0,80,160,0.35)' text-anchor='middle'>sin imagen</text>
+</svg>`);
+function img(url) { return (url && url.startsWith('http')) ? url : PLACEHOLDER; }
 function el(id)      { return document.getElementById(id); }
 function setHTML(id, html) { const e = el(id); if(e) e.innerHTML = html; }
 
@@ -168,11 +192,16 @@ const Header = {
         <div class="header-left">
           <div class="search-wrap">
             <input type="text" id="h-search" placeholder="Buscar productos..." />
-            <button id="h-search-btn">&#128269;</button>
+            <button id="h-search-btn"><i class="ph ph-magnifying-glass"></i></button>
           </div>
-          <button class="icon-btn" id="h-fav-btn" title="Favoritos">&#9825;</button>
+          <button class="icon-btn" id="h-fav-btn" title="Favoritos">
+            <i class="ph ph-heart"></i>
+            <span class="badge-count" id="fav-cnt" style="display:none">0</span>
+          </button>
           <div class="dropdown-wrap" id="cat-drop">
-            <div class="dropdown-toggle" id="cat-toggle">Productos <span class="arrow">&#9662;</span></div>
+            <div class="dropdown-toggle" id="cat-toggle">
+              <i class="ph ph-tag" style="font-size:1rem"></i> Productos <i class="ph ph-caret-down arrow" style="font-size:.75rem"></i>
+            </div>
             <div class="dropdown-menu" id="cat-menu">
               <a id="cat-all">Todos los productos</a>
               <div class="divider"></div>
@@ -184,11 +213,16 @@ const Header = {
           <span class="brand-name" id="brand-link">Lana &amp; Lino</span>
         </div>
         <div class="header-right">
-          <button class="icon-btn" id="theme-btn" title="Cambiar tema">🌙</button>
-          ${isAdmin ? '<button class="btn-aero" id="admin-btn">&#9881; Admin</button>' : ''}
-          <button class="icon-btn" id="cart-btn" title="Carrito">&#128722;<span class="badge-count" id="cart-cnt" style="display:none">0</span></button>
-          <button class="icon-btn" id="profile-btn" title="Perfil">&#128100;</button>
-          <button class="btn-aero" id="auth-btn">${logged ? '&#128682; Salir' : '&#128273; Ingresar'}</button>
+          <button class="icon-btn" id="theme-btn" title="Cambiar tema"><i class="ph ph-moon" id="theme-icon"></i></button>
+          ${isAdmin ? '<button class="btn-aero" id="admin-btn"><i class="ph ph-gear"></i> Admin</button>' : ''}
+          <button class="icon-btn" id="cart-btn" title="Carrito">
+            <i class="ph ph-shopping-cart"></i>
+            <span class="badge-count" id="cart-cnt" style="display:none">0</span>
+          </button>
+          <button class="icon-btn" id="profile-btn" title="Perfil"><i class="ph ph-user"></i></button>
+          <button class="btn-aero" id="auth-btn">
+            ${logged ? '<i class="ph ph-sign-out"></i> Salir' : '<i class="ph ph-sign-in"></i> Ingresar'}
+          </button>
         </div>
       </div>`;
     Theme._icon();
@@ -207,6 +241,7 @@ const Header = {
     el('cat-all').onclick = () => Router.go('catalog');
     this._loadCats();
     this._cartCount();
+    this._favCount();
   },
   _search() {
     const q = el('h-search') && el('h-search').value.trim();
@@ -255,6 +290,18 @@ const Header = {
     if (!u || !badge) return;
     try {
       const r = await API.getCart(u.id_usuario);
+      if (r.codigo === 200 && r.payload && r.payload.length > 0) {
+        badge.textContent = r.payload.length;
+        badge.style.display = 'flex';
+      } else { badge.style.display = 'none'; }
+    } catch(e) { badge.style.display = 'none'; }
+  },
+  async _favCount() {
+    const u = Session.user();
+    const badge = el('fav-cnt');
+    if (!u || !badge) return;
+    try {
+      const r = await API.getFavorites(u.id_usuario);
       if (r.codigo === 200 && r.payload && r.payload.length > 0) {
         badge.textContent = r.payload.length;
         badge.style.display = 'flex';
@@ -323,10 +370,32 @@ const Catalog = {
       el('cat-title').textContent = 'Todos los productos';
       this._draw(this._filter());
     };
+    this._drawSkeleton();
+    // Small tick so skeleton renders before heavy work
+    await new Promise(r => setTimeout(r, 30));
     this._draw(this._filter(params.search));
 
     // Background: load all inventory to populate color filter
     this._loadAllColors();
+  },
+
+  _drawSkeleton() {
+    const grid = el('pgrid');
+    if (!grid) return;
+    grid.innerHTML = Array(8).fill(0).map(() => `
+      <div class="product-card card-aero skeleton-card">
+        <div class="skeleton-img skeleton-pulse"></div>
+        <div class="product-card-body" style="gap:10px">
+          <div class="skeleton-line skeleton-pulse" style="width:50%;height:12px;border-radius:6px"></div>
+          <div class="skeleton-line skeleton-pulse" style="width:85%;height:16px;border-radius:6px"></div>
+          <div class="skeleton-line skeleton-pulse" style="width:70%;height:12px;border-radius:6px"></div>
+          <div class="skeleton-line skeleton-pulse" style="width:40%;height:12px;border-radius:6px"></div>
+        </div>
+        <div class="product-card-footer">
+          <div class="skeleton-line skeleton-pulse" style="width:60px;height:20px;border-radius:8px"></div>
+          <div class="skeleton-line skeleton-pulse" style="width:70px;height:32px;border-radius:16px"></div>
+        </div>
+      </div>`).join('');
   },
 
   // Loads inventory for all products in background to populate color dropdown
@@ -380,13 +449,13 @@ const Catalog = {
     const cnt  = el('r-count');
     if (!grid) return;
     if (cnt) cnt.textContent = list.length + ' producto' + (list.length!==1?'s':'');
-    if (!list.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">&#128269;</span><p>No se encontraron productos</p></div>'; return; }
+    if (!list.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon"><i class="ph ph-magnifying-glass" style="font-size:3rem;color:var(--text-muted)"></i></span><p>No se encontraron productos</p></div>'; return; }
     grid.innerHTML = list.map(p => {
       const fav = this.favs.includes(p.idProducto);
       return `<div class="product-card card-aero" data-pid="${p.idProducto}">
         <div class="product-card-img">
-          <img src="${img(p.ulrImagen)}" alt="${esc(p.producto)}" loading="lazy" onerror="this.src='https://placehold.co/400x400/c8e8ff/1a3a5c?text=Sin+Imagen'"/>
-          <button class="fav-btn ${fav?'active':''}" data-fid="${p.idProducto}">${fav?'&#10084;':'&#9825;'}</button>
+          <img src="${img(p.ulrImagen)}" alt="${esc(p.producto)}" loading="lazy" onerror="this.src=PLACEHOLDER"/>
+          <button class="fav-btn ${fav?'active':''}" data-fid="${p.idProducto}"><i class="ph ${fav?'ph-heart-fill fav-active':'ph-heart'}"></i></button>
         </div>
         <div class="product-card-body">
           <div class="product-card-category">${esc(p.categoria||'')}</div>
@@ -396,7 +465,7 @@ const Catalog = {
         </div>
         <div class="product-card-footer">
           <span class="product-price">${price(p.precio)}</span>
-          <button class="btn-aero" data-goto="${p.idProducto}">&#128722; Ver</button>
+          <button class="btn-aero" data-goto="${p.idProducto}"><i class="ph ph-shopping-bag"></i> Ver</button>
         </div>
       </div>`;
     }).join('');
@@ -410,8 +479,9 @@ const Catalog = {
       try {
         const r = isFav ? await API.removeFavorite(u.id_usuario, pid) : await API.addFavorite(pid, u.id_usuario);
         if (r.codigo === 200) {
-          if (isFav) { this.favs = this.favs.filter(f=>f!==pid); b.innerHTML='&#9825;'; b.classList.remove('active'); Toast.show('Eliminado de favoritos','info'); }
-          else       { this.favs.push(pid); b.innerHTML='&#10084;'; b.classList.add('active'); Toast.show('Agregado a favoritos','success'); }
+          if (isFav) { this.favs = this.favs.filter(f=>f!==pid); b.innerHTML='<i class="ph ph-heart"></i>'; b.classList.remove('active'); Toast.show('Eliminado de favoritos','info'); }
+          else       { this.favs.push(pid); b.innerHTML='<i class="ph ph-heart-fill fav-active"></i>'; b.classList.add('active'); Toast.show('Agregado a favoritos','success'); }
+          Header._favCount();
         }
       } catch(e) { Toast.show('Error al actualizar favoritos','error'); }
     });
@@ -439,10 +509,10 @@ const Product = {
     items.forEach(it => { if (!byColor[it.color]) byColor[it.color]=[]; byColor[it.color].push(it); });
     el('app').innerHTML = `
       <div class="product-detail-page animate-in">
-        <button class="btn-aero" id="pd-back" style="margin-bottom:16px">&#8592; Volver</button>
+        <button class="btn-aero" id="pd-back" style="margin-bottom:16px"><i class="ph ph-arrow-left"></i> Volver</button>
         <div class="product-detail-grid">
           <div class="product-detail-img card-aero" style="position:relative">
-            <img src="${img(first.ulrImagen)}" alt="${esc(first.producto)}" onerror="this.src='https://placehold.co/600x600/c8e8ff/1a3a5c?text=Sin+Imagen'"/>
+            <img src="${img(first.ulrImagen)}" alt="${esc(first.producto)}" onerror="this.src=PLACEHOLDER"/>
             ${totalStock===0?'<div class="no-stock-overlay">Sin Stock</div>':''}
           </div>
           <div class="product-detail-info glass-strong" style="border-radius:var(--radius-xl)">
@@ -468,30 +538,55 @@ const Product = {
             </div>
             <div id="pd-sel-info"></div>
             <div class="installments-card glass">
-              <div class="installments-title">&#128179; Calculadora de cuotas</div>
+              <div class="installments-title"><i class="ph ph-credit-card"></i> Calculadora de cuotas</div>
               <div class="installments-options">
                 ${Object.keys(RATES).map(n=>`<button class="installment-btn ${n=='1'?'active':''}" data-n="${n}">${n}x</button>`).join('')}
               </div>
               <div class="installment-result" id="pd-inst">${price(first.precio)} contado</div>
             </div>
-            <div class="flex gap-12" style="margin-top:4px">
+            <div class="flex gap-12" style="margin-top:4px;align-items:center;flex-wrap:wrap">
+              <div class="qty-selector glass" style="display:flex;align-items:center;border-radius:20px;overflow:hidden;border:1px solid var(--glass-border)">
+                <button class="qty-btn" id="qty-minus" style="width:36px;height:36px;background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-secondary);display:flex;align-items:center;justify-content:center" ${totalStock===0?'disabled':''}>
+                  <i class="ph ph-minus"></i>
+                </button>
+                <span id="qty-val" style="min-width:32px;text-align:center;font-weight:800;font-size:1rem;color:var(--text-primary)">1</span>
+                <button class="qty-btn" id="qty-plus" style="width:36px;height:36px;background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-secondary);display:flex;align-items:center;justify-content:center" ${totalStock===0?'disabled':''}>
+                  <i class="ph ph-plus"></i>
+                </button>
+              </div>
               <button class="btn-aero btn-success btn-lg" id="pd-cart" ${totalStock===0?'disabled':''}>
-                &#128722; ${totalStock===0?'Sin stock':'Agregar al carrito'}
+                <i class="ph ph-shopping-cart"></i> ${totalStock===0?'Sin stock':'Agregar al carrito'}
               </button>
-              <button class="btn-aero btn-lg" id="pd-fav">&#9825; Favorito</button>
+              <button class="btn-aero btn-lg" id="pd-fav"><i class="ph ph-heart"></i> Favorito</button>
             </div>
-            <div id="pd-hint" style="font-size:.78rem;color:var(--text-muted);margin-top:4px">${totalStock>0?'Selecciona un talle para agregar al carrito':''}</div>
+            <div id="pd-hint" style="font-size:.78rem;color:var(--text-muted);margin-top:4px">${totalStock>0?'Selecciona un talle y cantidad':''}  </div>
           </div>
         </div>
       </div>`;
     el('pd-back').onclick = () => Router.go('catalog');
+    // Quantity selector
+    let qty = 1;
+    const updateQtyDisplay = () => {
+      if (el('qty-val')) el('qty-val').textContent = qty;
+    };
+    el('qty-minus') && (el('qty-minus').onclick = () => {
+      if (qty > 1) { qty--; updateQtyDisplay(); }
+    });
+    el('qty-plus') && (el('qty-plus').onclick = () => {
+      const maxStock = this.selInv ? this.selInv.stock : 1;
+      if (qty < maxStock) { qty++; updateQtyDisplay(); }
+      else Toast.show('No hay mas stock disponible', 'info');
+    });
+
     // Sizes
     document.querySelectorAll('.size-btn:not([disabled])').forEach(b => b.onclick = () => {
       document.querySelectorAll('.size-btn').forEach(x=>x.classList.remove('selected'));
       b.classList.add('selected');
       this.selInv = { id: parseInt(b.dataset.inv), stock: parseInt(b.dataset.stock), color: b.dataset.color, talle: b.dataset.talle };
-      el('pd-sel-info').innerHTML = `<div class="stock-badge ${this.selInv.stock>0?'in-stock':'out-stock'}">${this.selInv.stock>0?'&#10003; Stock: '+this.selInv.stock+' unidades':'&#10007; Sin stock'}</div>`;
+      el('pd-sel-info').innerHTML = `<div class="stock-badge ${this.selInv.stock>0?'in-stock':'out-stock'}">${this.selInv.stock>0?'<i class="ph ph-check-circle"></i> Stock: '+this.selInv.stock+' unidades':'<i class="ph ph-x-circle"></i> Sin stock'}</div>`;
       el('pd-hint').textContent = '';
+      // Reset qty and clamp to new stock
+      qty = 1; updateQtyDisplay();
     });
     // Installments
     document.querySelectorAll('.installment-btn').forEach(b => b.onclick = () => {
@@ -505,12 +600,25 @@ const Product = {
     el('pd-cart').onclick = async () => {
       if (!Session.loggedIn()) { Toast.show('Inicia sesion para agregar al carrito','error'); Router.go('login'); return; }
       if (!this.selInv) { Toast.show('Selecciona un talle primero','info'); return; }
+      if (qty > this.selInv.stock) { Toast.show('No hay suficiente stock','error'); return; }
       const u = Session.user();
+      const btn = el('pd-cart');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Agregando...';
       try {
-        const r = await API.addToCart(this.selInv.id, u.id_usuario);
-        if (r.codigo===200) { Toast.show('Producto agregado al carrito','success'); Header._cartCount(); }
-        else Toast.show(r.mensaje||'Error al agregar','error');
+        let success = 0;
+        for (let i = 0; i < qty; i++) {
+          const r = await API.addToCart(this.selInv.id, u.id_usuario);
+          if (r.codigo === 200) success++;
+          else { Toast.show(r.mensaje || 'Error al agregar', 'error'); break; }
+        }
+        if (success > 0) {
+          Toast.show(success === 1 ? 'Producto agregado al carrito' : `${success} unidades agregadas al carrito`, 'success');
+          Header._cartCount();
+        }
       } catch(e) { Toast.show('Error de conexion','error'); }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ph ph-shopping-cart"></i> Agregar al carrito';
     };
     // Favorites
     el('pd-fav').onclick = async () => {
@@ -521,8 +629,8 @@ const Product = {
         const ids = fr.codigo===200 ? fr.payload.map(f=>f.idProducto) : [];
         const isFav = ids.includes(parseInt(id));
         let r;
-        if (isFav) { r = await API.removeFavorite(u.id_usuario, parseInt(id)); if(r.codigo===200){el('pd-fav').innerHTML='&#9825; Favorito'; Toast.show('Eliminado de favoritos','info');} }
-        else        { r = await API.addFavorite(parseInt(id), u.id_usuario);   if(r.codigo===200){el('pd-fav').innerHTML='&#10084; En favoritos'; Toast.show('Agregado a favoritos','success');} }
+        if (isFav) { r = await API.removeFavorite(u.id_usuario, parseInt(id)); if(r.codigo===200){el('pd-fav').innerHTML='<i class="ph ph-heart"></i> Favorito'; Toast.show('Eliminado de favoritos','info'); Header._favCount();} }
+        else        { r = await API.addFavorite(parseInt(id), u.id_usuario);   if(r.codigo===200){el('pd-fav').innerHTML='<i class="ph ph-heart-fill fav-active"></i> En favoritos'; Toast.show('Agregado a favoritos','success'); Header._favCount();} }
       } catch(e) { Toast.show('Error','error'); }
     };
     // Set fav btn state
@@ -530,7 +638,7 @@ const Product = {
       const u = Session.user();
       API.getFavorites(u.id_usuario).then(r => {
         if (r.codigo===200 && r.payload.map(f=>f.idProducto).includes(parseInt(id)))
-          el('pd-fav').innerHTML = '&#10084; En favoritos';
+          el('pd-fav').innerHTML = '<i class="ph ph-heart-fill fav-active"></i> En favoritos';
       }).catch(()=>{});
     }
   }
@@ -546,13 +654,13 @@ const Cart = {
     const u = Session.user();
     try { const r = await API.getCart(u.id_usuario); this.items = r.codigo===200 ? r.payload : []; }
     catch(e) { this.items = []; }
-    el('app').innerHTML = `<div class="cart-page animate-in"><h2 class="section-title">&#128722; Mi Carrito</h2><div id="cart-body"></div></div>`;
+    el('app').innerHTML = `<div class="cart-page animate-in"><h2 class="section-title"><i class="ph ph-shopping-cart"></i> Mi Carrito</h2><div id="cart-body"></div></div>`;
     this._draw();
   },
   _draw() {
     const b = el('cart-body'); if (!b) return;
     if (!this.items.length) {
-      b.innerHTML = `<div class="card-aero" style="padding:40px;text-align:center"><div class="empty-state"><span class="empty-icon">&#128722;</span><p>Tu carrito esta vacio</p></div><button class="btn-aero btn-lg" id="c-shop" style="margin-top:16px">Ver productos</button></div>`;
+      b.innerHTML = `<div class="card-aero" style="padding:40px;text-align:center"><div class="empty-state"><span class="empty-icon"><i class="ph ph-shopping-cart" style="font-size:3rem;color:var(--text-muted)"></i></span><p>Tu carrito esta vacio</p></div><button class="btn-aero btn-lg" id="c-shop" style="margin-top:16px">Ver productos</button></div>`;
       el('c-shop').onclick = () => Router.go('catalog');
       return;
     }
@@ -561,13 +669,13 @@ const Cart = {
       <div class="card-aero" style="padding:16px">
         ${this.items.map(it=>`
           <div class="cart-item">
-            <img class="cart-item-img" src="${img(it.urlImagen)}" alt="${esc(it.producto)}" onerror="this.src='https://placehold.co/80x80/c8e8ff/1a3a5c?text=?'"/>
+            <img class="cart-item-img" src="${img(it.urlImagen)}" alt="${esc(it.producto)}" onerror="this.src=PLACEHOLDER"/>
             <div class="cart-item-info">
               <div class="cart-item-name">${esc(it.producto)}</div>
               <div class="cart-item-meta">Talle: ${esc(it.talle)} &middot; Color: ${esc(it.color)}</div>
             </div>
             <div class="cart-item-price">${price(it.precio)}</div>
-            <button class="cart-item-remove" data-inv="${it.idInventario}">&#10005;</button>
+            <button class="cart-item-remove" data-inv="${it.idInventario}"><i class="ph ph-trash"></i></button>
           </div>`).join('')}
       </div>
       <div class="cart-summary glass" style="margin-top:16px;border-radius:var(--radius-lg)">
@@ -576,8 +684,8 @@ const Cart = {
           <span class="cart-total-value big">${price(total)}</span>
         </div>
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end">
-          <button class="btn-aero" id="c-back">&#8592; Seguir comprando</button>
-          <button class="btn-aero btn-success btn-lg" id="c-pay">&#128179; Ir a Pagar</button>
+          <button class="btn-aero" id="c-back"><i class="ph ph-arrow-left"></i> Seguir comprando</button>
+          <button class="btn-aero btn-success btn-lg" id="c-pay"><i class="ph ph-credit-card"></i> Ir a Pagar</button>
         </div>
       </div>`;
     el('c-back').onclick = () => Router.go('catalog');
@@ -603,8 +711,8 @@ const Payment = {
     if (!items.length) { Router.go('cart'); return; }
     el('app').innerHTML = `
       <div class="payment-page animate-in">
-        <button class="btn-aero" id="pay-back" style="margin-bottom:16px">&#8592; Volver</button>
-        <h2 class="section-title">&#128179; Finalizar Compra</h2>
+        <button class="btn-aero" id="pay-back" style="margin-bottom:16px"><i class="ph ph-arrow-left"></i> Volver</button>
+        <h2 class="section-title"><i class="ph ph-credit-card"></i> Finalizar Compra</h2>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
           <div class="card-aero" style="padding:20px">
             <h3 style="font-family:'Comfortaa',cursive;margin-bottom:14px">Resumen</h3>
@@ -634,8 +742,7 @@ const Payment = {
               </div>
               <div class="form-group"><label>Nombre del titular</label><input class="input-aero" id="ck" placeholder="Como aparece en la tarjeta"/></div>
             </div>
-            <button class="btn-aero btn-success btn-lg" id="pay-btn" disabled style="width:100%;justify-content:center;margin-top:16px">
-              &#128274; Pagar ${price(total)}
+            <button class="btn-aero btn-success btn-lg" id="pay-btn" disabled style="width:100%;justify-content:center;margin-top:16px"><i class="ph ph-lock"></i> Pagar ${price(total)}
             </button>
           </div>
         </div>
@@ -662,7 +769,7 @@ const Payment = {
       el('app').innerHTML = `
         <div class="page-section animate-in">
           <div class="card-aero payment-success" style="max-width:480px;margin:0 auto">
-            <div class="success-icon">&#9989;</div>
+            <div class="success-icon"><i class="ph ph-check-circle" style="font-size:4rem;color:var(--success)"></i></div>
             <h2>Pago aprobado con exito!</h2>
             <p>Gracias por tu compra en Lana &amp; Lino.</p>
             <button class="btn-aero btn-success btn-lg" id="ps-btn" style="margin-top:24px">Seguir comprando</button>
@@ -686,7 +793,7 @@ const AuthPages = {
           <p class="subtitle">Inicia sesion en Lana &amp; Lino</p>
           <div class="form-group"><label>Email</label><input class="input-aero" type="email" id="li-em" placeholder="tu@email.com"/></div>
           <div class="form-group"><label>Contrasena</label><input class="input-aero" type="password" id="li-pw" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"/></div>
-          <button class="btn-aero btn-success btn-lg" id="li-btn" style="width:100%;justify-content:center;margin-top:8px">&#128273; Ingresar</button>
+          <button class="btn-aero btn-success btn-lg" id="li-btn" style="width:100%;justify-content:center;margin-top:8px"><i class="ph ph-sign-in"></i> Ingresar</button>
           <div class="auth-link">No tenes cuenta? <a id="li-reg">Registrarse</a></div>
         </div>
       </div>`;
@@ -697,8 +804,8 @@ const AuthPages = {
       try {
         const r = await API.login(email, pass);
         if (r.codigo===200 && r.jwt) { Session.save(r.payload, r.jwt); Toast.show('Bienvenido/a!','success'); Header.render(); Router.go('catalog'); }
-        else { Toast.show(r.mensaje||'Credenciales incorrectas','error'); el('li-btn').disabled=false; el('li-btn').textContent='&#128273; Ingresar'; }
-      } catch(e) { Toast.show('Error de conexion con el servidor','error'); el('li-btn').disabled=false; el('li-btn').textContent='&#128273; Ingresar'; }
+        else { Toast.show(r.mensaje||'Credenciales incorrectas','error'); el('li-btn').disabled=false; el('li-btn').innerHTML='<i class="ph ph-sign-in"></i> Ingresar'; }
+      } catch(e) { Toast.show('Error de conexion con el servidor','error'); el('li-btn').disabled=false; el('li-btn').innerHTML='<i class="ph ph-sign-in"></i> Ingresar'; }
     };
     el('li-btn').onclick = doLogin;
     el('li-pw').onkeydown = e => { if(e.key==='Enter') doLogin(); };
@@ -744,7 +851,7 @@ const AuthPages = {
     const fields = [['nombre','Nombre'],['apellido','Apellido'],['direccion','Direccion'],['telefono','Telefono'],['email','Email']];
     el('app').innerHTML = `
       <div class="profile-page animate-in">
-        <h2 class="section-title">&#128100; Mi Perfil</h2>
+        <h2 class="section-title"><i class="ph ph-user"></i> Mi Perfil</h2>
         <div class="card-aero" style="padding:28px;max-width:560px;margin:0 auto">
           <div class="profile-avatar">${(ud.nombre||'?')[0].toUpperCase()}</div>
           <div id="prof-body"></div>
@@ -756,7 +863,7 @@ const AuthPages = {
           ${fields.map(([k,l])=>`<div><div style="font-size:.72rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em">${l}</div><div style="font-weight:600">${esc(ud[k]||'—')}</div></div>`).join('')}
           <div><div style="font-size:.72rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em">Rol</div><div style="font-weight:600">${esc(ud.rol||'—')}</div></div>
         </div>
-        <button class="btn-aero" id="edit-btn">&#9999; Editar datos</button>`);
+        <button class="btn-aero" id="edit-btn"><i class="ph ph-pencil-simple"></i> Editar datos</button>`);
       el('edit-btn').onclick = showEdit;
     };
     const showEdit = () => {
@@ -764,7 +871,7 @@ const AuthPages = {
         ${fields.map(([k,l])=>`<div class="form-group"><label>${l}</label><input class="input-aero" id="pf-${k}" value="${esc(ud[k]||'')}"/></div>`).join('')}
         <div class="form-group"><label>Nueva contrasena (dejar vacio para no cambiar)</label><input class="input-aero" type="password" id="pf-pw" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"/></div>
         <div style="display:flex;gap:10px;margin-top:8px">
-          <button class="btn-aero btn-success" id="save-prof">&#128190; Guardar</button>
+          <button class="btn-aero btn-success" id="save-prof"><i class="ph ph-floppy-disk"></i> Guardar</button>
           <button class="btn-aero" id="cancel-prof">Cancelar</button>
         </div>`);
       el('cancel-prof').onclick = showView;
@@ -792,13 +899,13 @@ const Favorites = {
     const u = Session.user();
     el('app').innerHTML = `
       <div class="page-section animate-in">
-        <h2 class="section-title">&#10084; Mis Favoritos</h2>
+        <h2 class="section-title"><i class="ph ph-heart"></i> Mis Favoritos</h2>
         <div id="fav-body"><div class="loading-container"><div class="spinner"></div></div></div>
       </div>`;
     try {
       const fr = await API.getFavorites(u.id_usuario);
       if (fr.codigo!==200||!fr.payload||!fr.payload.length) {
-        setHTML('fav-body',`<div class="card-aero" style="padding:40px;text-align:center"><div class="empty-state"><span class="empty-icon">&#9825;</span><p>No tenes favoritos</p></div><button class="btn-aero btn-lg" id="fav-shop" style="margin-top:16px">Ver productos</button></div>`);
+        setHTML('fav-body',`<div class="card-aero" style="padding:40px;text-align:center"><div class="empty-state"><span class="empty-icon"><i class="ph ph-heart" style="font-size:3rem;color:var(--text-muted)"></i></span><p>No tenes favoritos</p></div><button class="btn-aero btn-lg" id="fav-shop" style="margin-top:16px">Ver productos</button></div>`);
         el('fav-shop').onclick=()=>Router.go('catalog');
         return;
       }
@@ -806,21 +913,21 @@ const Favorites = {
       const pr = await API.getProducts();
       const all = pr.codigo===200 ? pr.payload : [];
       const favs = all.filter(p=>favIds.includes(p.idProducto));
-      if (!favs.length) { setHTML('fav-body','<div class="empty-state"><span class="empty-icon">&#9825;</span><p>No se encontraron favoritos</p></div>'); return; }
+      if (!favs.length) { setHTML('fav-body','<div class="empty-state"><span class="empty-icon"><i class="ph ph-heart" style="font-size:3rem;color:var(--text-muted)"></i></span><p>No se encontraron favoritos</p></div>'); return; }
       setHTML('fav-body',`<div class="favorites-grid stagger-children">${favs.map(p=>`
         <div class="fav-card card-aero" data-fid="${p.idProducto}">
-          <img class="fav-card-img" src="${img(p.ulrImagen)}" alt="${esc(p.producto)}" onerror="this.src='https://placehold.co/300x300/c8e8ff/1a3a5c?text=?'"/>
+          <img class="fav-card-img" src="${img(p.ulrImagen)}" alt="${esc(p.producto)}" onerror="this.src=PLACEHOLDER"/>
           <div class="fav-card-body">
             <div class="fav-card-name">${esc(p.producto)}</div>
             <div class="fav-card-price">${price(p.precio)}</div>
-            <button class="btn-aero btn-danger" data-rmfav="${p.idProducto}" style="font-size:.75rem;padding:4px 10px">&#10005; Quitar</button>
+            <button class="btn-aero btn-danger" data-rmfav="${p.idProducto}" style="font-size:.75rem;padding:4px 10px"><i class="ph ph-trash"></i> Quitar</button>
           </div>
         </div>`).join('')}</div>`);
       document.querySelectorAll('.fav-card').forEach(c=>c.onclick=e=>{if(!e.target.closest('button'))Router.go('product',{id:c.dataset.fid});});
       document.querySelectorAll('[data-rmfav]').forEach(b=>b.onclick=async e=>{
         e.stopPropagation();
         const r=await API.removeFavorite(u.id_usuario,parseInt(b.dataset.rmfav));
-        if(r.codigo===200){Toast.show('Eliminado de favoritos','info');Favorites.render();}
+        if(r.codigo===200){Toast.show('Eliminado de favoritos','info');Header._favCount();Favorites.render();}
       });
     } catch(e) { setHTML('fav-body','<p style="color:var(--danger)">Error al cargar favoritos.</p>'); }
   }
@@ -834,11 +941,11 @@ const Admin = {
     if (!Session.isAdmin()) { Toast.show('Acceso denegado','error'); Router.go('catalog'); return; }
     el('app').innerHTML = `
       <div class="admin-page animate-in">
-        <h2 class="section-title">&#9881; Gestion de Productos</h2>
+        <h2 class="section-title"><i class="ph ph-gear"></i> Gestion de Productos</h2>
         <div class="admin-tabs">
-          <button class="admin-tab active" data-tab="create">&#10133; Cargar Producto</button>
-          <button class="admin-tab" data-tab="edit">&#9999; Modificar Producto</button>
-          <button class="admin-tab" data-tab="cat">&#127991; Categorias</button>
+          <button class="admin-tab active" data-tab="create"><i class="ph ph-plus-circle"></i> Cargar Producto</button>
+          <button class="admin-tab" data-tab="edit"><i class="ph ph-pencil-simple"></i> Modificar Producto</button>
+          <button class="admin-tab" data-tab="cat"><i class="ph ph-tag"></i> Categorias</button>
         </div>
         <div id="admin-panel"></div>
       </div>`;
@@ -879,12 +986,12 @@ const Admin = {
           <div id="inv-entries"></div>
           <button class="btn-aero" id="add-inv-btn" style="font-size:.8rem;padding:6px 14px;margin-top:4px">+ Agregar talle/color</button>
         </div>
-        <button class="btn-aero btn-success btn-lg" id="ap-save" style="margin-top:16px">&#128190; Guardar Producto</button>
+        <button class="btn-aero btn-success btn-lg" id="ap-save" style="margin-top:16px"><i class="ph ph-floppy-disk"></i> Guardar Producto</button>
         <div id="ap-result" style="margin-top:10px"></div>
       </div>`);
     const addInv = () => {
       const d=document.createElement('div'); d.className='inventory-entry';
-      d.innerHTML=`<div class="form-group" style="margin:0"><label>Talle</label><input class="input-aero inv-t" placeholder="S, M, L, 42..."/></div><div class="form-group" style="margin:0"><label>Color</label><input class="input-aero inv-c" placeholder="Negro, Azul..."/></div><div class="form-group" style="margin:0"><label>Stock</label><input class="input-aero inv-s" type="number" value="10" min="0"/></div><button class="btn-aero btn-danger" style="padding:6px 10px;align-self:flex-end" onclick="this.parentElement.remove()">&#10005;</button>`;
+      d.innerHTML=`<div class="form-group" style="margin:0"><label>Talle</label><input class="input-aero inv-t" placeholder="S, M, L, 42..."/></div><div class="form-group" style="margin:0"><label>Color</label><input class="input-aero inv-c" placeholder="Negro, Azul..."/></div><div class="form-group" style="margin:0"><label>Stock</label><input class="input-aero inv-s" type="number" value="10" min="0"/></div><button class="btn-aero btn-danger" style="padding:6px 10px;align-self:flex-end" onclick="this.parentElement.remove()"><i class="ph ph-trash"></i></button>`;
       el('inv-entries').appendChild(d);
     };
     addInv();
@@ -905,7 +1012,7 @@ const Admin = {
           Toast.show('Producto cargado!','success');
         } else Toast.show(r.mensaje||'Error','error');
       } catch(e){Toast.show('Error de conexion','error');}
-      el('ap-save').disabled=false; el('ap-save').textContent='&#128190; Guardar Producto';
+      el('ap-save').disabled=false; el('ap-save').innerHTML='<i class="ph ph-floppy-disk"></i> Guardar Producto';
     };
   },
   async _edit() {
@@ -914,7 +1021,7 @@ const Admin = {
         <h3>Buscar y Modificar</h3>
         <div class="search-wrap" style="max-width:400px;margin-bottom:16px">
           <input type="text" id="as-q" placeholder="Buscar producto..."/>
-          <button id="as-btn">&#128269;</button>
+          <button id="as-btn"><i class="ph ph-magnifying-glass"></i></button>
         </div>
         <div id="as-res"></div>
         <div id="as-form"></div>
@@ -927,9 +1034,9 @@ const Admin = {
       if(!list.length){setHTML('as-res','<p style="color:var(--text-muted);font-size:.85rem">No se encontraron productos</p>');return;}
       setHTML('as-res',`<div class="product-search-result card-aero" style="max-height:280px;overflow-y:auto">${list.slice(0,20).map(p=>`
         <div class="result-item">
-          <img src="${img(p.ulrImagen)}" alt="" onerror="this.src='https://placehold.co/48x48/c8e8ff/1a3a5c?text=?'"/>
+          <img src="${img(p.ulrImagen)}" alt="" onerror="this.src=PLACEHOLDER"/>
           <div><div class="r-name">${esc(p.producto)}</div><div class="r-cat">${esc(p.categoria)} &middot; ${price(p.precio)}</div></div>
-          <button class="btn-aero" data-eid="${p.idProducto}" style="margin-left:auto;font-size:.75rem;padding:4px 12px">&#9999; Editar</button>
+          <button class="btn-aero" data-eid="${p.idProducto}" style="margin-left:auto;font-size:.75rem;padding:4px 12px"><i class="ph ph-pencil-simple"></i> Editar</button>
         </div>`).join('')}</div>`);
       document.querySelectorAll('[data-eid]').forEach(b=>b.onclick=()=>this._loadEdit(parseInt(b.dataset.eid)));
     };
@@ -947,7 +1054,7 @@ const Admin = {
         <h3 style="margin-bottom:14px">Editando: ${esc(p.producto)}</h3>
         ${inv.length?`<div style="margin-bottom:16px"><div style="font-size:.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Stock por talle/color</div>${inv.map(it=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="min-width:100px;font-weight:700;font-size:.85rem">${esc(it.talle)} / ${esc(it.color)}</span><input class="input-aero" type="number" value="${it.stock}" min="0" data-iid="${it.idInventario}" style="width:90px"/></div>`).join('')}</div>`:''}
         <div style="display:flex;gap:10px;margin-top:8px">
-          <button class="btn-aero btn-success" id="es-save">&#128190; Guardar stock</button>
+          <button class="btn-aero btn-success" id="es-save"><i class="ph ph-floppy-disk"></i> Guardar stock</button>
           <button class="btn-aero" onclick="setHTML('as-form','')">Cancelar</button>
         </div>
         <div id="es-result" style="margin-top:8px"></div>
@@ -960,7 +1067,7 @@ const Admin = {
         el('es-result').innerHTML=`<div class="toast success" style="position:static;animation:none">Stock actualizado</div>`;
         Toast.show('Stock actualizado','success');
       } catch(e){Toast.show('Error','error');}
-      el('es-save').disabled=false; el('es-save').textContent='&#128190; Guardar stock';
+      el('es-save').disabled=false; el('es-save').innerHTML='<i class="ph ph-floppy-disk"></i> Guardar stock';
     };
   },
   _cat() {
