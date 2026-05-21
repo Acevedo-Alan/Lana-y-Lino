@@ -221,12 +221,26 @@ const Router = {
     this.params = params;
     this._render();
   },
+  _titles: {
+    catalog:   'Lana & Lino — Tienda',
+    product:   'Lana & Lino — Producto',
+    cart:      'Lana & Lino — Carrito',
+    payment:   'Lana & Lino — Checkout',
+    login:     'Lana & Lino — Iniciar Sesión',
+    register:  'Lana & Lino — Registrarse',
+    profile:   'Lana & Lino — Mi Perfil',
+    favorites: 'Lana & Lino — Favoritos',
+    admin:     'Lana & Lino — Administración',
+  },
+
   _render() {
     const app = el('app');
     if (!app) return;
     app.innerHTML = '<div class="loading-container" style="min-height:60vh"><div class="spinner"></div><span>Cargando...</span></div>';
     app.classList.remove('page-enter');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Update browser tab title
+    document.title = this._titles[this.page] || 'Lana & Lino';
     // Clear search box and hide cat-bar when navigating away from catalog
     if (this.page !== 'catalog') {
       const s = el('h-search'); if(s) s.value = '';
@@ -690,6 +704,9 @@ const Product = {
     const totalStock = items.reduce((a,b)=>a+(b.stock||0),0);
     const byColor = {};
     items.forEach(it => { if (!byColor[it.color]) byColor[it.color]=[]; byColor[it.color].push(it); });
+    // Update title with actual product name
+    document.title = `Lana & Lino — ${first.producto}`;
+
     el('app').innerHTML = `
       <div class="product-detail-page animate-in">
         <!-- Breadcrumb -->
