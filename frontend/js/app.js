@@ -28,7 +28,20 @@ const API = {
     const opts = { method, headers: this._headers(auth) };
     if (body) opts.body = JSON.stringify(body);
     const res = await fetch(API_BASE + path, opts);
-    return res.json();
+    const data = await res.json();
+    // Detect expired/invalid token from any endpoint
+    if (auth && data && data.codigo === -1 &&
+        data.mensaje && (
+          data.mensaje.toLowerCase().includes('expirado') ||
+          data.mensaje.toLowerCase().includes('invalido') ||
+          data.mensaje.toLowerCase().includes('token')
+        )) {
+      Session.clear();
+      Toast.show('Tu sesión expiró. Iniciá sesión nuevamente.', 'error', 4000);
+      setTimeout(() => Router.go('login'), 400);
+      throw new Error('SESSION_EXPIRED');
+    }
+    return data;
   },
   // Auth
   login:       (email, password)  => API._req('POST', '/login',               { email, password },     false),
@@ -91,12 +104,26 @@ const Toast = {
 // ============================================================
 const Theme = {
   init() {
-    if (localStorage.getItem('ll_theme') === 'dark') document.body.classList.add('dark');
+    const dark = localStorage.getItem('ll_theme') === 'dark';
+    if (dark) document.body.classList.add('dark');
+    // Set inline background so it's never stale after a CSS variable update
+    const bg = dark
+      ? 'linear-gradient(160deg, #0a1628 0%, #0d2040 30%, #0a2818 70%, #0d1f12 100%)'
+      : 'linear-gradient(160deg, #c8eeff 0%, #a0d8ef 25%, #e8f8e8 60%, #b8e8b8 100%)';
+    document.body.style.background = bg;
+    document.body.style.backgroundAttachment = 'fixed';
     this._icon();
   },
   toggle() {
     document.body.classList.toggle('dark');
-    localStorage.setItem('ll_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    const dark = document.body.classList.contains('dark');
+    localStorage.setItem('ll_theme', dark ? 'dark' : 'light');
+    // Force background repaint — some browsers cache background even after var() change
+    const bg = dark
+      ? 'linear-gradient(160deg, #0a1628 0%, #0d2040 30%, #0a2818 70%, #0d1f12 100%)'
+      : 'linear-gradient(160deg, #c8eeff 0%, #a0d8ef 25%, #e8f8e8 60%, #b8e8b8 100%)';
+    document.body.style.background = bg;
+    document.body.style.backgroundAttachment = 'fixed';
     this._icon();
   },
   _icon() {
@@ -665,7 +692,20 @@ const Product = {
     items.forEach(it => { if (!byColor[it.color]) byColor[it.color]=[]; byColor[it.color].push(it); });
     el('app').innerHTML = `
       <div class="product-detail-page animate-in">
-        <button class="btn-aero" id="pd-back" style="margin-bottom:16px"><i class="ph ph-arrow-left"></i> Volver</button>
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a class="breadcrumb-item" id="bc-home">
+            <i class="ph ph-house"></i> Inicio
+          </a>
+          <span class="breadcrumb-sep"><i class="ph ph-caret-right"></i></span>
+          <a class="breadcrumb-item" id="bc-cat">
+            ${esc(first.categoria || 'Productos')}
+          </a>
+          <span class="breadcrumb-sep"><i class="ph ph-caret-right"></i></span>
+          <span class="breadcrumb-item breadcrumb-current">
+            ${esc(first.producto)}
+          </span>
+        </nav>
         <div class="product-detail-grid">
           <div class="product-detail-img card-aero" style="position:relative">
             <img src="${img(first.ulrImagen)}" alt="${esc(first.producto)}" onerror="this.src=PLACEHOLDER"/>
@@ -719,7 +759,9 @@ const Product = {
           </div>
         </div>
       </div>`;
-    el('pd-back').onclick = () => Router.go('catalog');
+    // Breadcrumb navigation
+    el('bc-home') && (el('bc-home').onclick = () => Router.go('catalog'));
+    el('bc-cat')  && (el('bc-cat').onclick  = () => Router.go('catalog', { catName: first.categoria }));
     // Quantity selector
     let qty = 1;
     const updateQtyDisplay = () => {
@@ -1121,13 +1163,46 @@ const Favorites = {
 const Admin = {
   async render() {
     if (!Session.isAdmin()) { Toast.show('Acceso denegado','error'); Router.go('catalog'); return; }
+    const user = Session.user();
     el('app').innerHTML = `
       <div class="admin-page animate-in">
-        <h2 class="section-title"><i class="ph ph-gear"></i> Gestion de Productos</h2>
+
+        <!-- Admin Hero -->
+        <div class="admin-hero glass">
+          <div class="admin-hero-left">
+            <div class="admin-hero-eyebrow">
+              <i class="ph ph-shield-check"></i> Panel de Administración
+            </div>
+            <h2 class="admin-hero-title">Gestión de Productos</h2>
+            <p class="admin-hero-sub">
+              Bienvenido, <strong>${esc(user ? user.nombre : 'Admin')}</strong> — Lana &amp; Lino
+            </p>
+          </div>
+          <div class="admin-hero-stats">
+            <div class="admin-stat-pill glass">
+              <i class="ph ph-package"></i>
+              <span id="stat-products">—</span>
+              <small>productos</small>
+            </div>
+            <div class="admin-stat-pill glass">
+              <i class="ph ph-tag"></i>
+              <span id="stat-cats">—</span>
+              <small>categorías</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
         <div class="admin-tabs">
-          <button class="admin-tab active" data-tab="create"><i class="ph ph-plus-circle"></i> Cargar Producto</button>
-          <button class="admin-tab" data-tab="edit"><i class="ph ph-pencil-simple"></i> Modificar Producto</button>
-          <button class="admin-tab" data-tab="cat"><i class="ph ph-tag"></i> Categorias</button>
+          <button class="admin-tab active" data-tab="create">
+            <i class="ph ph-plus-circle"></i> Cargar Producto
+          </button>
+          <button class="admin-tab" data-tab="edit">
+            <i class="ph ph-pencil-simple"></i> Modificar Producto
+          </button>
+          <button class="admin-tab" data-tab="cat">
+            <i class="ph ph-tag"></i> Categorias
+          </button>
         </div>
         <div id="admin-panel"></div>
       </div>`;
@@ -1137,6 +1212,16 @@ const Admin = {
       this._tab(t.dataset.tab);
     });
     this._tab('create');
+
+    // Load stat numbers
+    API.getProducts().then(r => {
+      const s = el('stat-products');
+      if (s && r.codigo === 200) s.textContent = r.payload.length;
+    }).catch(()=>{});
+    API.getCategories().then(r => {
+      const s = el('stat-cats');
+      if (s && r.codigo === 200) s.textContent = r.payload.length;
+    }).catch(()=>{});
   },
   async _tab(tab) {
     if (tab==='create') await this._create();

@@ -72,6 +72,7 @@
 body.dark {
   --bg-sky: linear-gradient(160deg, #0a1628 0%, #0d2040 30%, #0a2818 70%, #0d1f12 100%);
   --bg-body: #0a1628;
+  background: var(--bg-sky);  /* force repaint — variables alone don't trigger it */
 
   --glass-bg: rgba(10, 30, 60, 0.65);
   --glass-bg-strong: rgba(15, 40, 80, 0.82);
@@ -450,10 +451,17 @@ select.input-aero {
 .page-content {
   position: relative;
   z-index: 1;
-  padding-top: 0;
+  padding-top: 0;   /* each page sets its own via its wrapper class */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Ensure #app itself never clips behind fixed bars */
+#app {
+  position: relative;
+  z-index: 1;
+  flex: 1;
 }
 
 .flex { display: flex; }
