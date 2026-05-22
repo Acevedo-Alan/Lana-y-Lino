@@ -4,7 +4,7 @@
 
 .cart-page, .payment-page, .auth-page,
 .admin-page, .profile-page, .favorites-page {
-  padding: 88px 20px 40px;  /* 64px header + 24px breathing */
+  padding: 78px 20px 40px;  /* 58px header + 20px breathing */
   max-width: 860px;
   margin: 0 auto;
 }

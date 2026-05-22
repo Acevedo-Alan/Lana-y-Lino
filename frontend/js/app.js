@@ -127,10 +127,43 @@ const Theme = {
     this._icon();
   },
   _icon() {
-    const icon = document.getElementById('theme-icon');
-    if (icon) {
-      const dark = document.body.classList.contains('dark');
-      icon.className = dark ? 'ph ph-sun' : 'ph ph-moon';
+    const svg = document.getElementById('theme-svg');
+    if (!svg) return;
+    const dark = document.body.classList.contains('dark');
+    if (dark) {
+      // Sun SVG
+      svg.innerHTML = `<defs>
+        <radialGradient id="sun-g" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffe080"/>
+          <stop offset="60%" stop-color="#ffaa00"/>
+          <stop offset="100%" stop-color="#ff6600"/>
+        </radialGradient>
+        <radialGradient id="sun-g2" cx="35%" cy="30%" r="55%">
+          <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="11" cy="11" r="5" fill="url(#sun-g)" filter="url(#theme-drop)"/>
+      <circle cx="11" cy="11" r="5" fill="url(#sun-g2)"/>
+      <filter id="theme-drop"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(200,80,0,0.5)"/></filter>
+      ${[0,45,90,135,180,225,270,315].map(a => {
+        const r = a * Math.PI/180;
+        const x1 = 11 + 7*Math.cos(r), y1 = 11 + 7*Math.sin(r);
+        const x2 = 11 + 9*Math.cos(r), y2 = 11 + 9*Math.sin(r);
+        return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#ffaa00" stroke-width="1.8" stroke-linecap="round"/>';
+      }).join('')}`;
+    } else {
+      // Moon SVG
+      svg.innerHTML = `<defs>
+        <radialGradient id="moon-g" cx="40%" cy="30%" r="60%">
+          <stop offset="0%" stop-color="#c8e8ff"/>
+          <stop offset="60%" stop-color="#7ab0e0"/>
+          <stop offset="100%" stop-color="#3060a0"/>
+        </radialGradient>
+      </defs>
+      <filter id="theme-drop"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="rgba(0,40,120,0.4)"/></filter>
+      <path d="M11 3 A8 8 0 1 0 19 11 A6 6 0 0 1 11 3Z" fill="url(#moon-g)" filter="url(#theme-drop)"/>
+      <circle cx="8" cy="7" r="1.2" fill="white" opacity="0.6"/>`;
     }
   }
 };
@@ -244,8 +277,9 @@ const Router = {
     // Clear search box and hide cat-bar when navigating away from catalog
     if (this.page !== 'catalog') {
       const s = el('h-search'); if(s) s.value = '';
-      const bar = el('cat-bar'); if(bar) bar.style.display = 'none';
     }
+    // Old cat-bar always hidden — cats are now inline in header
+    const bar = el('cat-bar'); if(bar) bar.style.display = 'none';
     Header.render();
     const pages = {
       catalog:   () => Catalog.render(),
@@ -284,38 +318,129 @@ const Header = {
     const isAdmin = Session.isAdmin();
     h.innerHTML = `
       <div class="header-inner">
-        <div class="header-left">
-          <div class="search-wrap">
-            <input type="text" id="h-search" placeholder="Buscar productos..." />
-            <button id="h-search-btn"><i class="ph ph-magnifying-glass"></i></button>
-          </div>
-          <button class="icon-btn" id="h-fav-btn" title="Favoritos">
-            <i class="ph ph-heart"></i>
-            <span class="badge-count" id="fav-cnt" style="display:none">0</span>
-          </button>
-          <div class="dropdown-wrap" id="cat-drop">
-            <div class="dropdown-toggle" id="cat-toggle">
-              <i class="ph ph-tag" style="font-size:1rem"></i> Productos <i class="ph ph-caret-down arrow" style="font-size:.75rem"></i>
-            </div>
-            <div class="dropdown-menu" id="cat-menu">
-              <a id="cat-all">Todos los productos</a>
-              <div class="divider"></div>
-              <div id="cat-items"><span style="padding:8px 16px;font-size:.8rem;color:var(--text-muted);display:block">Cargando...</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="header-brand">
+
+        <!-- BRAND -->
+        <div class="header-brand-inline">
           <span class="brand-name" id="brand-link">Lana &amp; Lino</span>
         </div>
+
+        <!-- INLINE CATS (populated by _buildCatBar via #hcat-inner) -->
+        <nav class="header-cats" id="header-cats">
+          <div class="hcat-inner" id="hcat-inner">
+            <button class="hcat-item active" data-cat="">Todo</button>
+          </div>
+        </nav>
+
+        <!-- RIGHT ACTIONS -->
         <div class="header-right">
-          <button class="icon-btn" id="theme-btn" title="Cambiar tema"><i class="ph ph-moon" id="theme-icon"></i></button>
-          ${isAdmin ? '<button class="btn-aero" id="admin-btn"><i class="ph ph-gear"></i> Admin</button>' : ''}
-          <button class="icon-btn" id="cart-btn" title="Carrito">
-            <i class="ph ph-shopping-cart"></i>
+          <!-- Skeuomorphic search -->
+          <div class="search-wrap" id="search-wrap-toggle">
+            <input type="text" id="h-search" placeholder="Buscar..." />
+            <button id="h-search-btn" class="sku-btn sku-search" title="Buscar">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="sg" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+                    <stop offset="40%" stop-color="#60c0ff" stop-opacity="0.7"/>
+                    <stop offset="100%" stop-color="#0060c0" stop-opacity="1"/>
+                  </radialGradient>
+                  <radialGradient id="sg2" cx="30%" cy="25%" r="50%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <circle cx="8.5" cy="8.5" r="6" fill="url(#sg)" stroke="rgba(0,80,180,0.4)" stroke-width="1"/>
+                <circle cx="8.5" cy="8.5" r="6" fill="url(#sg2)"/>
+                <circle cx="6.5" cy="6" r="2" fill="white" opacity="0.5"/>
+                <line x1="13" y1="13" x2="17.5" y2="17.5" stroke="url(#sg)" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="13" y1="13" x2="17.5" y2="17.5" stroke="rgba(0,60,160,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Skeuomorphic theme toggle -->
+          <button class="sku-icon-btn" id="theme-btn" title="Cambiar tema">
+            <svg id="theme-svg" width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="moon-g" cx="40%" cy="30%" r="60%">
+                  <stop offset="0%" stop-color="#c8e8ff"/>
+                  <stop offset="60%" stop-color="#7ab0e0"/>
+                  <stop offset="100%" stop-color="#3060a0"/>
+                </radialGradient>
+              </defs>
+              <path id="theme-path" d="M11 3 A8 8 0 1 0 19 11 A6 6 0 0 1 11 3Z" fill="url(#moon-g)" filter="url(#theme-drop)"/>
+              <filter id="theme-drop"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="rgba(0,40,120,0.4)"/></filter>
+              <circle cx="8" cy="7" r="1.2" fill="white" opacity="0.6"/>
+            </svg>
+          </button>
+
+          ${isAdmin ? '<button class="btn-aero" id="admin-btn" style="font-size:.78rem;padding:6px 14px"><i class="ph ph-gear"></i> Admin</button>' : ''}
+
+          <!-- Skeuomorphic cart -->
+          <button class="sku-icon-btn" id="cart-btn" title="Carrito">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cg1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#80d0ff"/>
+                  <stop offset="50%" stop-color="#40a0e0"/>
+                  <stop offset="100%" stop-color="#1060b0"/>
+                </linearGradient>
+                <linearGradient id="cg2" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" fill="url(#cg1)" stroke="rgba(0,60,160,0.35)" stroke-width="0.5"/>
+              <path d="M6 2L3 6h18l-3-4z" fill="url(#cg2)"/>
+              <line x1="3" y1="6" x2="21" y2="6" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+              <path d="M16 10a4 4 0 01-8 0" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="9" cy="6" rx="2" ry="1" fill="white" opacity="0.4"/>
+            </svg>
             <span class="badge-count" id="cart-cnt" style="display:none">0</span>
           </button>
-          <button class="icon-btn" id="profile-btn" title="Perfil"><i class="ph ph-user"></i></button>
-          <button class="btn-aero" id="auth-btn">
+
+          <!-- Skeuomorphic profile -->
+          <button class="sku-icon-btn" id="profile-btn" title="Mi perfil">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="pg1" cx="50%" cy="35%" r="55%">
+                  <stop offset="0%" stop-color="#a0d8ff"/>
+                  <stop offset="100%" stop-color="#2070c0"/>
+                </radialGradient>
+                <radialGradient id="pg2" cx="50%" cy="30%" r="60%">
+                  <stop offset="0%" stop-color="#e0f4ff"/>
+                  <stop offset="100%" stop-color="#60a8e0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="12" cy="12" r="10" fill="url(#pg1)" stroke="rgba(0,60,160,0.3)" stroke-width="0.5"/>
+              <circle cx="12" cy="9" r="3.5" fill="url(#pg2)"/>
+              <ellipse cx="12" cy="9" rx="1.5" ry="1" fill="white" opacity="0.5"/>
+              <path d="M5 20.5C5 17.5 8 15 12 15s7 2.5 7 5.5" fill="url(#pg2)" opacity="0.9"/>
+              <ellipse cx="12" cy="11" rx="6" ry="2" fill="white" opacity="0.15"/>
+            </svg>
+          </button>
+
+          <!-- Skeuomorphic fav -->
+          <button class="sku-icon-btn" id="h-fav-btn" title="Favoritos">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="hg1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#ff9090"/>
+                  <stop offset="100%" stop-color="#cc2040"/>
+                </linearGradient>
+                <linearGradient id="hg2" x1="0%" y1="0%" x2="0%" y2="60%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.65"/>
+                  <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M11 18.5S2 13 2 7a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 7c0 6-9 11.5-9 11.5z" fill="url(#hg1)" stroke="rgba(160,0,40,0.3)" stroke-width="0.5"/>
+              <path d="M11 18.5S2 13 2 7a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 7c0 6-9 11.5-9 11.5z" fill="url(#hg2)"/>
+              <ellipse cx="8" cy="7" rx="2.5" ry="1.5" fill="white" opacity="0.4" transform="rotate(-20 8 7)"/>
+            </svg>
+            <span class="badge-count" id="fav-cnt" style="display:none">0</span>
+          </button>
+
+          <button class="btn-aero" id="auth-btn" style="font-size:.78rem;padding:6px 16px">
             ${logged ? '<i class="ph ph-sign-out"></i> Salir' : '<i class="ph ph-sign-in"></i> Ingresar'}
           </button>
         </div>
@@ -334,11 +459,7 @@ const Header = {
         Session.clear(); Toast.show('Sesion cerrada','info'); Header.render(); Router.go('catalog');
       } else Router.go('login');
     };
-    if (isAdmin) el('admin-btn').onclick = () => Router.go('admin');
-    // Dropdown
-    el('cat-toggle').onclick = e => { e.stopPropagation(); el('cat-drop').classList.toggle('open'); };
-    document.addEventListener('click', () => el('cat-drop') && el('cat-drop').classList.remove('open'));
-    el('cat-all').onclick = () => Router.go('catalog');
+    if (isAdmin) el('admin-btn') && (el('admin-btn').onclick = () => Router.go('admin'));
     this._loadCats();
     this._cartCount();
     this._favCount();
@@ -391,28 +512,26 @@ const Header = {
   },
 
   _buildCatBar(cats) {
-    const bar    = el('cat-bar');
-    const inner  = el('cat-bar-inner');
-    if (!bar || !inner) return;
-
-    if (!cats.length) { bar.style.display = 'none'; return; }
-
-    bar.style.display = 'flex';
-    inner.innerHTML =
-      `<button class="cat-bar-item active" data-cat="">Todo</button>` +
-      cats.map(cat => `<button class="cat-bar-item" data-cat="${esc(cat)}">${esc(cat)}</button>`).join('');
-
-    // Highlight active on load
-    const activeCat = Router.params && Router.params.catName || '';
-    inner.querySelectorAll('.cat-bar-item').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.cat === activeCat);
-      btn.onclick = () => {
-        inner.querySelectorAll('.cat-bar-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if (btn.dataset.cat) Router.go('catalog', { catName: btn.dataset.cat });
-        else Router.go('catalog', {});
-      };
-    });
+    // Fill the inline header nav
+    const hinner = el('hcat-inner');
+    if (hinner && cats.length) {
+      hinner.innerHTML =
+        `<button class="hcat-item" data-cat="">Todo</button>` +
+        cats.map(cat => `<button class="hcat-item" data-cat="${esc(cat)}">${esc(cat)}</button>`).join('');
+      const activeCat = (Router.params && Router.params.catName) || '';
+      hinner.querySelectorAll('.hcat-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === activeCat);
+        btn.onclick = () => {
+          hinner.querySelectorAll('.hcat-item').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          if (btn.dataset.cat) Router.go('catalog', { catName: btn.dataset.cat });
+          else Router.go('catalog', {});
+        };
+      });
+    }
+    // Also keep old cat-bar hidden (no longer needed)
+    const bar = el('cat-bar');
+    if (bar) bar.style.display = 'none';
   },
   async _cartCount() {
     const u = Session.user();
@@ -466,7 +585,7 @@ const Catalog = {
         <!-- ── HERO ───────────────────────────── -->
         <div class="catalog-hero glass">
           <div class="catalog-hero-content">
-            <span class="catalog-hero-eyebrow">Nueva Colección</span>
+            <span class="catalog-hero-eyebrow">Nueva Colección 2026</span>
             <h1 class="catalog-hero-title">Lana &amp; Lino</h1>
             <p class="catalog-hero-sub">Indumentaria pensada para cada momento.<br/>Estilo, calidad y comodidad en un solo lugar.</p>
             <div class="catalog-hero-pills">
@@ -477,11 +596,129 @@ const Catalog = {
               <span class="hero-pill">Calzado</span>
             </div>
           </div>
+
+          <!-- Frutiger Aero SVG decoration -->
           <div class="catalog-hero-deco" aria-hidden="true">
-            <div class="hero-orb hero-orb-1"></div>
-            <div class="hero-orb hero-orb-2"></div>
-            <div class="hero-orb hero-orb-3"></div>
-            <span class="hero-brand-bg">L&amp;L</span>
+            <svg class="hero-aero-svg" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <!-- Sky gradient -->
+                <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#a8deff" stop-opacity="0.5"/>
+                  <stop offset="60%" stop-color="#c8f0d0" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#80d8a0" stop-opacity="0.4"/>
+                </linearGradient>
+                <!-- Bubble gradient -->
+                <radialGradient id="bub1" cx="35%" cy="28%" r="65%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.85"/>
+                  <stop offset="40%" stop-color="#c0e8ff" stop-opacity="0.4"/>
+                  <stop offset="100%" stop-color="#60b0e0" stop-opacity="0.15"/>
+                </radialGradient>
+                <radialGradient id="bub2" cx="30%" cy="25%" r="60%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.9"/>
+                  <stop offset="50%" stop-color="#a0d8f8" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#40a0d0" stop-opacity="0.1"/>
+                </radialGradient>
+                <radialGradient id="bub3" cx="40%" cy="30%" r="55%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="#80c8e8" stop-opacity="0.1"/>
+                </radialGradient>
+                <!-- Lens flare -->
+                <radialGradient id="flare" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.95"/>
+                  <stop offset="30%" stop-color="white" stop-opacity="0.4"/>
+                  <stop offset="70%" stop-color="#c0e8ff" stop-opacity="0.1"/>
+                  <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="flare2" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                </radialGradient>
+                <!-- Grass gradient -->
+                <linearGradient id="grass" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#60d080" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="#30a050" stop-opacity="0.4"/>
+                </linearGradient>
+                <linearGradient id="grass2" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#80e0a0" stop-opacity="0.6"/>
+                  <stop offset="100%" stop-color="#40b060" stop-opacity="0.3"/>
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <!-- Background wash -->
+              <rect width="420" height="220" fill="url(#sky)" rx="0"/>
+
+              <!-- ── GRASS blades bottom-right ── -->
+              <g opacity="0.85">
+                <path d="M310 220 Q314 195 318 175 Q320 165 316 155 Q322 168 324 185 Q326 200 322 220Z" fill="url(#grass)"/>
+                <path d="M322 220 Q328 190 335 168 Q338 158 334 148 Q340 162 342 180 Q344 198 338 220Z" fill="url(#grass2)"/>
+                <path d="M335 220 Q340 198 346 178 Q349 165 344 152 Q351 167 353 185 Q355 202 348 220Z" fill="url(#grass)"/>
+                <path d="M350 220 Q354 200 360 180 Q362 168 358 156 Q365 170 367 188 Q369 205 362 220Z" fill="url(#grass2)"/>
+                <path d="M363 220 Q366 205 371 188 Q373 176 369 165 Q376 178 378 195 Q380 210 374 220Z" fill="url(#grass)"/>
+                <path d="M374 220 Q378 208 383 192 Q385 180 381 170 Q388 183 389 198 Q391 212 385 220Z" fill="url(#grass2)"/>
+                <path d="M386 220 Q390 210 394 196 Q396 185 392 175 Q399 187 400 202 Q402 215 396 220Z" fill="url(#grass)"/>
+                <path d="M398 220 Q401 212 405 200 Q407 190 403 181 Q410 192 411 206 Q413 218 407 220Z" fill="url(#grass2)"/>
+                <path d="M408 220 Q411 214 414 203 Q416 194 412 186 Q419 197 420 210 L420 220Z" fill="url(#grass)"/>
+                <!-- Second layer, shorter -->
+                <path d="M305 220 Q308 208 311 198 Q312 191 310 185 Q314 192 315 203 Q316 212 312 220Z" fill="url(#grass2)" opacity="0.7"/>
+                <path d="M318 220 Q322 210 326 200 Q328 192 325 184 Q330 193 331 205 Q332 215 327 220Z" fill="url(#grass)" opacity="0.7"/>
+                <path d="M330 220 Q334 212 338 202 Q340 194 337 186 Q342 195 343 207 Q344 217 339 220Z" fill="url(#grass2)" opacity="0.7"/>
+                <path d="M342 220 Q346 214 350 204 Q352 196 349 188 Q354 198 355 210 Q356 219 351 220Z" fill="url(#grass)" opacity="0.7"/>
+                <path d="M355 220 Q358 214 362 205 Q364 197 361 190 Q366 199 367 211 Q368 219 363 220Z" fill="url(#grass2)" opacity="0.7"/>
+                <path d="M367 220 Q370 215 374 207 Q376 199 373 193 Q378 201 379 213 Q380 220 375 220Z" fill="url(#grass)" opacity="0.7"/>
+              </g>
+
+              <!-- ── WATER BUBBLES ── -->
+              <!-- Large bubble -->
+              <circle cx="340" cy="60" r="42" fill="url(#bub1)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+              <ellipse cx="328" cy="44" rx="12" ry="7" fill="white" opacity="0.55" transform="rotate(-25 328 44)"/>
+              <circle cx="355" cy="75" r="3" fill="white" opacity="0.4"/>
+
+              <!-- Medium bubble -->
+              <circle cx="390" cy="95" r="26" fill="url(#bub2)" stroke="rgba(255,255,255,0.45)" stroke-width="0.7"/>
+              <ellipse cx="381" cy="84" rx="7" ry="4.5" fill="white" opacity="0.5" transform="rotate(-20 381 84)"/>
+              <circle cx="398" cy="105" r="2" fill="white" opacity="0.35"/>
+
+              <!-- Small bubbles cluster -->
+              <circle cx="300" cy="110" r="16" fill="url(#bub3)" stroke="rgba(255,255,255,0.4)" stroke-width="0.6"/>
+              <ellipse cx="294" cy="103" rx="5" ry="3" fill="white" opacity="0.45" transform="rotate(-20 294 103)"/>
+
+              <circle cx="410" cy="48" r="11" fill="url(#bub1)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+              <ellipse cx="406" cy="43" rx="3.5" ry="2" fill="white" opacity="0.5" transform="rotate(-25 406 43)"/>
+
+              <circle cx="270" cy="85" r="8" fill="url(#bub2)" stroke="rgba(255,255,255,0.35)" stroke-width="0.5"/>
+              <ellipse cx="267" cy="81" rx="2.5" ry="1.5" fill="white" opacity="0.5"/>
+
+              <circle cx="418" cy="145" r="7" fill="url(#bub3)" stroke="rgba(255,255,255,0.35)" stroke-width="0.5"/>
+              <circle cx="280" cy="155" r="5" fill="url(#bub1)" stroke="rgba(255,255,255,0.3)" stroke-width="0.4"/>
+              <circle cx="260" cy="130" r="4" fill="url(#bub2)" stroke="rgba(255,255,255,0.3)" stroke-width="0.4"/>
+
+              <!-- ── LENS FLARE top-right ── -->
+              <g filter="url(#glow)" opacity="0.9">
+                <!-- Main flare bloom -->
+                <circle cx="400" cy="22" r="18" fill="url(#flare)"/>
+                <!-- Streaks -->
+                <line x1="400" y1="4" x2="400" y2="40" stroke="white" stroke-width="1" stroke-opacity="0.5" stroke-linecap="round"/>
+                <line x1="382" y1="22" x2="418" y2="22" stroke="white" stroke-width="1" stroke-opacity="0.5" stroke-linecap="round"/>
+                <line x1="387" y1="9" x2="413" y2="35" stroke="white" stroke-width="0.6" stroke-opacity="0.3" stroke-linecap="round"/>
+                <line x1="413" y1="9" x2="387" y2="35" stroke="white" stroke-width="0.6" stroke-opacity="0.3" stroke-linecap="round"/>
+                <!-- Secondary flare -->
+                <circle cx="400" cy="22" r="6" fill="url(#flare2)"/>
+                <!-- Halo ring -->
+                <circle cx="400" cy="22" r="28" fill="none" stroke="white" stroke-width="0.5" stroke-opacity="0.25"/>
+                <!-- Chromatic dots along flare streak -->
+                <circle cx="368" cy="22" r="3" fill="#c0e8ff" opacity="0.4"/>
+                <circle cx="360" cy="22" r="2" fill="#a0d0ff" opacity="0.3"/>
+                <circle cx="350" cy="22" r="1.5" fill="white" opacity="0.2"/>
+              </g>
+
+              <!-- ── Brand watermark ── -->
+              <text x="250" y="200" font-family="Comfortaa,sans-serif" font-size="72" font-weight="700"
+                fill="rgba(0,120,212,0.045)" letter-spacing="-2">L&amp;L</text>
+            </svg>
           </div>
         </div>
 
@@ -525,10 +762,10 @@ const Catalog = {
       };
     });
 
-    // Sync cat-bar active state
-    const catBarInner = el('cat-bar-inner');
-    if (catBarInner) {
-      catBarInner.querySelectorAll('.cat-bar-item').forEach(btn => {
+    // Sync inline header cat active state
+    const hcatInner = el('hcat-inner');
+    if (hcatInner) {
+      hcatInner.querySelectorAll('.hcat-item').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.cat === (params.catName || ''));
       });
     }
