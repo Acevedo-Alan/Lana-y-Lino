@@ -519,7 +519,9 @@ const Header = {
     el('auth-btn').onclick     = () => {
       if (Session.loggedIn()) {
         if (!confirm('¿Cerrar sesion?')) return;
-        Session.clear(); Toast.show('Sesion cerrada','info'); Header.render(); Router.go('catalog');
+        Session.clear();
+        Header._catsCache = null;  // clear cache on logout
+        Toast.show('Sesion cerrada','info'); Header.render(); Router.go('catalog');
       } else Router.go('login');
     };
     if (isAdmin) el('admin-btn') && (el('admin-btn').onclick = () => Router.go('admin'));
@@ -628,7 +630,7 @@ const Header = {
     el('drawer-admin') && (el('drawer-admin').onclick = () => { Router.go('admin'); this._closeDrawer(); });
     el('drawer-logout') && (el('drawer-logout').onclick = () => {
       if (!confirm('¿Cerrar sesión?')) return;
-      Session.clear(); this._closeDrawer(); Header.render(); Router.go('catalog');
+      Session.clear(); Header._catsCache = null; this._closeDrawer(); Header.render(); Router.go('catalog');
     });
     el('drawer-theme').onclick = () => {
       Theme.toggle();
@@ -737,8 +739,16 @@ const Header = {
     const box = el('search-recent');
     if (box) box.remove();
   },
+  // Cache so we only hit the API once per session
+  _catsCache: null,
+
   async _loadCats() {
-    const c = el('cat-items');
+    // If already cached, just render — no API call
+    if (this._catsCache) {
+      this._buildCatBar(this._catsCache);
+      return;
+    }
+
     let cats = [];
 
     if (Session.loggedIn()) {
@@ -750,7 +760,7 @@ const Header = {
       } catch(e) {}
     }
 
-    // Fallback from products list (works without login)
+    // Fallback: extract from product list (works without login)
     if (!cats.length) {
       try {
         const r = await API.getProducts();
@@ -760,22 +770,11 @@ const Header = {
       } catch(e) {}
     }
 
-    // Populate header dropdown
-    if (c) {
-      if (!cats.length) {
-        c.innerHTML = '<span style="padding:8px 16px;font-size:.8rem;color:var(--text-muted);display:block">Sin categorias</span>';
-      } else {
-        c.innerHTML = cats.map(cat =>
-          `<a data-cname="${esc(cat)}">${esc(cat)}</a>`
-        ).join('');
-        c.querySelectorAll('a').forEach(a => a.onclick = () => {
-          Router.go('catalog', { catName: a.dataset.cname });
-          el('cat-drop').classList.remove('open');
-        });
-      }
-    }
+    // Save to cache
+    if (cats.length) this._catsCache = cats;
 
-    // Populate horizontal category bar
+    // Guard: if header was re-rendered while we were awaiting, hcat-inner
+    // will be a fresh element — _buildCatBar targets it by ID so it's always current
     this._buildCatBar(cats);
   },
 
@@ -1583,7 +1582,7 @@ const AuthPages = {
       el('li-btn').disabled=true; el('li-btn').textContent='Ingresando...';
       try {
         const r = await API.login(email, pass);
-        if (r.codigo===200 && r.jwt) { Session.save(r.payload, r.jwt); Toast.show('Bienvenido/a!','success'); Header.render(); Router.go('catalog'); }
+        if (r.codigo===200 && r.jwt) { Session.save(r.payload, r.jwt); Header._catsCache = null; Toast.show('Bienvenido/a!','success'); Header.render(); Router.go('catalog'); }
         else { Toast.show(r.mensaje||'Credenciales incorrectas','error'); el('li-btn').disabled=false; el('li-btn').innerHTML='<i class="ph ph-sign-in"></i> Ingresar'; }
       } catch(e) { Toast.show('Error de conexion con el servidor','error'); el('li-btn').disabled=false; el('li-btn').innerHTML='<i class="ph ph-sign-in"></i> Ingresar'; }
     };
