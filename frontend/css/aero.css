@@ -658,3 +658,361 @@ body.dark .skeleton-pulse {
 }
 
 .img-placeholder i { font-size: 2rem; opacity: 0.4; }
+
+/* ============================================
+   CUSTOM AERO CURSOR
+   ============================================ */
+*, *::before, *::after {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cdefs%3E%3CradialGradient id='cg' cx='30%25' cy='20%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='white' stop-opacity='0.95'/%3E%3Cstop offset='45%25' stop-color='%2380c8ff' stop-opacity='0.8'/%3E%3Cstop offset='100%25' stop-color='%230060c0' stop-opacity='0.9'/%3E%3C/radialGradient%3E%3CradialGradient id='glow' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%2340a0ff' stop-opacity='0.4'/%3E%3Cstop offset='100%25' stop-color='%2340a0ff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='12' cy='12' rx='10' ry='10' fill='url(%23glow)'/%3E%3Cpath d='M4 4 L4 18 L8 14 L11 20 L13 19 L10 13 L15 13 Z' fill='url(%23cg)' stroke='rgba(0%2C60%2C180%2C0.4)' stroke-width='0.5'/%3E%3Cpath d='M4 4 L4 10 L7 7 Z' fill='white' opacity='0.6'/%3E%3C/svg%3E") 4 4, auto;
+}
+
+/* Pointer cursor for interactive elements */
+a, button, [role="button"], select, label, .product-card,
+.fav-btn, .hcat-item, .hero-pill, .size-btn, .installment-btn,
+.cat-bar-item, .result-item, .fav-card, .admin-tab {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='28' viewBox='0 0 24 28'%3E%3Cdefs%3E%3CradialGradient id='pg' cx='30%25' cy='20%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='white' stop-opacity='0.95'/%3E%3Cstop offset='45%25' stop-color='%2380d0ff' stop-opacity='0.85'/%3E%3Cstop offset='100%25' stop-color='%230080e0' stop-opacity='0.9'/%3E%3C/radialGradient%3E%3CradialGradient id='pglow' cx='50%25' cy='60%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%2360b8ff' stop-opacity='0.5'/%3E%3Cstop offset='100%25' stop-color='%2360b8ff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='9' cy='20' rx='8' ry='6' fill='url(%23pglow)'/%3E%3Cpath d='M5 2 Q5 20 9 24 Q10 18 12 16 L16 20 L18 18 L14 14 L18 14 Q18 4 5 2 Z' fill='url(%23pg)' stroke='rgba(0%2C60%2C180%2C0.35)' stroke-width='0.5'/%3E%3Cpath d='M5 2 Q5 8 8 10 Q9 6 5 2 Z' fill='white' opacity='0.55'/%3E%3C/svg%3E") 5 2, pointer;
+}
+
+/* Text cursor */
+input, textarea { cursor: text !important; }
+
+/* ============================================
+   SEARCH RECENT DROPDOWN
+   ============================================ */
+.search-recent-box {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 240px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  z-index: 700;
+  animation: fadeInUp 0.18s ease both;
+  box-shadow: 0 8px 24px rgba(0,60,180,0.18), var(--glass-inner);
+}
+
+.sr-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 8px 12px 4px;
+}
+
+.sr-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.sr-item:hover { background: rgba(0,120,212,0.08); }
+
+.sr-item i { color: var(--text-muted); font-size: 0.9rem; flex-shrink: 0; }
+
+.sr-del {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.sr-item:hover .sr-del { opacity: 1; }
+.sr-del:hover { color: var(--danger); background: rgba(229,57,53,0.1); }
+
+.sr-clear {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  padding: 6px 12px 8px;
+  cursor: pointer;
+  text-align: center;
+  border-top: 1px solid var(--glass-border);
+  transition: background 0.12s;
+}
+.sr-clear:hover { background: rgba(0,120,212,0.06); }
+
+/* ============================================
+   ADMIN HINT BOX on Login
+   ============================================ */
+.admin-hint-box {
+  margin-top: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0,120,212,0.2);
+  background: rgba(0,120,212,0.05);
+  overflow: hidden;
+}
+
+.admin-hint-box summary {
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+.admin-hint-box summary::-webkit-details-marker { display: none; }
+.admin-hint-box summary:hover { color: var(--accent-blue); }
+
+.admin-hint-body {
+  padding: 0 14px 14px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.admin-hint-body p { margin-bottom: 8px; }
+
+.admin-hint-body code {
+  display: block;
+  background: rgba(0,0,0,0.06);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--accent-blue);
+  margin: 6px 0 10px;
+  word-break: break-all;
+}
+
+body.dark .admin-hint-body code {
+  background: rgba(255,255,255,0.05);
+  color: var(--accent-cyan);
+}
+
+/* ============================================
+   CART BADGE ALIGNMENT FIX
+   ============================================ */
+#cart-btn, #h-fav-btn {
+  position: relative;
+  overflow: visible !important;
+}
+
+#cart-cnt, #fav-cnt {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: linear-gradient(135deg, #ff4444, #cc1111);
+  border-radius: 9px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: #fff;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-body, #d4f0ff);
+  box-shadow: 0 2px 6px rgba(200,0,0,0.4);
+  line-height: 1;
+  z-index: 10;
+  animation: badgePop 0.3s cubic-bezier(0.4,0,0.2,1) both;
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+
+/* ============================================
+   AERO BUBBLE NOTIFICATIONS
+   ============================================ */
+#toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  align-items: flex-end;
+}
+
+/* Outer wrapper — clips bubbles, manages animation */
+.aero-notif {
+  position: relative;
+  min-width: 260px;
+  max-width: 360px;
+  border-radius: 20px;
+  overflow: hidden;
+  pointer-events: all;
+  animation: aeroNotifIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.18),
+    0 2px 8px rgba(0,0,0,0.10);
+}
+
+.aero-notif-out {
+  animation: aeroNotifOut 0.38s cubic-bezier(0.4,0,0.2,1) forwards !important;
+}
+
+@keyframes aeroNotifIn {
+  from { opacity:0; transform: translateX(60px) scale(0.85); }
+  to   { opacity:1; transform: translateX(0) scale(1); }
+}
+@keyframes aeroNotifOut {
+  from { opacity:1; transform: translateX(0) scale(1); }
+  to   { opacity:0; transform: translateX(40px) scale(0.9); }
+}
+
+/* Type-specific outer gradients */
+.aero-notif-success {
+  background: linear-gradient(145deg,
+    rgba(200,255,210,0.92) 0%,
+    rgba(160,240,180,0.88) 40%,
+    rgba(80,200,120,0.92) 100%);
+  border: 1px solid rgba(0,160,80,0.35);
+}
+.aero-notif-error {
+  background: linear-gradient(145deg,
+    rgba(255,200,200,0.92) 0%,
+    rgba(255,160,160,0.88) 40%,
+    rgba(220,60,80,0.92) 100%);
+  border: 1px solid rgba(180,0,30,0.35);
+}
+.aero-notif-info {
+  background: linear-gradient(145deg,
+    rgba(200,230,255,0.92) 0%,
+    rgba(160,205,255,0.88) 40%,
+    rgba(60,140,240,0.92) 100%);
+  border: 1px solid rgba(0,80,200,0.35);
+}
+.aero-notif-warning {
+  background: linear-gradient(145deg,
+    rgba(255,240,180,0.92) 0%,
+    rgba(255,210,100,0.88) 40%,
+    rgba(210,130,0,0.92) 100%);
+  border: 1px solid rgba(160,80,0,0.35);
+}
+
+/* Aero glass top shine */
+.aero-notif::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48%;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.62) 0%,
+    rgba(255,255,255,0.08) 100%);
+  border-radius: 20px 20px 50% 50%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Inner content row */
+.aero-notif-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px 13px 13px;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(2px);
+}
+
+.aero-notif-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+}
+
+.aero-notif-msg {
+  flex: 1;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  line-height: 1.35;
+}
+
+/* Type-specific text colors */
+.aero-notif-success .aero-notif-msg { color: #003a10; }
+.aero-notif-error   .aero-notif-msg { color: #3a0008; }
+.aero-notif-info    .aero-notif-msg { color: #001a50; }
+.aero-notif-warning .aero-notif-msg { color: #3a1a00; }
+
+.aero-notif-close {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 50%;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: rgba(0,0,0,0.5);
+  transition: all 0.15s;
+  padding: 0;
+}
+.aero-notif-close:hover {
+  background: rgba(255,255,255,0.55);
+  transform: scale(1.1);
+}
+
+/* ── Floating bubbles ──────────────────────── */
+.aero-notif-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.aero-bub {
+  position: absolute;
+  border-radius: 50%;
+  animation: bubFloat linear forwards;
+}
+
+/* Bubble internal shine */
+.aero-bub::after {
+  content: '';
+  position: absolute;
+  top: 15%; left: 15%;
+  width: 38%; height: 32%;
+  background: rgba(255,255,255,0.65);
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+@keyframes bubFloat {
+  0%   { transform: translateY(0)   scale(1);    opacity: 0.9; }
+  30%  { opacity: 0.8; }
+  80%  { transform: translateY(-70px) scale(0.7); opacity: 0.4; }
+  100% { transform: translateY(-95px) scale(0.3); opacity: 0; }
+}
+
+/* ── Success variant — green tinted bubbles ─ */
+/* (color set in JS via inline style) */
+
+@media (max-width: 480px) {
+  #toast-container { bottom: 16px; right: 12px; left: 12px; align-items: stretch; }
+  .aero-notif { min-width: unset; max-width: unset; }
+}

@@ -829,3 +829,159 @@ body.dark .catalog-hero-title {
   border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.8);
 }
+
+/* ============================================
+   WET FLOOR REFLECTION
+   ============================================ */
+.product-card {
+  /* needs non-auto overflow for the pseudo reflection */
+  overflow: visible !important;
+  margin-bottom: 28px; /* space for reflection */
+}
+
+/* The reflection lives AFTER the card */
+.product-card::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: -22px;
+  height: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(100,180,255,0.18) 0%,
+    rgba(100,180,255,0.06) 60%,
+    transparent 100%
+  );
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  transform: scaleY(-1);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 100%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 100%);
+  pointer-events: none;
+  /* Subtle blur for the glossy floor effect */
+  filter: blur(1px);
+}
+
+body.dark .product-card::after {
+  background: linear-gradient(
+    180deg,
+    rgba(60,140,255,0.12) 0%,
+    rgba(60,140,255,0.04) 60%,
+    transparent 100%
+  );
+}
+
+/* Horizontal divider line between card and reflection */
+.product-card-footer {
+  position: relative;
+}
+.product-card-footer::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,0.6) 30%,
+    rgba(200,230,255,0.8) 50%,
+    rgba(255,255,255,0.6) 70%,
+    transparent
+  );
+}
+
+/* ============================================
+   AQUA / GEL "ADD TO CART" BUTTON
+   ============================================ */
+.btn-aqua-cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 22px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(0,130,0,0.45);
+  background: linear-gradient(180deg,
+    #a8e870 0%,
+    #70d040 22%,
+    #38b010 50%,
+    #2a9008 51%,
+    #3ab818 75%,
+    #60d030 100%
+  );
+  box-shadow:
+    0 3px 10px rgba(0,120,0,0.35),
+    0 1px 3px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,60,0,0.5);
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  letter-spacing: 0.01em;
+}
+
+/* Top gel bubble highlight */
+.btn-aqua-cart::before {
+  content: '';
+  position: absolute;
+  top: 1px; left: 6%; right: 6%;
+  height: 46%;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.75) 0%,
+    rgba(255,255,255,0.2) 100%
+  );
+  border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+  pointer-events: none;
+}
+
+/* Subtle bottom shine */
+.btn-aqua-cart::after {
+  content: '';
+  position: absolute;
+  bottom: 2px; left: 20%; right: 20%;
+  height: 20%;
+  background: linear-gradient(180deg,
+    transparent,
+    rgba(255,255,255,0.25)
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.btn-aqua-cart:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 18px rgba(0,140,0,0.45),
+    0 2px 6px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  background: linear-gradient(180deg,
+    #c0f080 0%,
+    #88e050 22%,
+    #48c820 50%,
+    #38a010 51%,
+    #50c828 75%,
+    #78e040 100%
+  );
+}
+
+.btn-aqua-cart:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 6px rgba(0,100,0,0.3),
+    inset 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.btn-aqua-cart:disabled {
+  background: linear-gradient(180deg, #c0c0c0, #909090);
+  border-color: rgba(0,0,0,0.2);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
