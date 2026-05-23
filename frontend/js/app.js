@@ -382,6 +382,15 @@ const Header = {
           </div>
         </nav>
 
+        <!-- MOBILE: hamburger -->
+        <button class="hamburger-btn sku-icon-btn" id="hamburger-btn" title="Menu" aria-label="Abrir menu">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+            <rect y="0"  width="18" height="2.2" rx="1.1" fill="currentColor"/>
+            <rect y="6"  width="14" height="2.2" rx="1.1" fill="currentColor"/>
+            <rect y="12" width="18" height="2.2" rx="1.1" fill="currentColor"/>
+          </svg>
+        </button>
+
         <!-- RIGHT ACTIONS -->
         <div class="header-right">
           <!-- Skeuomorphic search -->
@@ -514,9 +523,156 @@ const Header = {
       } else Router.go('login');
     };
     if (isAdmin) el('admin-btn') && (el('admin-btn').onclick = () => Router.go('admin'));
+    el('hamburger-btn') && (el('hamburger-btn').onclick = () => this._openDrawer());
     this._loadCats();
     this._cartCount();
     this._favCount();
+    this._buildDrawer(logged, isAdmin);
+  },
+
+  _buildDrawer(logged, isAdmin) {
+    // Remove old drawer if exists
+    const old = el('mobile-drawer');
+    const oldOverlay = el('drawer-overlay');
+    if (old) old.remove();
+    if (oldOverlay) oldOverlay.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'drawer-overlay';
+    overlay.className = 'drawer-overlay';
+    overlay.onclick = () => this._closeDrawer();
+
+    const drawer = document.createElement('div');
+    drawer.id = 'mobile-drawer';
+    drawer.className = 'mobile-drawer glass-strong';
+    drawer.innerHTML = `
+      <!-- Drawer header -->
+      <div class="drawer-header">
+        <span class="brand-name" style="-webkit-text-fill-color:unset;color:var(--accent-blue)">Lana &amp; Lino</span>
+        <button class="drawer-close sku-icon-btn" id="drawer-close">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+
+      <!-- Search in drawer -->
+      <div class="drawer-search">
+        <div class="search-wrap" style="width:100%">
+          <input type="text" id="drawer-search" placeholder="Buscar productos..." style="width:100%"/>
+          <button id="drawer-search-btn" class="sku-btn"><i class="ph ph-magnifying-glass"></i></button>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="drawer-section-title">Categorías</div>
+      <div class="drawer-cats" id="drawer-cats">
+        <button class="drawer-cat-item" data-cat="">
+          <i class="ph ph-squares-four"></i> Todo
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="drawer-section-title">Mi cuenta</div>
+      <div class="drawer-actions">
+        <button class="drawer-action-btn" id="drawer-profile">
+          <i class="ph ph-user"></i>
+          ${logged ? 'Mi Perfil' : 'Iniciar Sesión'}
+        </button>
+        <button class="drawer-action-btn" id="drawer-fav">
+          <i class="ph ph-heart"></i> Favoritos
+        </button>
+        <button class="drawer-action-btn" id="drawer-cart">
+          <i class="ph ph-shopping-cart"></i> Carrito
+        </button>
+        ${isAdmin ? `<button class="drawer-action-btn drawer-action-admin" id="drawer-admin">
+          <i class="ph ph-gear"></i> Panel Admin
+        </button>` : ''}
+        ${logged ? `<button class="drawer-action-btn drawer-action-logout" id="drawer-logout">
+          <i class="ph ph-sign-out"></i> Cerrar Sesión
+        </button>` : ''}
+      </div>
+
+      <!-- Theme toggle -->
+      <div class="drawer-theme">
+        <button class="drawer-theme-btn" id="drawer-theme">
+          <i class="ph ph-moon" id="drawer-theme-icon"></i>
+          <span id="drawer-theme-label">Modo oscuro</span>
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(drawer);
+
+    // Wire events
+    el('drawer-close').onclick = () => this._closeDrawer();
+    el('drawer-search-btn').onclick = () => {
+      const q = el('drawer-search').value.trim();
+      if (q) { this._saveSearch(q); Router.go('catalog', { search: q }); }
+      this._closeDrawer();
+    };
+    el('drawer-search').onkeydown = e => {
+      if (e.key === 'Enter') { el('drawer-search-btn').click(); }
+    };
+    el('drawer-profile').onclick = () => {
+      Session.loggedIn() ? Router.go('profile') : Router.go('login');
+      this._closeDrawer();
+    };
+    el('drawer-fav').onclick = () => {
+      if (!Session.loggedIn()) { Router.go('login'); } else { Router.go('favorites'); }
+      this._closeDrawer();
+    };
+    el('drawer-cart').onclick = () => {
+      if (!Session.loggedIn()) { Router.go('login'); } else { Router.go('cart'); }
+      this._closeDrawer();
+    };
+    el('drawer-admin') && (el('drawer-admin').onclick = () => { Router.go('admin'); this._closeDrawer(); });
+    el('drawer-logout') && (el('drawer-logout').onclick = () => {
+      if (!confirm('¿Cerrar sesión?')) return;
+      Session.clear(); this._closeDrawer(); Header.render(); Router.go('catalog');
+    });
+    el('drawer-theme').onclick = () => {
+      Theme.toggle();
+      const dark = document.body.classList.contains('dark');
+      el('drawer-theme-icon').className = dark ? 'ph ph-sun' : 'ph ph-moon';
+      el('drawer-theme-label').textContent = dark ? 'Modo claro' : 'Modo oscuro';
+    };
+    // Update drawer theme icon
+    const dark = document.body.classList.contains('dark');
+    el('drawer-theme-icon').className = dark ? 'ph ph-sun' : 'ph ph-moon';
+    el('drawer-theme-label').textContent = dark ? 'Modo claro' : 'Modo oscuro';
+  },
+
+  _populateDrawerCats(cats) {
+    const dc = el('drawer-cats');
+    if (!dc || !cats.length) return;
+    dc.innerHTML = `<button class="drawer-cat-item" data-cat=""><i class="ph ph-squares-four"></i> Todo</button>` +
+      cats.map(cat => `<button class="drawer-cat-item" data-cat="${cat}">
+        <i class="ph ph-tag"></i> ${cat}
+      </button>`).join('');
+    dc.querySelectorAll('.drawer-cat-item').forEach(btn => {
+      btn.onclick = () => {
+        if (btn.dataset.cat) Router.go('catalog', { catName: btn.dataset.cat });
+        else Router.go('catalog', {});
+        this._closeDrawer();
+      };
+    });
+  },
+
+  _openDrawer() {
+    el('mobile-drawer') && el('mobile-drawer').classList.add('open');
+    el('drawer-overlay') && el('drawer-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Populate cats in drawer
+    const hist = JSON.parse(localStorage.getItem('ll_searches') || '[]');
+    const cats = [...el('hcat-inner').querySelectorAll('.hcat-item')]
+      .map(b => b.dataset.cat).filter(Boolean);
+    this._populateDrawerCats(cats);
+  },
+
+  _closeDrawer() {
+    el('mobile-drawer') && el('mobile-drawer').classList.remove('open');
+    el('drawer-overlay') && el('drawer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
   },
   _search() {
     const q = el('h-search') && el('h-search').value.trim();
