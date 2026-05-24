@@ -1016,3 +1016,230 @@ body.dark .admin-hint-body code {
   #toast-container { bottom: 16px; right: 12px; left: 12px; align-items: stretch; }
   .aero-notif { min-width: unset; max-width: unset; }
 }
+
+/* ============================================
+   BADGE BUMP ANIMATION
+   ============================================ */
+@keyframes badgeBump {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.6); }
+  65%  { transform: scale(0.85); }
+  100% { transform: scale(1); }
+}
+.badge-bump {
+  animation: badgeBump 0.38s cubic-bezier(0.4, 0, 0.2, 1) both !important;
+}
+
+/* ============================================
+   LIGHTBOX
+   ============================================ */
+.pd-zoom-hint {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.85);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  color: var(--accent-blue);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.product-detail-img:hover .pd-zoom-hint { opacity: 1; }
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 10, 40, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.lightbox-overlay.lightbox-in  { opacity: 1; }
+.lightbox-overlay.lightbox-out { opacity: 0; }
+
+.lightbox-box {
+  position: relative;
+  max-width: min(90vw, 760px);
+  max-height: 90vh;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,255,255,0.15);
+  animation: lightboxIn 0.28s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes lightboxIn {
+  from { transform: scale(0.82); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.lightbox-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  background: rgba(10,20,50,0.8);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 36px; height: 36px;
+  z-index: 1;
+  background: rgba(0,0,0,0.5) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  color: white !important;
+}
+.lightbox-close:hover { background: rgba(0,0,0,0.75) !important; }
+
+/* ============================================
+   PAYMENT SUCCESS REDESIGN
+   ============================================ */
+.payment-success {
+  position: relative;
+  overflow: hidden;
+  max-width: 520px;
+  margin: 40px auto;
+  border-radius: var(--radius-xl) !important;
+  padding: 0 !important;
+}
+
+.ps-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ps-bub {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.55;
+  animation: psBubFloat linear infinite;
+}
+.ps-bub::after {
+  content:''; position:absolute;
+  top:15%; left:15%; width:38%; height:32%;
+  background:rgba(255,255,255,0.6); border-radius:50%;
+  transform:rotate(-30deg);
+}
+.ps-bub-1 { width:60px; height:60px; left:8%;  bottom:-60px; background:rgba(0,180,100,0.35); border:1px solid rgba(255,255,255,0.4); animation-duration:5.5s; animation-delay:0s; }
+.ps-bub-2 { width:40px; height:40px; left:25%; bottom:-40px; background:rgba(0,200,120,0.28); border:1px solid rgba(255,255,255,0.35); animation-duration:4.8s; animation-delay:0.8s; }
+.ps-bub-3 { width:80px; height:80px; left:55%; bottom:-80px; background:rgba(0,160,80,0.22);  border:1px solid rgba(255,255,255,0.3); animation-duration:6.2s; animation-delay:0.3s; }
+.ps-bub-4 { width:28px; height:28px; left:72%; bottom:-28px; background:rgba(100,220,150,0.4); border:1px solid rgba(255,255,255,0.45); animation-duration:4.2s; animation-delay:1.2s; }
+.ps-bub-5 { width:50px; height:50px; left:85%; bottom:-50px; background:rgba(0,200,100,0.3);  border:1px solid rgba(255,255,255,0.35); animation-duration:5.0s; animation-delay:0.5s; }
+
+@keyframes psBubFloat {
+  0%   { transform: translateY(0)    scale(1);    opacity: 0.55; }
+  70%  { opacity: 0.4; }
+  100% { transform: translateY(-440px) scale(0.4); opacity: 0; }
+}
+
+.ps-content {
+  position: relative;
+  z-index: 1;
+  padding: 40px 36px 36px;
+  text-align: center;
+}
+
+.ps-icon {
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(0,160,0,0.3));
+  animation: psIconIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both 0.1s;
+}
+@keyframes psIconIn {
+  from { transform: scale(0.4) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1)   rotate(0deg);   opacity: 1; }
+}
+
+.ps-title {
+  font-family: 'Comfortaa', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 16px;
+  animation: fadeInUp 0.4s ease both 0.2s;
+}
+
+.ps-order-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 18px;
+  background: linear-gradient(135deg, rgba(0,150,80,0.12), rgba(0,200,120,0.08));
+  border: 1px solid rgba(0,160,80,0.25);
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 6px;
+  animation: fadeInUp 0.4s ease both 0.3s;
+}
+
+.ps-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  animation: fadeInUp 0.4s ease both 0.35s;
+}
+
+.ps-msg {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.4s ease both 0.4s;
+}
+
+.ps-items-summary {
+  background: rgba(0,0,0,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  text-align: left;
+  animation: fadeInUp 0.4s ease both 0.45s;
+}
+
+body.dark .ps-items-summary { background: rgba(255,255,255,0.04); }
+
+.ps-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.ps-item-row:last-child { border-bottom: none; }
+
+.ps-total-row {
+  margin-top: 4px;
+  padding-top: 8px !important;
+  font-size: 0.92rem !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   CARD BRAND LOGO in payment
+   ============================================ */
+#card-brand-wrap {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}

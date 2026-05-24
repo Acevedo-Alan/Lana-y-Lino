@@ -807,8 +807,16 @@ const Header = {
     try {
       const r = await API.getCart(u.id_usuario);
       if (r.codigo === 200 && r.payload && r.payload.length > 0) {
-        badge.textContent = r.payload.length;
+        const prev = parseInt(badge.textContent) || 0;
+        const next = r.payload.length;
+        badge.textContent = next;
         badge.style.display = 'flex';
+        // Animate only when count increases
+        if (next > prev) {
+          badge.classList.remove('badge-bump');
+          void badge.offsetWidth; // force reflow
+          badge.classList.add('badge-bump');
+        }
       } else { badge.style.display = 'none'; }
     } catch(e) { badge.style.display = 'none'; }
   },
@@ -1244,9 +1252,10 @@ const Product = {
           </span>
         </nav>
         <div class="product-detail-grid">
-          <div class="product-detail-img card-aero" style="position:relative">
-            <img src="${img(first.ulrImagen)}" alt="${esc(first.producto)}" onerror="this.src=PLACEHOLDER"/>
+          <div class="product-detail-img card-aero" style="position:relative;cursor:zoom-in" id="pd-img-wrap">
+            <img src="${img(first.ulrImagen)}" alt="${esc(first.producto)}" onerror="this.src=PLACEHOLDER" id="pd-main-img"/>
             ${totalStock===0?'<div class="no-stock-overlay">Sin Stock</div>':''}
+            <div class="pd-zoom-hint"><i class="ph ph-magnifying-glass-plus"></i></div>
           </div>
           <div class="product-detail-info glass-strong" style="border-radius:var(--radius-xl)">
             <div class="product-detail-category">${esc(first.categoria||'')}</div>
@@ -1304,6 +1313,25 @@ const Product = {
     // Breadcrumb navigation
     el('bc-home') && (el('bc-home').onclick = () => Router.go('catalog'));
     el('bc-cat')  && (el('bc-cat').onclick  = () => Router.go('catalog', { catName: first.categoria }));
+
+    // Lightbox
+    el('pd-img-wrap') && (el('pd-img-wrap').onclick = () => {
+      const imgSrc = el('pd-main-img') && el('pd-main-img').src;
+      if (!imgSrc) return;
+      const overlay = document.createElement('div');
+      overlay.className = 'lightbox-overlay';
+      overlay.innerHTML = `
+        <div class="lightbox-box">
+          <button class="lightbox-close sku-icon-btn"><i class="ph ph-x"></i></button>
+          <img src="${imgSrc}" alt="${esc(first.producto)}" class="lightbox-img"/>
+        </div>`;
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+      const close = () => { overlay.classList.add('lightbox-out'); setTimeout(() => { overlay.remove(); document.body.style.overflow=''; }, 280); };
+      overlay.onclick = e => { if (!e.target.closest('.lightbox-box') || e.target.closest('.lightbox-close')) close(); };
+      document.addEventListener('keydown', function esc(e) { if(e.key==='Escape'){close(); document.removeEventListener('keydown',esc);} });
+      requestAnimationFrame(() => overlay.classList.add('lightbox-in'));
+    });
     // Quantity selector
     let qty = 1;
     const updateQtyDisplay = () => {
@@ -1460,6 +1488,82 @@ const Cart = {
 // PAYMENT
 // ============================================================
 const Payment = {
+  _detectBrand(num) {
+    const wrap = el('card-brand-wrap');
+    if (!wrap) return;
+    let svg = '';
+    if (/^4/.test(num)) {
+      // Visa
+      svg = `<svg width="46" height="28" viewBox="0 0 46 28" xmlns="http://www.w3.org/2000/svg">
+        <rect width="46" height="28" rx="5" fill="#1a1f71"/>
+        <rect width="46" height="28" rx="5" fill="url(#vsh)" opacity="0.3"/>
+        <defs><linearGradient id="vsh" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="white" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </linearGradient></defs>
+        <text x="23" y="20" font-family="Arial,sans-serif" font-size="13" font-weight="900"
+          fill="white" text-anchor="middle" letter-spacing="1">VISA</text>
+      </svg>`;
+    } else if (/^5[1-5]|^2[2-7]/.test(num)) {
+      // Mastercard
+      svg = `<svg width="46" height="28" viewBox="0 0 46 28" xmlns="http://www.w3.org/2000/svg">
+        <rect width="46" height="28" rx="5" fill="#252525"/>
+        <defs>
+          <radialGradient id="mcr" cx="35%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ff5f00" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#eb001b" stop-opacity="0.9"/>
+          </radialGradient>
+          <radialGradient id="mco" cx="65%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#f79e1b" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#ff5f00" stop-opacity="0.9"/>
+          </radialGradient>
+          <linearGradient id="mcsh" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="white" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="white" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <circle cx="17" cy="14" r="9" fill="url(#mcr)"/>
+        <circle cx="29" cy="14" r="9" fill="url(#mco)"/>
+        <ellipse cx="23" cy="14" rx="4" ry="9" fill="#ff5f00" opacity="0.7"/>
+        <rect width="46" height="28" rx="5" fill="url(#mcsh)"/>
+      </svg>`;
+    } else if (/^3[47]/.test(num)) {
+      // Amex
+      svg = `<svg width="46" height="28" viewBox="0 0 46 28" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="amxg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#007bc1"/>
+            <stop offset="100%" stop-color="#00adef"/>
+          </linearGradient>
+          <linearGradient id="amxsh" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="white" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="white" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <rect width="46" height="28" rx="5" fill="url(#amxg)"/>
+        <rect width="46" height="28" rx="5" fill="url(#amxsh)"/>
+        <text x="23" y="17" font-family="Arial,sans-serif" font-size="7.5" font-weight="900"
+          fill="white" text-anchor="middle" letter-spacing="0.5">AMERICAN</text>
+        <text x="23" y="24" font-family="Arial,sans-serif" font-size="7.5" font-weight="900"
+          fill="white" text-anchor="middle" letter-spacing="0.5">EXPRESS</text>
+      </svg>`;
+    }
+    wrap.innerHTML = svg;
+    // Animate logo appearance
+    const svgEl = wrap.querySelector('svg');
+    if (svgEl && svg) {
+      svgEl.style.opacity = '0';
+      svgEl.style.transform = 'scale(0.7)';
+      svgEl.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+      requestAnimationFrame(() => {
+        svgEl.style.opacity = '1';
+        svgEl.style.transform = 'scale(1)';
+      });
+    } else if (!svg) {
+      wrap.innerHTML = '';
+    }
+  },
+
   render(items, total) {
     if (!Session.loggedIn()) { Router.go('login'); return; }
     items = items || [];
@@ -1504,12 +1608,27 @@ const Payment = {
         </div>
       </div>`;
     el('pay-back').onclick = () => Router.go('cart');
+
+    // Inject card brand logo placeholder
+    const cardNumGroup = el('cn') && el('cn').closest('.form-group');
+    if (cardNumGroup) {
+      const logoWrap = document.createElement('div');
+      logoWrap.id = 'card-brand-wrap';
+      logoWrap.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;';
+      const cnParent = el('cn').parentElement;
+      cnParent.style.position = 'relative';
+      cnParent.appendChild(logoWrap);
+    }
+
     const validate = () => {
       const m = el('pm').value;
       if (!m) { el('pay-btn').disabled=true; return; }
       if (m==='transferencia') { el('pay-btn').disabled=false; return; }
       const n=(el('cn').value||'').replace(/\s/g,''); const e=(el('ce').value||''); const v=(el('cv').value||''); const k=(el('ck').value||'').trim();
-      el('pay-btn').disabled = !(n.length===16 && e.length===5 && v.length>=3 && k.length>=3);
+      const isAmex = /^3[47]/.test(n);
+      const validLen = isAmex ? n.length===15 : n.length===16;
+      const validCvv = isAmex ? v.length===4 : v.length>=3;
+      el('pay-btn').disabled = !(validLen && e.length===5 && validCvv && k.length>=3);
     };
     el('pm').onchange = () => {
       const m = el('pm').value;
@@ -1517,7 +1636,24 @@ const Payment = {
       validate();
     };
     ['cn','ce','cv','ck'].forEach(id => { const inp=el(id); if(inp) inp.oninput=validate; });
-    el('cn') && (el('cn').oninput = function() { let v=this.value.replace(/\D/g,'').substring(0,16); this.value=v.replace(/(.{4})/g,'$1 ').trim(); validate(); });
+    el('cn') && (el('cn').oninput = function() {
+      const isAmex = /^3[47]/.test(this.value.replace(/\D/g,''));
+      const maxLen = isAmex ? 15 : 16;
+      const maxFmt = isAmex ? 17 : 19; // with spaces
+      let v = this.value.replace(/\D/g,'').substring(0, maxLen);
+      if (isAmex) {
+        // Amex format: 4-6-5
+        v = v.replace(/^(\d{0,4})(\d{0,6})(\d{0,5})$/, (_,a,b,c) =>
+          [a,b,c].filter(Boolean).join(' '));
+      } else {
+        v = v.replace(/(.{4})/g,'$1 ').trim();
+      }
+      this.value = v;
+      this.maxLength = maxFmt;
+      // Update brand logo
+      Payment._detectBrand(this.value.replace(/\s/g,''));
+      validate();
+    });
     el('ce') && (el('ce').oninput = function() { let v=this.value.replace(/\D/g,'').substring(0,4); if(v.length>=2) v=v.substring(0,2)+'/'+v.substring(2); this.value=v; validate(); });
     el('pay-btn').onclick = async () => {
       const btn = el('pay-btn');
@@ -1533,15 +1669,63 @@ const Payment = {
           }
         } catch(e) {}
       }
+      const orderNum = 'LL-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900000)+100000);
+      const orderDate = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
       el('app').innerHTML = `
         <div class="page-section animate-in">
-          <div class="card-aero payment-success" style="max-width:480px;margin:0 auto;text-align:center;padding:48px 32px">
-            <div class="success-icon" style="margin-bottom:16px"><i class="ph ph-check-circle" style="font-size:5rem;color:var(--success)"></i></div>
-            <h2 style="font-family:'Comfortaa',cursive;color:var(--success);font-size:1.8rem;margin-bottom:8px">Pago aprobado!</h2>
-            <p style="color:var(--text-muted);margin-bottom:24px">Gracias por tu compra en Lana &amp; Lino.<br/>Te enviamos los detalles por email.</p>
-            <button class="btn-aero btn-success btn-lg" id="ps-btn" style="justify-content:center">
-              <i class="ph ph-storefront"></i> Seguir comprando
-            </button>
+          <div class="card-aero payment-success">
+            <!-- Aero bubble decorations -->
+            <div class="ps-bubbles" aria-hidden="true">
+              <span class="ps-bub ps-bub-1"></span>
+              <span class="ps-bub ps-bub-2"></span>
+              <span class="ps-bub ps-bub-3"></span>
+              <span class="ps-bub ps-bub-4"></span>
+              <span class="ps-bub ps-bub-5"></span>
+            </div>
+            <div class="ps-content">
+              <div class="ps-icon">
+                <svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <radialGradient id="psg" cx="35%" cy="28%" r="65%">
+                      <stop offset="0%" stop-color="white" stop-opacity="0.9"/>
+                      <stop offset="40%" stop-color="#80ff80" stop-opacity="0.7"/>
+                      <stop offset="100%" stop-color="#00aa00"/>
+                    </radialGradient>
+                    <radialGradient id="psg2" cx="35%" cy="28%" r="55%">
+                      <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+                      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                    </radialGradient>
+                    <filter id="psf"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,150,0,0.35)"/></filter>
+                  </defs>
+                  <circle cx="36" cy="36" r="34" fill="url(#psg)" filter="url(#psf)" stroke="rgba(0,150,0,0.2)" stroke-width="1"/>
+                  <circle cx="36" cy="36" r="34" fill="url(#psg2)"/>
+                  <ellipse cx="26" cy="22" rx="10" ry="6" fill="white" opacity="0.45" transform="rotate(-30 26 22)"/>
+                  <path d="M18 36 L28 46 L54 22" stroke="white" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h2 class="ps-title">¡Pago aprobado!</h2>
+              <div class="ps-order-badge">
+                <i class="ph ph-receipt"></i>
+                Orden <strong>${orderNum}</strong>
+              </div>
+              <p class="ps-date">${orderDate}</p>
+              <p class="ps-msg">Gracias por tu compra en <strong>Lana &amp; Lino</strong>.<br/>Te enviamos los detalles por email.</p>
+              <div class="ps-items-summary">
+                ${items.slice(0,3).map(it => `
+                  <div class="ps-item-row">
+                    <span>${esc(it.producto)} <small style="opacity:.6">(${esc(it.talle)})</small></span>
+                    <span>${price(it.precio)}</span>
+                  </div>`).join('')}
+                ${items.length > 3 ? `<div class="ps-item-row" style="opacity:.6"><span>+ ${items.length-3} producto${items.length-3!==1?'s':''} más</span></div>` : ''}
+                <div class="ps-item-row ps-total-row">
+                  <span><strong>Total</strong></span>
+                  <span><strong>${price(total)}</strong></span>
+                </div>
+              </div>
+              <button class="btn-aqua-cart" id="ps-btn" style="justify-content:center;margin-top:20px;width:100%">
+                <i class="ph ph-storefront"></i> Seguir comprando
+              </button>
+            </div>
           </div>
         </div>`;
       el('ps-btn').onclick = () => Router.go('catalog');
