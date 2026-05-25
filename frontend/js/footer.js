@@ -1,1 +1,1 @@
-/* Footer is rendered inline in index.html */
+/* Footer lo renderiza en index.html */

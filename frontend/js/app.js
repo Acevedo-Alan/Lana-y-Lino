@@ -857,145 +857,216 @@ const Catalog = {
     el('app').innerHTML = `
       <div class="catalog-page animate-in">
 
-        <!-- ── HERO ───────────────────────────── -->
-        <div class="catalog-hero glass">
-          <div class="catalog-hero-content">
-            <span class="catalog-hero-eyebrow">Nueva Colección 2026</span>
-            <h1 class="catalog-hero-title">Lana &amp; Lino</h1>
-            <p class="catalog-hero-sub">Indumentaria pensada para cada momento.<br/>Estilo, calidad y comodidad en un solo lugar.</p>
-            <div class="catalog-hero-pills">
-              <span class="hero-pill">Remeras</span>
-              <span class="hero-pill">Buzos</span>
-              <span class="hero-pill">Camperas</span>
-              <span class="hero-pill">Pantalones</span>
-              <span class="hero-pill">Calzado</span>
+        <!-- ── HERO CAROUSEL ────────────────── -->
+        <div class="hero-carousel" id="hero-carousel">
+
+          <!-- SLIDES TRACK -->
+          <div class="hero-track" id="hero-track">
+
+            <!-- SLIDE 1: Nueva Colección -->
+            <div class="hero-slide hero-slide-1">
+              <div class="catalog-hero-content">
+                <span class="catalog-hero-eyebrow">Nueva Colección 2026</span>
+                <h1 class="catalog-hero-title">Lana &amp; Lino</h1>
+                <p class="catalog-hero-sub">Indumentaria pensada para cada momento.<br/>Estilo, calidad y comodidad en un solo lugar.</p>
+                <div class="catalog-hero-pills">
+                  <span class="hero-pill">Remeras</span>
+                  <span class="hero-pill">Buzos</span>
+                  <span class="hero-pill">Camperas</span>
+                  <span class="hero-pill">Pantalones</span>
+                  <span class="hero-pill">Calzado</span>
+                </div>
+              </div>
+              <div class="catalog-hero-deco" aria-hidden="true">
+                <svg class="hero-aero-svg" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a8deff" stop-opacity="0.5"/><stop offset="60%" stop-color="#c8f0d0" stop-opacity="0.3"/><stop offset="100%" stop-color="#80d8a0" stop-opacity="0.4"/></linearGradient>
+                    <radialGradient id="bub1s1" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="white" stop-opacity="0.85"/><stop offset="40%" stop-color="#c0e8ff" stop-opacity="0.4"/><stop offset="100%" stop-color="#60b0e0" stop-opacity="0.15"/></radialGradient>
+                    <radialGradient id="bub2s1" cx="30%" cy="25%" r="60%"><stop offset="0%" stop-color="white" stop-opacity="0.9"/><stop offset="100%" stop-color="#40a0d0" stop-opacity="0.1"/></radialGradient>
+                    <radialGradient id="flares1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="white" stop-opacity="0.95"/><stop offset="30%" stop-color="white" stop-opacity="0.4"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient>
+                    <linearGradient id="grasss1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#60d080" stop-opacity="0.7"/><stop offset="100%" stop-color="#30a050" stop-opacity="0.4"/></linearGradient>
+                    <linearGradient id="grass2s1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#80e0a0" stop-opacity="0.6"/><stop offset="100%" stop-color="#40b060" stop-opacity="0.3"/></linearGradient>
+                    <filter id="glows1"><feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                  </defs>
+                  <rect width="420" height="220" fill="url(#sky)"/>
+                  <g opacity="0.85">
+                    <path d="M310 220 Q314 195 318 175 Q320 165 316 155 Q322 168 324 185 Q326 200 322 220Z" fill="url(#grasss1)"/>
+                    <path d="M322 220 Q328 190 335 168 Q338 158 334 148 Q340 162 342 180 Q344 198 338 220Z" fill="url(#grass2s1)"/>
+                    <path d="M335 220 Q340 198 346 178 Q349 165 344 152 Q351 167 353 185 Q355 202 348 220Z" fill="url(#grasss1)"/>
+                    <path d="M350 220 Q354 200 360 180 Q362 168 358 156 Q365 170 367 188 Q369 205 362 220Z" fill="url(#grass2s1)"/>
+                    <path d="M363 220 Q366 205 371 188 Q373 176 369 165 Q376 178 378 195 Q380 210 374 220Z" fill="url(#grasss1)"/>
+                    <path d="M374 220 Q378 208 383 192 Q385 180 381 170 Q388 183 389 198 Q391 212 385 220Z" fill="url(#grass2s1)"/>
+                    <path d="M386 220 Q390 210 394 196 Q396 185 392 175 Q399 187 400 202 Q402 215 396 220Z" fill="url(#grasss1)"/>
+                    <path d="M398 220 Q401 212 405 200 Q407 190 403 181 Q410 192 411 206 Q413 218 407 220Z" fill="url(#grass2s1)"/>
+                    <path d="M408 220 Q411 214 414 203 Q416 194 412 186 Q419 197 420 210 L420 220Z" fill="url(#grasss1)"/>
+                  </g>
+                  <circle cx="340" cy="60" r="42" fill="url(#bub1s1)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/><ellipse cx="328" cy="44" rx="12" ry="7" fill="white" opacity="0.55" transform="rotate(-25 328 44)"/>
+                  <circle cx="390" cy="95" r="26" fill="url(#bub2s1)" stroke="rgba(255,255,255,0.45)" stroke-width="0.7"/><ellipse cx="381" cy="84" rx="7" ry="4.5" fill="white" opacity="0.5" transform="rotate(-20 381 84)"/>
+                  <circle cx="410" cy="48" r="11" fill="url(#bub1s1)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                  <circle cx="270" cy="85" r="8" fill="url(#bub2s1)" stroke="rgba(255,255,255,0.35)" stroke-width="0.5"/>
+                  <circle cx="280" cy="155" r="5" fill="url(#bub1s1)" stroke="rgba(255,255,255,0.3)" stroke-width="0.4"/>
+                  <g filter="url(#glows1)" opacity="0.9">
+                    <circle cx="400" cy="22" r="18" fill="url(#flares1)"/>
+                    <line x1="400" y1="4" x2="400" y2="40" stroke="white" stroke-width="1" stroke-opacity="0.5" stroke-linecap="round"/>
+                    <line x1="382" y1="22" x2="418" y2="22" stroke="white" stroke-width="1" stroke-opacity="0.5" stroke-linecap="round"/>
+                    <line x1="387" y1="9" x2="413" y2="35" stroke="white" stroke-width="0.6" stroke-opacity="0.3" stroke-linecap="round"/>
+                    <circle cx="400" cy="22" r="6" fill="url(#flares1)" opacity="0.8"/>
+                    <circle cx="400" cy="22" r="28" fill="none" stroke="white" stroke-width="0.5" stroke-opacity="0.2"/>
+                    <circle cx="368" cy="22" r="3" fill="#c0e8ff" opacity="0.4"/>
+                    <circle cx="358" cy="22" r="2" fill="#a0d0ff" opacity="0.3"/>
+                  </g>
+                  <text x="250" y="200" font-family="Comfortaa,sans-serif" font-size="72" font-weight="700" fill="rgba(0,120,212,0.045)" letter-spacing="-2">L&amp;L</text>
+                </svg>
+              </div>
             </div>
-          </div>
 
-          <!-- Frutiger Aero SVG decoration -->
-          <div class="catalog-hero-deco" aria-hidden="true">
-            <svg class="hero-aero-svg" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-              <defs>
-                <!-- Sky gradient -->
-                <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#a8deff" stop-opacity="0.5"/>
-                  <stop offset="60%" stop-color="#c8f0d0" stop-opacity="0.3"/>
-                  <stop offset="100%" stop-color="#80d8a0" stop-opacity="0.4"/>
-                </linearGradient>
-                <!-- Bubble gradient -->
-                <radialGradient id="bub1" cx="35%" cy="28%" r="65%">
-                  <stop offset="0%" stop-color="white" stop-opacity="0.85"/>
-                  <stop offset="40%" stop-color="#c0e8ff" stop-opacity="0.4"/>
-                  <stop offset="100%" stop-color="#60b0e0" stop-opacity="0.15"/>
-                </radialGradient>
-                <radialGradient id="bub2" cx="30%" cy="25%" r="60%">
-                  <stop offset="0%" stop-color="white" stop-opacity="0.9"/>
-                  <stop offset="50%" stop-color="#a0d8f8" stop-opacity="0.35"/>
-                  <stop offset="100%" stop-color="#40a0d0" stop-opacity="0.1"/>
-                </radialGradient>
-                <radialGradient id="bub3" cx="40%" cy="30%" r="55%">
-                  <stop offset="0%" stop-color="white" stop-opacity="0.8"/>
-                  <stop offset="100%" stop-color="#80c8e8" stop-opacity="0.1"/>
-                </radialGradient>
-                <!-- Lens flare -->
-                <radialGradient id="flare" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="white" stop-opacity="0.95"/>
-                  <stop offset="30%" stop-color="white" stop-opacity="0.4"/>
-                  <stop offset="70%" stop-color="#c0e8ff" stop-opacity="0.1"/>
-                  <stop offset="100%" stop-color="white" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="flare2" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
-                  <stop offset="100%" stop-color="white" stop-opacity="0"/>
-                </radialGradient>
-                <!-- Grass gradient -->
-                <linearGradient id="grass" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#60d080" stop-opacity="0.7"/>
-                  <stop offset="100%" stop-color="#30a050" stop-opacity="0.4"/>
-                </linearGradient>
-                <linearGradient id="grass2" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#80e0a0" stop-opacity="0.6"/>
-                  <stop offset="100%" stop-color="#40b060" stop-opacity="0.3"/>
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-              </defs>
+            <!-- SLIDE 2: Tendencias de temporada (agua/cristal) -->
+            <div class="hero-slide hero-slide-2">
+              <div class="catalog-hero-content">
+                <span class="catalog-hero-eyebrow" style="background:rgba(0,180,180,0.15);border-color:rgba(0,200,200,0.35);color:#00c8c8">Tendencias de Temporada</span>
+                <h1 class="catalog-hero-title" style="background:linear-gradient(135deg,#003366 40%,#00c8d8);-webkit-background-clip:text;background-clip:text">Buzos &amp; Camperas</h1>
+                <p class="catalog-hero-sub">Las prendas de abrigo más buscadas de la colección. Calidad premium con estilo Aero.</p>
+                <div class="catalog-hero-pills">
+                  <span class="hero-pill hero-pill-teal" data-cat="Buzos">Ver Buzos</span>
+                  <span class="hero-pill hero-pill-teal" data-cat="Camperas">Ver Camperas</span>
+                </div>
+              </div>
+              <div class="catalog-hero-deco" aria-hidden="true">
+                <svg class="hero-aero-svg" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <linearGradient id="waters2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d4ff" stop-opacity="0.2"/><stop offset="50%" stop-color="#00a0c0" stop-opacity="0.15"/><stop offset="100%" stop-color="#0060a0" stop-opacity="0.25"/></linearGradient>
+                    <radialGradient id="crys1" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="white" stop-opacity="0.92"/><stop offset="35%" stop-color="#80f0ff" stop-opacity="0.5"/><stop offset="100%" stop-color="#00a0d0" stop-opacity="0.1"/></radialGradient>
+                    <radialGradient id="crys2" cx="35%" cy="30%" r="55%"><stop offset="0%" stop-color="white" stop-opacity="0.88"/><stop offset="40%" stop-color="#c0f0ff" stop-opacity="0.45"/><stop offset="100%" stop-color="#0080c0" stop-opacity="0.08"/></radialGradient>
+                    <radialGradient id="crys3" cx="30%" cy="25%" r="60%"><stop offset="0%" stop-color="white" stop-opacity="0.85"/><stop offset="100%" stop-color="#60d0f0" stop-opacity="0.05"/></radialGradient>
+                    <linearGradient id="waves2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#00c0e0" stop-opacity="0.18"/><stop offset="100%" stop-color="#0080b0" stop-opacity="0.3"/></linearGradient>
+                    <filter id="glows2"><feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                  </defs>
+                  <rect width="420" height="220" fill="url(#waters2)"/>
+                  <!-- Water wave lines -->
+                  <path d="M0 160 Q60 148 120 160 Q180 172 240 160 Q300 148 360 160 Q390 166 420 160 L420 220 L0 220Z" fill="url(#waves2)" opacity="0.5"/>
+                  <path d="M0 175 Q70 162 140 175 Q210 188 280 175 Q350 162 420 175 L420 220 L0 220Z" fill="url(#waves2)" opacity="0.4"/>
+                  <path d="M0 190 Q80 178 160 190 Q240 202 320 190 Q370 183 420 190 L420 220 L0 220Z" fill="url(#waves2)" opacity="0.6"/>
+                  <!-- Crystal/ice shards -->
+                  <polygon points="320,20 345,80 295,80" fill="url(#crys1)" stroke="rgba(255,255,255,0.6)" stroke-width="0.8" opacity="0.8"/>
+                  <polygon points="320,20 345,80 295,80" fill="rgba(255,255,255,0.25)"/>
+                  <polygon points="365,40 395,110 335,110" fill="url(#crys2)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8" opacity="0.75"/>
+                  <polygon points="390,15 415,70 365,70" fill="url(#crys3)" stroke="rgba(255,255,255,0.55)" stroke-width="0.6" opacity="0.7"/>
+                  <polygon points="280,50 300,105 260,105" fill="url(#crys1)" stroke="rgba(255,255,255,0.4)" stroke-width="0.6" opacity="0.6"/>
+                  <!-- Water drops -->
+                  <ellipse cx="350" cy="130" rx="12" ry="16" fill="url(#crys2)" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+                  <ellipse cx="346" cy="124" rx="5" ry="3" fill="white" opacity="0.5" transform="rotate(-20 346 124)"/>
+                  <ellipse cx="395" cy="120" rx="8" ry="11" fill="url(#crys1)" stroke="rgba(255,255,255,0.4)" stroke-width="0.6"/>
+                  <ellipse cx="392" cy="116" rx="3.5" ry="2" fill="white" opacity="0.5" transform="rotate(-20 392 116)"/>
+                  <ellipse cx="270" cy="140" rx="6" ry="9" fill="url(#crys3)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                  <!-- Sparkles -->
+                  <g filter="url(#glows2)" opacity="0.9">
+                    <line x1="415" y1="30" x2="415" y2="50" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="405" y1="40" x2="425" y2="40" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="408" y1="33" x2="422" y2="47" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
+                    <line x1="422" y1="33" x2="408" y2="47" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
+                    <circle cx="415" cy="40" r="4" fill="white" opacity="0.7"/>
+                  </g>
+                  <g filter="url(#glows2)" opacity="0.7">
+                    <line x1="275" y1="30" x2="275" y2="46" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                    <line x1="267" y1="38" x2="283" y2="38" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                    <circle cx="275" cy="38" r="3" fill="white" opacity="0.6"/>
+                  </g>
+                  <text x="250" y="205" font-family="Comfortaa,sans-serif" font-size="68" font-weight="700" fill="rgba(0,160,200,0.05)" letter-spacing="-2">A&amp;F</text>
+                </svg>
+              </div>
+            </div>
 
-              <!-- Background wash -->
-              <rect width="420" height="220" fill="url(#sky)" rx="0"/>
+            <!-- SLIDE 3: Envío gratis (naturaleza/verde) -->
+            <div class="hero-slide hero-slide-3">
+              <div class="catalog-hero-content">
+                <span class="catalog-hero-eyebrow" style="background:rgba(0,160,60,0.15);border-color:rgba(0,180,80,0.35);color:#00a040">Oferta Especial</span>
+                <h1 class="catalog-hero-title" style="background:linear-gradient(135deg,#003a10 40%,#00c840);-webkit-background-clip:text;background-clip:text">Envío Gratis</h1>
+                <p class="catalog-hero-sub">En todas las compras superiores a <strong style="color:var(--price-color)">$20.000</strong>.<br/>Válido para todo el país. ¡Aprovechá ahora!</p>
+                <div class="catalog-hero-pills">
+                  <span class="hero-pill hero-pill-green">Ver toda la tienda</span>
+                  <span class="hero-pill hero-pill-green" data-cat="Calzado">Ver Calzado</span>
+                </div>
+              </div>
+              <div class="catalog-hero-deco" aria-hidden="true">
+                <svg class="hero-aero-svg" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <linearGradient id="meadows3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a0f0c0" stop-opacity="0.35"/><stop offset="50%" stop-color="#60e090" stop-opacity="0.2"/><stop offset="100%" stop-color="#20c060" stop-opacity="0.3"/></linearGradient>
+                    <radialGradient id="orb1s3" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="white" stop-opacity="0.85"/><stop offset="40%" stop-color="#80ffb0" stop-opacity="0.5"/><stop offset="100%" stop-color="#00c060" stop-opacity="0.12"/></radialGradient>
+                    <radialGradient id="orb2s3" cx="35%" cy="30%" r="55%"><stop offset="0%" stop-color="white" stop-opacity="0.8"/><stop offset="40%" stop-color="#c0ffd8" stop-opacity="0.4"/><stop offset="100%" stop-color="#00a040" stop-opacity="0.08"/></radialGradient>
+                    <radialGradient id="sun3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffc0" stop-opacity="0.9"/><stop offset="40%" stop-color="#ffd040" stop-opacity="0.4"/><stop offset="100%" stop-color="#ff8000" stop-opacity="0"/></radialGradient>
+                    <linearGradient id="tall1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#40d870" stop-opacity="0.8"/><stop offset="100%" stop-color="#20a050" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="tall2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#60f090" stop-opacity="0.7"/><stop offset="100%" stop-color="#30b060" stop-opacity="0.4"/></linearGradient>
+                    <filter id="glows3"><feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                  </defs>
+                  <rect width="420" height="220" fill="url(#meadows3)"/>
+                  <!-- Sun glow top right -->
+                  <circle cx="405" cy="25" r="35" fill="url(#sun3)" filter="url(#glows3)"/>
+                  <circle cx="405" cy="25" r="16" fill="#ffffc0" opacity="0.7"/>
+                  <!-- Sun rays -->
+                  <g opacity="0.5" filter="url(#glows3)">
+                    <line x1="405" y1="0"  x2="405" y2="10" stroke="#ffd040" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="420" y1="10" x2="414" y2="16" stroke="#ffd040" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="420" y1="25" x2="410" y2="25" stroke="#ffd040" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="416" y1="38" x2="410" y2="33" stroke="#ffd040" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="390" y1="10" x2="396" y2="16" stroke="#ffd040" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="388" y1="25" x2="398" y2="25" stroke="#ffd040" stroke-width="2" stroke-linecap="round"/>
+                  </g>
+                  <!-- Tall grass / plants -->
+                  <g opacity="0.9">
+                    <path d="M260 220 Q264 180 268 150 Q270 135 265 120 Q272 138 274 160 Q276 185 272 220Z" fill="url(#tall1)"/>
+                    <path d="M275 220 Q280 175 286 145 Q289 128 284 115 Q292 133 294 158 Q296 182 290 220Z" fill="url(#tall2)"/>
+                    <path d="M292 220 Q296 178 302 150 Q305 133 300 120 Q307 138 309 162 Q311 186 305 220Z" fill="url(#tall1)"/>
+                    <path d="M308 220 Q312 182 318 155 Q321 138 316 125 Q323 143 325 168 Q327 192 320 220Z" fill="url(#tall2)"/>
+                    <path d="M324 220 Q328 185 334 160 Q337 143 332 130 Q339 148 341 172 Q343 196 336 220Z" fill="url(#tall1)"/>
+                    <path d="M340 220 Q344 188 350 164 Q353 148 348 136 Q355 153 357 177 Q359 200 352 220Z" fill="url(#tall2)"/>
+                    <path d="M356 220 Q360 190 366 168 Q369 152 364 140 Q371 157 373 180 Q375 202 368 220Z" fill="url(#tall1)"/>
+                    <path d="M372 220 Q376 193 382 172 Q385 157 380 145 Q387 162 389 184 Q391 206 384 220Z" fill="url(#tall2)"/>
+                    <path d="M388 220 Q392 196 397 177 Q400 163 395 152 Q402 168 404 188 Q406 208 400 220Z" fill="url(#tall1)"/>
+                    <path d="M404 220 Q407 200 412 183 Q414 170 410 160 Q416 174 418 192 L420 220Z" fill="url(#tall2)"/>
+                  </g>
+                  <!-- Green orbs -->
+                  <circle cx="330" cy="70" r="38" fill="url(#orb1s3)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+                  <ellipse cx="318" cy="56" rx="11" ry="6.5" fill="white" opacity="0.5" transform="rotate(-25 318 56)"/>
+                  <circle cx="385" cy="100" r="22" fill="url(#orb2s3)" stroke="rgba(255,255,255,0.4)" stroke-width="0.7"/>
+                  <ellipse cx="377" cy="92" rx="7" ry="4" fill="white" opacity="0.45" transform="rotate(-20 377 92)"/>
+                  <circle cx="268" cy="100" r="14" fill="url(#orb1s3)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                  <circle cx="412" cy="55" r="9" fill="url(#orb2s3)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                  <!-- Butterfly (simple) -->
+                  <g transform="translate(295,75)" opacity="0.65">
+                    <path d="M0,0 Q-12,-10 -18,2 Q-12,12 0,4Z" fill="#80ffb0"/>
+                    <path d="M0,0 Q12,-10 18,2 Q12,12 0,4Z" fill="#a0ffc0"/>
+                    <path d="M0,4 Q-8,8 -10,16 Q-4,12 0,8Z" fill="#60e090"/>
+                    <path d="M0,4 Q8,8 10,16 Q4,12 0,8Z" fill="#60e090"/>
+                    <line x1="0" y1="0" x2="-6" y2="-8" stroke="#205030" stroke-width="0.6" stroke-linecap="round"/>
+                    <line x1="0" y1="0" x2="6" y2="-8" stroke="#205030" stroke-width="0.6" stroke-linecap="round"/>
+                  </g>
+                  <text x="240" y="205" font-family="Comfortaa,sans-serif" font-size="68" font-weight="700" fill="rgba(0,160,60,0.05)" letter-spacing="-2">ECO</text>
+                </svg>
+              </div>
+            </div>
 
-              <!-- ── GRASS blades bottom-right ── -->
-              <g opacity="0.85">
-                <path d="M310 220 Q314 195 318 175 Q320 165 316 155 Q322 168 324 185 Q326 200 322 220Z" fill="url(#grass)"/>
-                <path d="M322 220 Q328 190 335 168 Q338 158 334 148 Q340 162 342 180 Q344 198 338 220Z" fill="url(#grass2)"/>
-                <path d="M335 220 Q340 198 346 178 Q349 165 344 152 Q351 167 353 185 Q355 202 348 220Z" fill="url(#grass)"/>
-                <path d="M350 220 Q354 200 360 180 Q362 168 358 156 Q365 170 367 188 Q369 205 362 220Z" fill="url(#grass2)"/>
-                <path d="M363 220 Q366 205 371 188 Q373 176 369 165 Q376 178 378 195 Q380 210 374 220Z" fill="url(#grass)"/>
-                <path d="M374 220 Q378 208 383 192 Q385 180 381 170 Q388 183 389 198 Q391 212 385 220Z" fill="url(#grass2)"/>
-                <path d="M386 220 Q390 210 394 196 Q396 185 392 175 Q399 187 400 202 Q402 215 396 220Z" fill="url(#grass)"/>
-                <path d="M398 220 Q401 212 405 200 Q407 190 403 181 Q410 192 411 206 Q413 218 407 220Z" fill="url(#grass2)"/>
-                <path d="M408 220 Q411 214 414 203 Q416 194 412 186 Q419 197 420 210 L420 220Z" fill="url(#grass)"/>
-                <!-- Second layer, shorter -->
-                <path d="M305 220 Q308 208 311 198 Q312 191 310 185 Q314 192 315 203 Q316 212 312 220Z" fill="url(#grass2)" opacity="0.7"/>
-                <path d="M318 220 Q322 210 326 200 Q328 192 325 184 Q330 193 331 205 Q332 215 327 220Z" fill="url(#grass)" opacity="0.7"/>
-                <path d="M330 220 Q334 212 338 202 Q340 194 337 186 Q342 195 343 207 Q344 217 339 220Z" fill="url(#grass2)" opacity="0.7"/>
-                <path d="M342 220 Q346 214 350 204 Q352 196 349 188 Q354 198 355 210 Q356 219 351 220Z" fill="url(#grass)" opacity="0.7"/>
-                <path d="M355 220 Q358 214 362 205 Q364 197 361 190 Q366 199 367 211 Q368 219 363 220Z" fill="url(#grass2)" opacity="0.7"/>
-                <path d="M367 220 Q370 215 374 207 Q376 199 373 193 Q378 201 379 213 Q380 220 375 220Z" fill="url(#grass)" opacity="0.7"/>
-              </g>
+          </div><!-- /hero-track -->
 
-              <!-- ── WATER BUBBLES ── -->
-              <!-- Large bubble -->
-              <circle cx="340" cy="60" r="42" fill="url(#bub1)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
-              <ellipse cx="328" cy="44" rx="12" ry="7" fill="white" opacity="0.55" transform="rotate(-25 328 44)"/>
-              <circle cx="355" cy="75" r="3" fill="white" opacity="0.4"/>
-
-              <!-- Medium bubble -->
-              <circle cx="390" cy="95" r="26" fill="url(#bub2)" stroke="rgba(255,255,255,0.45)" stroke-width="0.7"/>
-              <ellipse cx="381" cy="84" rx="7" ry="4.5" fill="white" opacity="0.5" transform="rotate(-20 381 84)"/>
-              <circle cx="398" cy="105" r="2" fill="white" opacity="0.35"/>
-
-              <!-- Small bubbles cluster -->
-              <circle cx="300" cy="110" r="16" fill="url(#bub3)" stroke="rgba(255,255,255,0.4)" stroke-width="0.6"/>
-              <ellipse cx="294" cy="103" rx="5" ry="3" fill="white" opacity="0.45" transform="rotate(-20 294 103)"/>
-
-              <circle cx="410" cy="48" r="11" fill="url(#bub1)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
-              <ellipse cx="406" cy="43" rx="3.5" ry="2" fill="white" opacity="0.5" transform="rotate(-25 406 43)"/>
-
-              <circle cx="270" cy="85" r="8" fill="url(#bub2)" stroke="rgba(255,255,255,0.35)" stroke-width="0.5"/>
-              <ellipse cx="267" cy="81" rx="2.5" ry="1.5" fill="white" opacity="0.5"/>
-
-              <circle cx="418" cy="145" r="7" fill="url(#bub3)" stroke="rgba(255,255,255,0.35)" stroke-width="0.5"/>
-              <circle cx="280" cy="155" r="5" fill="url(#bub1)" stroke="rgba(255,255,255,0.3)" stroke-width="0.4"/>
-              <circle cx="260" cy="130" r="4" fill="url(#bub2)" stroke="rgba(255,255,255,0.3)" stroke-width="0.4"/>
-
-              <!-- ── LENS FLARE top-right ── -->
-              <g filter="url(#glow)" opacity="0.9">
-                <!-- Main flare bloom -->
-                <circle cx="400" cy="22" r="18" fill="url(#flare)"/>
-                <!-- Streaks -->
-                <line x1="400" y1="4" x2="400" y2="40" stroke="white" stroke-width="1" stroke-opacity="0.5" stroke-linecap="round"/>
-                <line x1="382" y1="22" x2="418" y2="22" stroke="white" stroke-width="1" stroke-opacity="0.5" stroke-linecap="round"/>
-                <line x1="387" y1="9" x2="413" y2="35" stroke="white" stroke-width="0.6" stroke-opacity="0.3" stroke-linecap="round"/>
-                <line x1="413" y1="9" x2="387" y2="35" stroke="white" stroke-width="0.6" stroke-opacity="0.3" stroke-linecap="round"/>
-                <!-- Secondary flare -->
-                <circle cx="400" cy="22" r="6" fill="url(#flare2)"/>
-                <!-- Halo ring -->
-                <circle cx="400" cy="22" r="28" fill="none" stroke="white" stroke-width="0.5" stroke-opacity="0.25"/>
-                <!-- Chromatic dots along flare streak -->
-                <circle cx="368" cy="22" r="3" fill="#c0e8ff" opacity="0.4"/>
-                <circle cx="360" cy="22" r="2" fill="#a0d0ff" opacity="0.3"/>
-                <circle cx="350" cy="22" r="1.5" fill="white" opacity="0.2"/>
-              </g>
-
-              <!-- ── Brand watermark ── -->
-              <text x="250" y="200" font-family="Comfortaa,sans-serif" font-size="72" font-weight="700"
-                fill="rgba(0,120,212,0.045)" letter-spacing="-2">L&amp;L</text>
+          <!-- PREV / NEXT arrows -->
+          <button class="hero-arrow hero-arrow-prev" id="hero-prev" aria-label="Anterior">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 3 L5 8 L10 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+          </button>
+          <button class="hero-arrow hero-arrow-next" id="hero-next" aria-label="Siguiente">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 3 L11 8 L6 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- DOT indicators -->
+          <div class="hero-dots" id="hero-dots">
+            <button class="hero-dot active" data-idx="0" aria-label="Slide 1"></button>
+            <button class="hero-dot" data-idx="1" aria-label="Slide 2"></button>
+            <button class="hero-dot" data-idx="2" aria-label="Slide 3"></button>
           </div>
-        </div>
+
+        </div><!-- /hero-carousel -->
 
         <div class="filter-bar glass mb-16">
           <span class="filter-label">Filtrar:</span>
@@ -1027,15 +1098,27 @@ const Catalog = {
     // Wire hero pills to category filter
     document.querySelectorAll('.hero-pill').forEach(pill => {
       pill.onclick = () => {
-        const cat = pill.textContent.trim();
-        // Find matching category (case-insensitive)
+        const cat = pill.dataset.cat || pill.textContent.trim();
         const sel = el('fc');
         if (sel) {
-          const opt = [...sel.options].find(o => o.value.toLowerCase().includes(cat.toLowerCase()));
+          const opt = [...sel.options].find(o =>
+            o.value.toLowerCase() === cat.toLowerCase() ||
+            o.value.toLowerCase().includes(cat.toLowerCase())
+          );
           if (opt) { sel.value = opt.value; this._draw(this._filter()); }
+          else if (!pill.dataset.cat) {
+            // Try exact text match
+            const opt2 = [...sel.options].find(o => o.text.toLowerCase().includes(cat.toLowerCase()));
+            if (opt2) { sel.value = opt2.value; this._draw(this._filter()); }
+          }
         }
+        // Scroll to grid
+        el('pgrid') && el('pgrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
     });
+
+    // Init carousel
+    this._initCarousel();
 
     // Sync inline header cat active state
     const hcatInner = el('hcat-inner');
@@ -1086,6 +1169,68 @@ const Catalog = {
   },
 
   // Loads inventory for all products in background to populate color dropdown
+  _initCarousel() {
+    const track   = el('hero-track');
+    const dots    = document.querySelectorAll('.hero-dot');
+    const slides  = document.querySelectorAll('.hero-slide');
+    if (!track || !slides.length) return;
+
+    let current = 0;
+    let timer   = null;
+    let startX  = 0;
+
+    const goTo = (idx, dir) => {
+      slides[current].classList.remove('active','slide-in-left','slide-in-right','slide-out-left','slide-out-right');
+      const outClass = dir === 'next' ? 'slide-out-left' : 'slide-out-right';
+      const inClass  = dir === 'next' ? 'slide-in-right' : 'slide-in-left';
+      slides[current].classList.add(outClass);
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.remove('slide-out-left','slide-out-right','slide-in-left','slide-in-right');
+      slides[current].classList.add('active', inClass);
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+      setTimeout(() => {
+        slides.forEach(s => s.classList.remove('slide-out-left','slide-out-right','slide-in-left','slide-in-right'));
+      }, 480);
+    };
+
+    const next = () => goTo(current + 1, 'next');
+    const prev = () => goTo(current - 1, 'prev');
+
+    const startAuto = () => { timer = setInterval(next, 5000); };
+    const stopAuto  = () => { clearInterval(timer); };
+
+    // Init first slide
+    slides[0].classList.add('active');
+    dots[0].classList.add('active');
+
+    el('hero-next') && (el('hero-next').onclick = () => { stopAuto(); next(); startAuto(); });
+    el('hero-prev') && (el('hero-prev').onclick = () => { stopAuto(); prev(); startAuto(); });
+
+    dots.forEach(dot => dot.onclick = () => {
+      stopAuto();
+      const idx = parseInt(dot.dataset.idx);
+      goTo(idx, idx > current ? 'next' : 'prev');
+      startAuto();
+    });
+
+    // Pause on hover
+    const carousel = el('hero-carousel');
+    if (carousel) {
+      carousel.addEventListener('mouseenter', stopAuto);
+      carousel.addEventListener('mouseleave', startAuto);
+    }
+
+    // Touch swipe
+    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopAuto(); }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); }
+      startAuto();
+    }, { passive: true });
+
+    startAuto();
+  },
+
   async _loadAllColors() {
     if (!Session.loggedIn()) return; // getProduct requires auth
     if (!this.stockMap) this.stockMap = {};

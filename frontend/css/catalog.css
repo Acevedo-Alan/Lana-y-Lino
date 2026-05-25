@@ -726,8 +726,242 @@ body.dark .catalog-hero-title {
     min-height: 160px;
   }
   .catalog-hero-deco { width: 35%; }
-  .hero-brand-bg { font-size: 5rem; }
   .catalog-hero-pills { display: none; }
+}
+
+/* ============================================
+   HERO CAROUSEL
+   ============================================ */
+
+.hero-carousel {
+  position: relative;
+  margin-bottom: 28px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--card-shadow), var(--glass-inner);
+}
+
+/* Slide track */
+.hero-track {
+  position: relative;
+  width: 100%;
+}
+
+/* Each slide */
+.hero-slide {
+  display: none;
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  min-height: 220px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.hero-slide.active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Slide 1: sky/nature (existing catalog-hero styles apply) */
+.hero-slide-1 {
+  background: linear-gradient(135deg,
+    rgba(0,120,212,0.08) 0%,
+    rgba(0,180,216,0.05) 100%),
+    var(--glass-bg);
+}
+
+/* Slide 2: water/crystal */
+.hero-slide-2 {
+  background: linear-gradient(135deg,
+    rgba(0,180,220,0.1) 0%,
+    rgba(0,120,180,0.08) 50%,
+    rgba(0,80,140,0.06) 100%),
+    var(--glass-bg);
+}
+
+/* Slide 3: nature/green */
+.hero-slide-3 {
+  background: linear-gradient(135deg,
+    rgba(0,160,80,0.1) 0%,
+    rgba(0,200,100,0.06) 50%,
+    rgba(80,220,120,0.08) 100%),
+    var(--glass-bg);
+}
+
+/* Slide transitions */
+@keyframes slideInRight {
+  from { transform: translateX(6%) scale(0.97); opacity: 0; }
+  to   { transform: translateX(0)  scale(1);    opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-6%) scale(0.97); opacity: 0; }
+  to   { transform: translateX(0)   scale(1);    opacity: 1; }
+}
+@keyframes slideOutLeft {
+  from { transform: translateX(0)   scale(1);    opacity: 1; }
+  to   { transform: translateX(-4%) scale(0.97); opacity: 0; }
+}
+@keyframes slideOutRight {
+  from { transform: translateX(0)  scale(1);    opacity: 1; }
+  to   { transform: translateX(4%) scale(0.97); opacity: 0; }
+}
+
+.hero-slide.slide-in-right  { animation: slideInRight  0.46s cubic-bezier(0.4,0,0.2,1) both; }
+.hero-slide.slide-in-left   { animation: slideInLeft   0.46s cubic-bezier(0.4,0,0.2,1) both; }
+.hero-slide.slide-out-left  { display: flex !important; animation: slideOutLeft  0.46s cubic-bezier(0.4,0,0.2,1) both; position: absolute; top:0; left:0; right:0; bottom:0; }
+.hero-slide.slide-out-right { display: flex !important; animation: slideOutRight 0.46s cubic-bezier(0.4,0,0.2,1) both; position: absolute; top:0; left:0; right:0; bottom:0; }
+
+/* Each slide inherits hero content layout */
+.hero-slide .catalog-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+  padding: 40px 40px 40px 48px;
+}
+
+.hero-slide .catalog-hero-deco {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 52%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+  z-index: 1;
+}
+
+/* Aero shine on all slides */
+.hero-slide::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.38), transparent);
+  pointer-events: none;
+  z-index: 3;
+  border-radius: var(--radius-xl) var(--radius-xl) 50% 50%;
+}
+
+/* ── Arrow buttons ──────────────────────── */
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.82) 0%,
+    rgba(200,230,255,0.7)  45%,
+    rgba(140,195,240,0.75) 50%,
+    rgba(90,165,230,0.8)   100%);
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow:
+    0 3px 10px rgba(0,80,180,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  color: #003a6e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0;
+}
+
+/* Shine on arrow */
+.hero-arrow::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.65), transparent);
+  border-radius: 50% 50% 0 0;
+  pointer-events: none;
+}
+
+.hero-carousel:hover .hero-arrow { opacity: 1; }
+.hero-arrow:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 5px 16px rgba(0,80,180,0.35), inset 0 1px 0 rgba(255,255,255,0.95);
+}
+.hero-arrow:active { transform: translateY(-50%) scale(0.96); }
+
+.hero-arrow-prev { left: 12px; }
+.hero-arrow-next { right: 12px; }
+
+body.dark .hero-arrow {
+  background: linear-gradient(180deg, rgba(40,80,160,0.8), rgba(0,40,120,0.9));
+  border-color: rgba(80,150,255,0.4);
+  color: #c8e8ff;
+}
+
+/* ── Dot indicators ─────────────────────── */
+.hero-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 7px;
+  z-index: 10;
+}
+
+.hero-dot {
+  width: 28px; height: 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.hero-dot.active {
+  width: 44px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.92),
+    rgba(180,225,255,0.8));
+  border-color: rgba(255,255,255,0.9);
+  box-shadow: 0 2px 8px rgba(0,80,200,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.hero-dot:hover:not(.active) {
+  width: 36px;
+  background: rgba(255,255,255,0.65);
+}
+
+/* ── Pill variants ──────────────────────── */
+.hero-pill-teal {
+  background: rgba(0,180,200,0.12) !important;
+  border-color: rgba(0,180,200,0.3) !important;
+  color: #007090 !important;
+}
+.hero-pill-teal:hover {
+  background: rgba(0,180,200,0.22) !important;
+  color: #005a70 !important;
+}
+
+.hero-pill-green {
+  background: rgba(0,160,80,0.12) !important;
+  border-color: rgba(0,160,80,0.3) !important;
+  color: #005a20 !important;
+}
+.hero-pill-green:hover {
+  background: rgba(0,160,80,0.22) !important;
+  color: #003a10 !important;
+}
+
+body.dark .hero-pill-teal { color: #00d4f0 !important; }
+body.dark .hero-pill-green { color: #00d060 !important; }
+
+/* Mobile carousel */
+@media (max-width: 640px) {
+  .hero-arrow { display: none; }
+  .hero-slide .catalog-hero-content { padding: 24px 20px 32px; }
+  .hero-slide { min-height: 180px; }
+  .hero-dots { bottom: 8px; }
 }
 
 /* ============================================
