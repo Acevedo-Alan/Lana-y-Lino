@@ -322,7 +322,7 @@ const Router = {
     if (!app) return;
     app.innerHTML = '<div class="loading-container" style="min-height:60vh"><div class="spinner"></div><span>Cargando...</span></div>';
     app.classList.remove('page-enter');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
     // Update browser tab title
     document.title = this._titles[this.page] || 'Lana & Lino';
     // Clear search box and hide cat-bar when navigating away from catalog
@@ -520,7 +520,8 @@ const Header = {
       if (Session.loggedIn()) {
         if (!confirm('¿Cerrar sesion?')) return;
         Session.clear();
-        Header._catsCache = null;  // clear cache on logout
+        Header._catsCache = null;
+        Header._loadingCats = false;
         Toast.show('Sesion cerrada','info'); Header.render(); Router.go('catalog');
       } else Router.go('login');
     };
@@ -741,13 +742,17 @@ const Header = {
   },
   // Cache so we only hit the API once per session
   _catsCache: null,
+  _loadingCats: false,  // prevent concurrent fetches
 
   async _loadCats() {
-    // If already cached, just render — no API call
+    // Already have data — just render it
     if (this._catsCache) {
       this._buildCatBar(this._catsCache);
       return;
     }
+    // Another fetch is in flight — skip, it will call _buildCatBar when done
+    if (this._loadingCats) return;
+    this._loadingCats = true;
 
     let cats = [];
 
@@ -770,11 +775,8 @@ const Header = {
       } catch(e) {}
     }
 
-    // Save to cache
+    this._loadingCats = false;
     if (cats.length) this._catsCache = cats;
-
-    // Guard: if header was re-rendered while we were awaiting, hcat-inner
-    // will be a fresh element — _buildCatBar targets it by ID so it's always current
     this._buildCatBar(cats);
   },
 
@@ -2477,6 +2479,181 @@ const Admin = {
 // ============================================================
 // BOOT
 // ============================================================
+// ============================================================
+// FRUTIGER AERO AMBIENT BACKGROUND — Canvas bubbles & rays
+// ============================================================
+const AeroBackground = {
+  canvas: null,
+  ctx: null,
+  bubbles: [],
+  rays: [],
+  raf: null,
+  W: 0,
+  H: 0,
+
+  init() {
+    this.canvas = document.getElementById('aero-canvas');
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    this.spawnBubbles();
+    this.spawnRays();
+    window.addEventListener('resize', () => this.resize());
+    this.loop();
+  },
+
+  resize() {
+    this.W = this.canvas.width  = window.innerWidth;
+    this.H = this.canvas.height = window.innerHeight;
+  },
+
+  _isDark() { return document.body.classList.contains('dark'); },
+
+  spawnBubbles() {
+    this.bubbles = [];
+    const count = Math.min(22, Math.floor(this.W / 60));
+    for (let i = 0; i < count; i++) {
+      this.bubbles.push(this._newBubble(true));
+    }
+  },
+
+  _newBubble(randomY = false) {
+    const dark = this._isDark();
+    const r = 8 + Math.random() * 36;
+    return {
+      x: Math.random() * this.W,
+      y: randomY ? Math.random() * this.H : this.H + r + Math.random() * 200,
+      r,
+      speed: 0.18 + Math.random() * 0.45,
+      drift: (Math.random() - 0.5) * 0.35,
+      opacity: 0.12 + Math.random() * 0.22,
+      colorIdx: Math.floor(Math.random() * 4),
+      phase: Math.random() * Math.PI * 2,
+    };
+  },
+
+  _bubbleColors(dark) {
+    return dark
+      ? ['rgba(0,140,255,', 'rgba(0,200,180,', 'rgba(80,120,255,', 'rgba(0,180,140,']
+      : ['rgba(0,160,240,', 'rgba(0,200,160,', 'rgba(100,180,255,', 'rgba(0,220,200,'];
+  },
+
+  spawnRays() {
+    this.rays = [];
+    for (let i = 0; i < 3; i++) {
+      this.rays.push(this._newRay(true));
+    }
+  },
+
+  _newRay(randomProgress = false) {
+    return {
+      x: Math.random() * this.W,
+      angle: -0.3 + Math.random() * 0.6, // radians from vertical
+      width: 60 + Math.random() * 120,
+      opacity: 0.02 + Math.random() * 0.04,
+      speed: 0.0003 + Math.random() * 0.0006,
+      progress: randomProgress ? Math.random() : 0,
+    };
+  },
+
+  loop() {
+    this.raf = requestAnimationFrame(() => this.loop());
+    const ctx = this.ctx;
+    const dark = this._isDark();
+    ctx.clearRect(0, 0, this.W, this.H);
+    const colors = this._bubbleColors(dark);
+
+    // ── Draw light rays ──────────────────────
+    for (let i = 0; i < this.rays.length; i++) {
+      const ray = this.rays[i];
+      ray.progress += ray.speed;
+      if (ray.progress > 1) {
+        this.rays[i] = this._newRay(false);
+        continue;
+      }
+      const len = this.H * 1.6;
+      const cx = ray.x + Math.sin(ray.angle) * len * ray.progress;
+      const cy = -100 + len * ray.progress;
+      const fade = Math.sin(ray.progress * Math.PI); // fade in/out
+
+      const grad = ctx.createLinearGradient(
+        ray.x, -100,
+        cx, cy
+      );
+      grad.addColorStop(0,   `rgba(255,255,255,0)`);
+      grad.addColorStop(0.2, `rgba(200,240,255,${ray.opacity * fade})`);
+      grad.addColorStop(0.5, `rgba(180,230,255,${ray.opacity * fade * 0.7})`);
+      grad.addColorStop(1,   `rgba(255,255,255,0)`);
+
+      ctx.save();
+      ctx.translate(ray.x, -100);
+      ctx.rotate(ray.angle);
+      const hw = ray.width / 2;
+      ctx.beginPath();
+      ctx.moveTo(-hw, 0);
+      ctx.lineTo(hw, 0);
+      ctx.lineTo(hw * 0.3, len);
+      ctx.lineTo(-hw * 0.3, len);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ── Draw bubbles ─────────────────────────
+    for (let i = 0; i < this.bubbles.length; i++) {
+      const b = this.bubbles[i];
+      b.y  -= b.speed;
+      b.x  += b.drift + Math.sin(Date.now() * 0.0008 + b.phase) * 0.18;
+      const pulse = 1 + Math.sin(Date.now() * 0.001 + b.phase) * 0.04;
+      const r = b.r * pulse;
+
+      // Recycle bubble
+      if (b.y < -r * 2) {
+        this.bubbles[i] = this._newBubble(false);
+        continue;
+      }
+
+      const color = colors[b.colorIdx];
+      const grad = ctx.createRadialGradient(
+        b.x - r * 0.3, b.y - r * 0.3, r * 0.05,
+        b.x, b.y, r
+      );
+      grad.addColorStop(0,   `rgba(255,255,255,${b.opacity * 0.9})`);
+      grad.addColorStop(0.3, color + `${b.opacity * 0.55})`);
+      grad.addColorStop(0.7, color + `${b.opacity * 0.2})`);
+      grad.addColorStop(1,   color + `0)`);
+
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Rim highlight
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,255,255,${b.opacity * 0.45})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      // Internal shine ellipse
+      ctx.save();
+      ctx.translate(b.x - r * 0.28, b.y - r * 0.28);
+      ctx.rotate(-0.5);
+      ctx.scale(1, 0.55);
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.38, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${b.opacity * 0.55})`;
+      ctx.fill();
+      ctx.restore();
+    }
+  },
+
+  destroy() {
+    if (this.raf) { cancelAnimationFrame(this.raf); this.raf = null; }
+  }
+};
+
 // ── INTERSECTION OBSERVER — scroll fade-in ──────────────────────────────────
 const ScrollReveal = {
   _io: null,
@@ -2518,4 +2695,5 @@ document.addEventListener('DOMContentLoaded', () => {
   Header.render();
   Router.go('catalog');
   ScrollReveal.init();
+  AeroBackground.init();
 });

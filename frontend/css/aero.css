@@ -1243,3 +1243,22 @@ body.dark .ps-items-summary { background: rgba(255,255,255,0.04); }
   pointer-events: none;
   z-index: 2;
 }
+
+/* ============================================
+   FRUTIGER AERO AMBIENT BACKGROUND
+   ============================================ */
+#aero-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#aero-canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+}
+
+body.dark #aero-canvas { opacity: 0.35; }

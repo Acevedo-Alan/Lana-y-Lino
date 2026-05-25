@@ -692,113 +692,71 @@ body.dark .sku-icon-btn {
 }
 
 /* ============================================
-   FOOTER ABOUT SECTION
+   FOOTER ABOUT — compact inline strip
    ============================================ */
 .footer-about {
-  position: relative;
-  overflow: hidden;
-  border-bottom: 1px solid rgba(100,180,255,0.1);
-  padding: 48px 0;
+  border-bottom: 1px solid rgba(100,180,255,0.12);
+  padding: 18px 0;
 }
 
-/* Aero shimmer top */
 .footer-about::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
+  display: block;
   height: 1px;
   background: linear-gradient(90deg,
-    transparent, rgba(100,180,255,0.3) 30%,
-    rgba(0,220,255,0.5) 50%,
-    rgba(100,180,255,0.3) 70%, transparent);
+    transparent, rgba(0,220,255,0.4) 40%,
+    rgba(100,255,180,0.4) 60%, transparent);
+  margin-bottom: 18px;
 }
 
 .footer-about-inner {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Floating aero bubbles decoration */
-.footer-about-deco {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.fab {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.12;
-}
-
-.fab-1 { width:120px; height:120px; top:-30px; right:5%;
-  background:radial-gradient(circle, #00d4ff, transparent 70%); }
-.fab-2 { width:80px;  height:80px;  bottom:-20px; right:20%;
-  background:radial-gradient(circle, #00ff90, transparent 70%); }
-.fab-3 { width:60px;  height:60px;  top:20px; right:35%;
-  background:radial-gradient(circle, #ffffff, transparent 70%); }
-.fab-4 { width:40px;  height:40px;  bottom:10px; right:10%;
-  background:radial-gradient(circle, #80c8ff, transparent 70%); }
-
-.footer-about-content {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .footer-about-logo {
   font-family: 'Comfortaa', cursive;
-  font-size: 3rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: transparent;
-  -webkit-text-stroke: 2px rgba(100,180,255,0.5);
-  letter-spacing: -0.05em;
+  -webkit-text-stroke: 1.5px rgba(100,180,255,0.6);
+  letter-spacing: -0.04em;
   line-height: 1;
   user-select: none;
   flex-shrink: 0;
 }
 
-.footer-about-title {
-  font-family: 'Comfortaa', cursive;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--accent-cyan);
-  margin: 0 0 10px;
-  letter-spacing: 0.02em;
-}
-
 .footer-about-text {
-  font-size: 0.84rem;
-  color: rgba(180,220,255,0.75);
-  line-height: 1.7;
-  max-width: 560px;
-  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(160,210,255,0.65);
+  line-height: 1.5;
+  flex: 1;
+  min-width: 200px;
 }
 
 .footer-about-stats {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .footer-stat {
   text-align: center;
-  padding: 10px 18px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(100,180,255,0.15);
-  border-radius: var(--radius-md);
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(100,180,255,0.12);
+  border-radius: var(--radius-sm);
 }
 
 .footer-stat-num {
   display: block;
   font-family: 'Comfortaa', cursive;
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--accent-cyan);
   line-height: 1;
@@ -806,26 +764,16 @@ body.dark .sku-icon-btn {
 
 .footer-stat-label {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(150,200,240,0.6);
-  margin-top: 3px;
+  letter-spacing: 0.05em;
+  color: rgba(130,190,240,0.5);
+  margin-top: 2px;
 }
 
-@media (max-width: 768px) {
-  .footer-about-content {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .footer-about-logo { font-size: 2rem; text-align: center; }
-  .footer-about-text { max-width: 100%; }
-  .footer-about-stats {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-  .footer-stat { flex: 1; min-width: 80px; }
+@media (max-width: 600px) {
+  .footer-about-inner { gap: 12px; }
+  .footer-about-text  { display: none; }
+  .footer-stat-label  { display: none; }
 }
