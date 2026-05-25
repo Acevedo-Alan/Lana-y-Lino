@@ -855,6 +855,34 @@ const Catalog = {
     const knownColors = [...new Set(Object.values(this.colorMap).flat())].sort();
 
     el('app').innerHTML = `
+      <!-- ── MARQUEE TICKER ────────────────── -->
+      <div class="marquee-wrap" id="marquee-wrap">
+        <div class="marquee-track">
+          <div class="marquee-inner" id="marquee-inner">
+            <span class="mq-item"><i class="ph ph-star-four"></i> Nueva Colección 2026</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-truck"></i> Envío gratis en compras +$20.000</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-leaf"></i> Indumentaria premium Frutiger Aero</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-sparkle"></i> Temporada Invierno 2026</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-heart"></i> +500 clientes satisfechos</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-star-four"></i> Nueva Colección 2026</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-truck"></i> Envío gratis en compras +$20.000</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-leaf"></i> Indumentaria premium Frutiger Aero</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-sparkle"></i> Temporada Invierno 2026</span>
+            <span class="mq-sep">·</span>
+            <span class="mq-item"><i class="ph ph-heart"></i> +500 clientes satisfechos</span>
+            <span class="mq-sep">·</span>
+          </div>
+        </div>
+      </div>
+
       <div class="catalog-page animate-in">
 
         <!-- ── HERO CAROUSEL ────────────────── -->
@@ -1068,6 +1096,48 @@ const Catalog = {
 
         </div><!-- /hero-carousel -->
 
+        <!-- ── CATEGORY VISUAL BLOCKS ────── -->
+        <div class="cat-visual-grid" id="cat-visual-grid">
+          <div class="cat-visual-card cat-vc-1" data-cat="Remeras">
+            <div class="cat-vc-bg"></div>
+            <div class="cat-vc-content">
+              <span class="cat-vc-label">Remeras</span>
+              <span class="cat-vc-sub">Nueva temporada</span>
+              <button class="cat-vc-btn">Ver colección <i class="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+          <div class="cat-visual-card cat-vc-2" data-cat="Buzos">
+            <div class="cat-vc-bg"></div>
+            <div class="cat-vc-content">
+              <span class="cat-vc-label">Buzos &amp; Camperas</span>
+              <span class="cat-vc-sub">Abrigo con estilo</span>
+              <button class="cat-vc-btn">Ver colección <i class="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+          <div class="cat-visual-card cat-vc-3" data-cat="Calzado">
+            <div class="cat-vc-bg"></div>
+            <div class="cat-vc-content">
+              <span class="cat-vc-label">Calzado</span>
+              <span class="cat-vc-sub">Caminá distinto</span>
+              <button class="cat-vc-btn">Ver colección <i class="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FEATURED HORIZONTAL SCROLL ───── -->
+        <div class="featured-section" id="featured-section" style="display:none">
+          <div class="featured-header">
+            <h3 class="featured-title"><i class="ph ph-fire"></i> Más vendidos</h3>
+            <div class="featured-arrows">
+              <button class="feat-arrow" id="feat-prev"><i class="ph ph-caret-left"></i></button>
+              <button class="feat-arrow" id="feat-next"><i class="ph ph-caret-right"></i></button>
+            </div>
+          </div>
+          <div class="featured-track-wrap">
+            <div class="featured-track" id="featured-track"></div>
+          </div>
+        </div>
+
         <div class="filter-bar glass mb-16">
           <span class="filter-label">Filtrar:</span>
           <select class="input-aero" id="fg" style="width:auto">
@@ -1091,9 +1161,105 @@ const Catalog = {
           <span class="results-count" id="r-count"></span>
         </div>
         <div class="products-grid stagger-children" id="pgrid"></div>
+
+        <!-- ── REVIEWS SECTION ───────────────── -->
+        <div class="reviews-section">
+          <div class="reviews-header">
+            <h3 class="reviews-title">Lo que dicen nuestros clientes</h3>
+            <div class="reviews-stars-total">
+              <span class="reviews-star-row">★★★★★</span>
+              <span class="reviews-avg">4.8 / 5</span>
+              <span class="reviews-count">+500 reseñas</span>
+            </div>
+          </div>
+          <!-- Reviews horizontal scroll -->
+          <div class="reviews-scroll-wrap">
+            <button class="reviews-arrow reviews-arrow-prev" id="rev-prev">
+              <i class="ph ph-caret-left"></i>
+            </button>
+            <button class="reviews-arrow reviews-arrow-next" id="rev-next">
+              <i class="ph ph-caret-right"></i>
+            </button>
+            <div class="reviews-track" id="reviews-track">
+              ${[
+                { name:'Valentina M.', city:'Buenos Aires', txt:'La mejor remera que compré. El diseño es increíble y la tela super suave. ¡Ya pedí otra!', stars:5, cat:'Remera Aero Glass' },
+                { name:'Tomás R.',     city:'Córdoba',      txt:'El buzo Vista Premium es una obra de arte. Llegó en perfectas condiciones y el envío fue rápido.', stars:5, cat:'Buzo Vista Premium' },
+                { name:'Lucía F.',     city:'Rosario',      txt:'Las zapatillas son comodísimas y la calidad es excelente. Se nota que cuidan cada detalle.', stars:5, cat:'Zapatillas Aero Foam' },
+                { name:'Matías G.',    city:'Mendoza',      txt:'La campera Glass Windbreaker es perfecta para el frío. El diseño es único, todos me preguntan dónde la compré.', stars:5, cat:'Campera Glass Windbreaker' },
+                { name:'Sofía P.',     city:'La Plata',     txt:'Me enamoré del Buzo Bubble Crew. La calidad es impresionante y el color es exactamente como en las fotos.', stars:4, cat:'Buzo Bubble Crew' },
+                { name:'Agustín L.',   city:'Tucumán',      txt:'Excelente tienda, los productos son de alta calidad y la atención al cliente es inmejorable. Muy recomendable.', stars:5, cat:'Remera Liquid Sky' },
+                { name:'Carolina V.',  city:'Mar del Plata', txt:'Compré tres remeras y todas llegaron perfectas. Los colores son exactamente como en las fotos.', stars:5, cat:'Remera Orb Gradient' },
+                { name:'Pablo N.',     city:'Salta',        txt:'El jean Sky Wash es increíble. La tela es suave y el diseño de lavado es hermoso. Lo recomiendo 100%.', stars:5, cat:'Jean Slim Sky Wash' },
+              ].map(r => `
+                <div class="review-card glass">
+                  <div class="review-quote-icon">&#10077;</div>
+                  <p class="review-txt">${r.txt}</p>
+                  <div class="review-card-bottom">
+                    <div class="review-card-top">
+                      <div class="review-avatar">${r.name[0]}</div>
+                      <div>
+                        <div class="review-name">${r.name}</div>
+                        <div class="review-city"><i class="ph ph-map-pin"></i> ${r.city}</div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+                      <div class="review-product"><i class="ph ph-tag"></i> ${r.cat}</div>
+                    </div>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+
       </div>`;
 
     if (params.catName) { el('fc').value = params.catName; }
+
+    // Apply scroll-reveal classes after DOM renders
+    setTimeout(() => {
+      document.querySelectorAll('.cat-visual-card').forEach((el, i) => {
+        el.classList.add('sr-hidden', 'sr-slide-up');
+        el.style.transitionDelay = (i * 0.08) + 's';
+      });
+      document.querySelectorAll('.feat-card').forEach((el, i) => {
+        el.classList.add('sr-hidden', 'sr-slide-up');
+        el.style.transitionDelay = (i * 0.05) + 's';
+      });
+      document.querySelectorAll('.review-card').forEach((el, i) => {
+        el.classList.add('sr-hidden', 'sr-slide-up');
+        el.style.transitionDelay = (i * 0.06) + 's';
+      });
+      document.querySelectorAll('.product-card').forEach((el, i) => {
+        el.classList.add('sr-hidden', 'sr-slide-up');
+        el.style.transitionDelay = Math.min(i * 0.04, 0.4) + 's';
+      });
+      document.querySelectorAll('.hero-carousel, .featured-section, .reviews-section').forEach(el => {
+        el.classList.add('sr-hidden', 'sr-fade');
+      });
+      ScrollReveal.observe();
+    }, 80);
+
+    // Wire category visual blocks
+    document.querySelectorAll('.cat-visual-card').forEach(card => {
+      card.onclick = () => {
+        const cat = card.dataset.cat;
+        const sel = el('fc');
+        if (sel) {
+          const opt = [...sel.options].find(o => o.value.toLowerCase() === cat.toLowerCase());
+          if (opt) { sel.value = opt.value; this._draw(this._filter()); }
+        }
+        el('pgrid') && el('pgrid').scrollIntoView({ behavior:'smooth', block:'start' });
+      };
+    });
+
+    // Populate featured horizontal scroll with first 8 products
+    this._buildFeatured(this.all.slice(0, 8));
+
+    // Wire featured arrows
+    const ft = el('featured-track');
+    el('feat-next') && (el('feat-next').onclick = () => { if(ft) ft.scrollBy({ left: 280, behavior:'smooth' }); });
+    el('feat-prev') && (el('feat-prev').onclick = () => { if(ft) ft.scrollBy({ left:-280, behavior:'smooth' }); });
 
     // Wire hero pills to category filter
     document.querySelectorAll('.hero-pill').forEach(pill => {
@@ -1116,6 +1282,19 @@ const Catalog = {
         el('pgrid') && el('pgrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
     });
+
+    // Wire review scroll arrows
+    const rt = el('reviews-track');
+    el('rev-next') && (el('rev-next').onclick = () => rt && rt.scrollBy({ left:  320, behavior:'smooth' }));
+    el('rev-prev') && (el('rev-prev').onclick = () => rt && rt.scrollBy({ left: -320, behavior:'smooth' }));
+    if (rt) {
+      let rx = 0;
+      rt.addEventListener('touchstart', e => { rx = e.touches[0].clientX; }, { passive:true });
+      rt.addEventListener('touchend',   e => {
+        const diff = rx - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) rt.scrollBy({ left: diff > 0 ? 320 : -320, behavior:'smooth' });
+      }, { passive:true });
+    }
 
     // Init carousel
     this._initCarousel();
@@ -1169,6 +1348,53 @@ const Catalog = {
   },
 
   // Loads inventory for all products in background to populate color dropdown
+  _buildFeatured(products) {
+    if (!products || !products.length) return;
+    const section = el('featured-section');
+    const track   = el('featured-track');
+    if (!section || !track) return;
+    section.style.display = 'block';
+    track.innerHTML = products.map(p => {
+      const fav = this.favs.includes(p.idProducto);
+      return `<div class="feat-card" data-pid="${p.idProducto}">
+        <div class="feat-card-img">
+          <img src="${img(p.ulrImagen)}" alt="${esc(p.producto)}" loading="lazy" onerror="this.src=PLACEHOLDER"/>
+          <button class="fav-btn ${fav?'active':''}" data-fid="${p.idProducto}">
+            <i class="ph ${fav?'ph-heart-fill fav-active':'ph-heart'}"></i>
+          </button>
+        </div>
+        <div class="feat-card-body">
+          <div class="feat-card-cat">${esc(p.categoria||'')}</div>
+          <div class="feat-card-name">${esc(p.producto)}</div>
+          <div class="feat-card-price">${price(p.precio)}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    track.querySelectorAll('.feat-card').forEach(card => {
+      card.onclick = e => {
+        if (e.target.closest('.fav-btn')) return;
+        Router.go('product', { id: card.dataset.pid });
+      };
+    });
+    track.querySelectorAll('.fav-btn').forEach(btn => {
+      btn.onclick = async e => {
+        e.stopPropagation();
+        if (!Session.loggedIn()) { Toast.show('Inicia sesion para agregar favoritos','error'); return; }
+        const u = Session.user(); const pid = parseInt(btn.dataset.fid);
+        const isFav = this.favs.includes(pid);
+        try {
+          const r = isFav ? await API.removeFavorite(u.id_usuario,pid) : await API.addFavorite(pid,u.id_usuario);
+          if (r.codigo===200) {
+            if (isFav) { this.favs=this.favs.filter(f=>f!==pid); btn.innerHTML='<i class="ph ph-heart"></i>'; btn.classList.remove('active'); Toast.show('Eliminado de favoritos','info'); }
+            else       { this.favs.push(pid); btn.innerHTML='<i class="ph ph-heart-fill fav-active"></i>'; btn.classList.add('active'); Toast.show('Agregado a favoritos','success'); }
+            Header._favCount();
+          }
+        } catch(e) { Toast.show('Error','error'); }
+      };
+    });
+  },
+
   _initCarousel() {
     const track   = el('hero-track');
     const dots    = document.querySelectorAll('.hero-dot');
@@ -2251,6 +2477,38 @@ const Admin = {
 // ============================================================
 // BOOT
 // ============================================================
+// ── INTERSECTION OBSERVER — scroll fade-in ──────────────────────────────────
+const ScrollReveal = {
+  _io: null,
+  init() {
+    if (this._io) this._io.disconnect();
+    this._io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('sr-visible');
+          this._io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    this.observe();
+  },
+  observe() {
+    if (!this._io) return;
+    document.querySelectorAll('.sr-hidden').forEach(el => {
+      // skip if already visible
+      if (!el.classList.contains('sr-visible')) this._io.observe(el);
+    });
+  }
+};
+
+// Auto-observe after every navigation render
+const _origRender = Router._render.bind(Router);
+Router._render = function() {
+  _origRender();
+  // Re-observe after content loads
+  setTimeout(() => ScrollReveal.observe(), 200);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Sync dark class from FOUC-prevention early class
   if (document.documentElement.classList.contains('dark-early')) {
@@ -2259,4 +2517,5 @@ document.addEventListener('DOMContentLoaded', () => {
   Theme.init();
   Header.render();
   Router.go('catalog');
+  ScrollReveal.init();
 });
