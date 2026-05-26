@@ -6,6 +6,28 @@
 /* ── GLOBAL ─────────────────────────────────── */
 html { font-size: 15px; }
 
+/* Ensure page content always sits above canvas bg */
+#app, #main-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Prevent card-aero from creating broken stacking on mobile */
+.card-aero {
+  transform: translateZ(0);  /* promote to own layer */
+  isolation: isolate;
+}
+
+/* Fix section title overlap on non-catalog pages */
+.cart-page h2,
+.profile-page h2,
+.favorites-page h2,
+.admin-page h2,
+.payment-page h2 {
+  position: relative;
+  z-index: 2;
+}
+
 /* ── HEADER ─────────────────────────────────── */
 @media (max-width: 900px) {
   .hamburger-btn    { display: flex !important; }
@@ -27,8 +49,8 @@ html { font-size: 15px; }
 
 /* ── CATALOG PAGE ───────────────────────────── */
 @media (max-width: 900px) {
-  .catalog-page       { padding: 62px 14px 40px; }
-  .product-detail-page{ padding: 62px 14px 40px; }
+  .catalog-page       { padding: 66px 14px 40px; }
+  .product-detail-page{ padding: 66px 14px 40px; }
 }
 
 /* Hero carousel */
@@ -137,7 +159,7 @@ html { font-size: 15px; }
   .cart-page, .payment-page,
   .auth-page, .admin-page,
   .profile-page, .favorites-page {
-    padding: 62px 12px 32px;
+    padding: 68px 12px 32px;  /* 52px header + 16px breathing */
   }
 
   /* Payment — stack columns */
@@ -153,7 +175,7 @@ html { font-size: 15px; }
 
 /* ── AUTH ───────────────────────────────────── */
 @media (max-width: 480px) {
-  .auth-page   { padding: 62px 12px 24px; }
+  .auth-page   { padding: 68px 12px 24px; }
   .auth-card   { padding: 22px 16px; }
   .auth-card h2 { font-size: 1.25rem; }
   .form-row    { grid-template-columns: 1fr; }

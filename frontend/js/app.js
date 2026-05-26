@@ -331,7 +331,7 @@ const Router = {
     }
     // Old cat-bar always hidden — cats are now inline in header
     const bar = el('cat-bar'); if(bar) bar.style.display = 'none';
-    Header.render();
+    Header._refreshState();  // lightweight — only update badges/buttons, no full re-render
     const pages = {
       catalog:   () => Catalog.render(),
       product:   () => Product.render(this.params.id),
@@ -743,7 +743,23 @@ const Header = {
   },
   // Cache so we only hit the API once per session
   _catsCache: null,
-  _loadingCats: false,  // prevent concurrent fetches
+  _loadingCats: false,
+
+  // Lightweight update — only sync badges and active cat, no full HTML rebuild
+  _refreshState() {
+    // If header doesn't exist yet, do a full render
+    if (!el('brand-link')) { this.render(); return; }
+    // Sync active cat pill
+    const activeCat = (Router.params && Router.params.catName) || '';
+    document.querySelectorAll('.hcat-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.cat === activeCat);
+    });
+    // Update badges
+    this._cartCount();
+    this._favCount();
+    // Update theme icon
+    Theme._icon();
+  },
 
   async _loadCats() {
     // Already have data — just render it

@@ -297,6 +297,9 @@ select.input-aero {
   box-shadow: var(--card-shadow), var(--glass-inner);
   transition: var(--transition);
   overflow: hidden;
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
 }
 
 .card-aero:hover {
@@ -462,6 +465,7 @@ select.input-aero {
   position: relative;
   z-index: 1;
   flex: 1;
+  isolation: isolate;
 }
 
 .flex { display: flex; }

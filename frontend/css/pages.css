@@ -456,14 +456,7 @@
   }
 }
 
-/* Cart — tighter on mobile */
-@media (max-width: 480px) {
-  .cart-page, .payment-page, .profile-page,
-  .favorites-page, .admin-page {
-    padding: 72px 12px 32px;
-  }
-  .cart-item-img { width: 58px; height: 58px; }
-}
+/* Mobile overrides now in mobile.css */
 
 /* Catalog filter bar — wrap nicely */
 @media (max-width: 600px) {
