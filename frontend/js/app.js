@@ -527,7 +527,8 @@ const Header = {
     };
     if (isAdmin) el('admin-btn') && (el('admin-btn').onclick = () => Router.go('admin'));
     el('hamburger-btn') && (el('hamburger-btn').onclick = () => this._openDrawer());
-    this._loadCats();
+    // Only re-render from cache — never fetch on every Header.render()
+    if (this._catsCache) this._buildCatBar(this._catsCache);
     this._cartCount();
     this._favCount();
     this._buildDrawer(logged, isAdmin);
@@ -2139,7 +2140,7 @@ const AuthPages = {
       el('li-btn').disabled=true; el('li-btn').textContent='Ingresando...';
       try {
         const r = await API.login(email, pass);
-        if (r.codigo===200 && r.jwt) { Session.save(r.payload, r.jwt); Header._catsCache = null; Toast.show('Bienvenido/a!','success'); Header.render(); Router.go('catalog'); }
+        if (r.codigo===200 && r.jwt) { Session.save(r.payload, r.jwt); Header._catsCache = null; Header._loadingCats = false; Toast.show('Bienvenido/a!','success'); Header.render(); Header._loadCats(); Router.go('catalog'); }
         else { Toast.show(r.mensaje||'Credenciales incorrectas','error'); el('li-btn').disabled=false; el('li-btn').innerHTML='<i class="ph ph-sign-in"></i> Ingresar'; }
       } catch(e) { Toast.show('Error de conexion con el servidor','error'); el('li-btn').disabled=false; el('li-btn').innerHTML='<i class="ph ph-sign-in"></i> Ingresar'; }
     };
@@ -2693,6 +2694,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   Theme.init();
   Header.render();
+  // Load categories ONCE at boot, then it's always served from cache
+  Header._loadCats();
   Router.go('catalog');
   ScrollReveal.init();
   AeroBackground.init();
