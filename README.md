@@ -63,7 +63,7 @@ npx serve .
 
 ---
 
-## 🔑 Acceso administrador (para el corrector)
+##  Acceso administrador (para el corrector)
 
 Los usuarios se registran con rol `user` por defecto. Para probar el panel de administración:
 
@@ -203,11 +203,7 @@ lana-y-lino/
 
 ---
 
-## 🌐 Deploy
 
-Ver sección de deploy para instrucciones de Railway (backend + DB) y Vercel (frontend).
-
-**Backend → Railway** · **Base de datos → Railway MySQL** · **Frontend → Vercel**
 
 ---
 
