@@ -582,15 +582,7 @@
   .product-detail-name { font-size: 1.8rem; }
 }
 
-@media (max-width: 600px) {
-  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .product-card-body { padding: 12px 12px 6px; }
-  .product-card-footer { padding: 8px 12px 12px; }
-  .product-card-name { font-size: 0.92rem; }
-  .product-price { font-size: 1rem; }
-  #cat-bar { height: 38px; }
-  .cat-bar-item { padding: 0 12px; font-size: 0.72rem; }
-}
+/* → mobile.css */
 
 /* ============================================
    HERO SECTION
