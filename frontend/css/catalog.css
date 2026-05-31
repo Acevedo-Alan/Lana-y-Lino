@@ -85,6 +85,7 @@
   padding: 78px 40px 60px;  /* 58px header + 20px breathing */
   max-width: 1440px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 /* ── Filter Bar ───────────────────────────────── */
@@ -143,7 +144,7 @@
 /* ── Products Grid — editorial, larger ─────────── */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 45vw), 1fr));
   gap: 28px 24px;
 }
 
@@ -573,16 +574,7 @@
   text-transform: uppercase;
 }
 
-/* ── Responsive ───────────────────────────────── */
-@media (max-width: 900px) {
-  .catalog-page { padding: 70px 20px 48px; }
-  .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
-  .product-detail-grid { grid-template-columns: 1fr; gap: 24px; }
-  .product-detail-page { padding: 70px 20px 48px; }
-  .product-detail-name { font-size: 1.8rem; }
-}
-
-/* → mobile.css */
+/* ── Responsive → mobile.css ─────────────────── */
 
 /* ============================================
    HERO SECTION

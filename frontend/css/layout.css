@@ -37,6 +37,7 @@
   padding: 0 18px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 /* Brand — left anchor */
@@ -71,6 +72,7 @@ body.dark .brand-name {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .hcat-inner {
@@ -154,8 +156,10 @@ body.dark .brand-name {
   overflow: hidden;
   backdrop-filter: blur(4px);
   box-shadow: var(--input-shadow);
-  transition: var(--transition);
+  transition: width .25s, border-color .2s, box-shadow .2s;
   width: 160px;
+  max-width: 100%;
+  flex-shrink: 1;
 }
 
 .search-wrap:focus-within {
@@ -649,40 +653,7 @@ body.dark .sku-icon-btn {
 /* ============================================
    MOBILE RESPONSIVE BREAKPOINTS
    ============================================ */
-@media (max-width: 900px) {
-  /* Show hamburger */
-  .hamburger-btn { display: flex; }
-
-  /* Hide desktop cats nav */
-  .header-cats { display: none; }
-
-  /* Collapse search to just the icon on narrow screens */
-  .search-wrap {
-    width: 38px !important;
-    overflow: hidden;
-  }
-  .search-wrap input { display: none; }
-  .search-wrap:focus-within {
-    width: 180px !important;
-  }
-  .search-wrap:focus-within input { display: block; }
-
-  /* Hide some buttons on smallest screens */
-  .header-right .btn-aero { display: none; }
-
-  /* Tighten header */
-  .header-inner { padding: 0 12px; gap: 6px; }
-}
-
-@media (max-width: 480px) {
-  /* Even tighter on phones */
-  .header-inner { padding: 0 10px; gap: 4px; }
-  .sku-icon-btn { width: 34px; height: 34px; }
-  .brand-name { font-size: 1rem; }
-
-  /* Hide fav on very small screens — available in drawer */
-  #h-fav-btn { display: none; }
-}
+/* header responsive → mobile.css */
 
 /* ============================================
    FOOTER ABOUT — compact inline strip
