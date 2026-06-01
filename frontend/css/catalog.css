@@ -794,8 +794,8 @@ body.dark .catalog-hero-title {
 
 .hero-slide.slide-in-right  { animation: slideInRight  0.46s cubic-bezier(0.4,0,0.2,1) both; }
 .hero-slide.slide-in-left   { animation: slideInLeft   0.46s cubic-bezier(0.4,0,0.2,1) both; }
-.hero-slide.slide-out-left  { display: flex !important; animation: slideOutLeft  0.46s cubic-bezier(0.4,0,0.2,1) both; position: absolute; top:0; left:0; right:0; bottom:0; }
-.hero-slide.slide-out-right { display: flex !important; animation: slideOutRight 0.46s cubic-bezier(0.4,0,0.2,1) both; position: absolute; top:0; left:0; right:0; bottom:0; }
+.hero-slide.slide-out-left  { display: flex !important; animation: slideOutLeft  0.46s cubic-bezier(0.4,0,0.2,1) both; position: absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; pointer-events:none; }
+.hero-slide.slide-out-right { display: flex !important; animation: slideOutRight 0.46s cubic-bezier(0.4,0,0.2,1) both; position: absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; pointer-events:none; }
 
 /* Each slide inherits hero content layout */
 .hero-slide .catalog-hero-content {
