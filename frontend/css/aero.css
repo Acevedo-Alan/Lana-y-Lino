@@ -1018,10 +1018,6 @@ body.dark .admin-hint-body code {
 /* ── Success variant — green tinted bubbles ─ */
 /* (color set in JS via inline style) */
 
-@media (max-width: 480px) {
-  #toast-container { bottom: 16px; right: 12px; left: 12px; align-items: stretch; }
-  .aero-notif { min-width: unset; max-width: unset; }
-}
 
 /* ============================================
    BADGE BUMP ANIMATION

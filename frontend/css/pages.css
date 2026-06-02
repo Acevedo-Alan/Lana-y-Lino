@@ -403,11 +403,6 @@
   margin: 0 auto;
 }
 
-@media (max-width: 600px) {
-  .form-row { grid-template-columns: 1fr; }
-  .payment-card-fields { grid-template-columns: 1fr; }
-  .inventory-entry { grid-template-columns: 1fr 1fr; }
-}
 
 /* All mobile overrides → mobile.css */
 
@@ -715,14 +710,3 @@ body.dark .admin-hero::after {
   color: var(--text-primary);
 }
 
-@media (max-width: 640px) {
-  .admin-hero {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 22px 20px;
-  }
-  .admin-hero-stats { width: 100%; }
-  .admin-stat-pill { flex: 1; }
-  .admin-hero-title { font-size: 1.4rem; }
-  .inventory-entry { grid-template-columns: 1fr 1fr; }
-}

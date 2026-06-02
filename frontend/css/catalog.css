@@ -144,7 +144,7 @@
 /* ── Products Grid — editorial, larger ─────────── */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(300px, 45vw), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 28px 24px;
 }
 
@@ -704,14 +704,6 @@ body.dark .catalog-hero-title {
 }
 
 /* ── Hero search bar on catalog ──────────── */
-@media (max-width: 640px) {
-  .catalog-hero {
-    padding: 28px 24px;
-    min-height: 160px;
-  }
-  .catalog-hero-deco { width: 35%; }
-  .catalog-hero-pills { display: none; }
-}
 
 /* ============================================
    HERO CAROUSEL
@@ -941,12 +933,6 @@ body.dark .hero-pill-teal { color: #00d4f0 !important; }
 body.dark .hero-pill-green { color: #00d060 !important; }
 
 /* Mobile carousel */
-@media (max-width: 640px) {
-  .hero-arrow { display: none; }
-  .hero-slide .catalog-hero-content { padding: 24px 20px 32px; }
-  .hero-slide { min-height: 180px; }
-  .hero-dots { bottom: 8px; }
-}
 
 /* ============================================
    FLY-TO-CART ANIMATION
@@ -1750,25 +1736,7 @@ body.dark .feat-arrow {
 }
 
 /* ── Responsive ──────────────────────────── */
-@media (max-width: 768px) {
-  .cat-visual-grid {
-    grid-template-columns: 1fr 1fr;
-    height: auto;
-    gap: 10px;
-  }
-  .cat-vc-2 { grid-column: 1 / -1; height: 160px; }
-  .cat-vc-1, .cat-vc-3 { height: 140px; }
-  .reviews-track { grid-template-columns: 1fr; }
-  .featured-section { display: none !important; }
-}
 
-@media (max-width: 480px) {
-  .cat-visual-grid { grid-template-columns: 1fr; height: auto; }
-  .cat-vc-2 { grid-column: auto; height: 150px; }
-  .cat-vc-1, .cat-vc-3 { height: 130px; }
-  .marquee-wrap { height: 30px; }
-  .mq-item { font-size: 0.68rem; padding: 0 12px; }
-}
 
 /* ============================================
    REVIEWS — HORIZONTAL SCROLL (Chrome-style)
@@ -1973,7 +1941,3 @@ body.dark .reviews-arrow {
   .sr-hidden { opacity: 1; transform: none; transition: none; }
 }
 
-@media (max-width: 600px) {
-  .review-card { width: 260px; }
-  .reviews-arrow { display: none; }
-}
