@@ -47,33 +47,38 @@ img, svg, video { max-width: 100%; display: block; }
   .hero-track    { overflow: hidden; }
 
   .hero-slide {
-    min-height: 175px;
+    min-height: 160px !important;
     overflow: hidden;
+    position: relative !important;
   }
-  /* Stack: deco behind, content on top */
   .hero-slide.active {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-    position: relative;
+    display: block !important;
+    position: relative !important;
   }
+  /* Deco fills entire slide as background */
   .hero-slide .catalog-hero-deco {
-    grid-area: 1/1;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.22;
-    z-index: 0;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important;
+    right: 0 !important; bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0.35 !important;
+    z-index: 0 !important;
+    pointer-events: none;
   }
+  .hero-slide .catalog-hero-deco .hero-aero-svg {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+  }
+  /* Content sits on top of deco */
   .hero-slide .catalog-hero-content {
-    grid-area: 1/1;
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 100%;
-    padding: 18px 16px 40px;
-    box-sizing: border-box;
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px 16px 42px !important;
+    box-sizing: border-box !important;
   }
   .catalog-hero-eyebrow { font-size: .62rem; padding: 2px 8px; }
   .catalog-hero-title   { font-size: clamp(1.3rem, 6vw, 1.9rem); white-space: normal; word-break: break-word; }
@@ -96,22 +101,24 @@ img, svg, video { max-width: 100%; display: block; }
   .mq-item      { font-size: .62rem; padding: 0 8px; }
   .mq-item i, .mq-sep { display: none; }
 
-  /* ── Category visual grid ── */
+  /* ── Category visual grid — 2 cols always ── */
   .cat-visual-grid {
-    grid-template-columns: 1fr 1fr;
-    height: auto;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    height: auto !important;
     gap: 8px;
     margin-bottom: 14px;
   }
-  .cat-vc-1, .cat-vc-3 { height: 110px; }
-  .cat-vc-2             { grid-column: 1 / -1; height: 120px; }
+  .cat-vc-1, .cat-vc-3   { height: 100px !important; }
+  .cat-vc-2               { grid-column: 1 / -1 !important; height: 110px !important; }
   .cat-vc-sub, .cat-vc-btn { display: none; }
-  .cat-vc-label         { font-size: .88rem; }
+  .cat-vc-label           { font-size: .88rem; }
 
   /* ── Products grid — always 2 per row on mobile ── */
   .products-grid {
+    display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px;
+    gap: 10px !important;
   }
   .product-card-desc   { display: none; }
   .product-card-name   { font-size: .85rem; }
