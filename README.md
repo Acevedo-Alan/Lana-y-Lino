@@ -26,7 +26,7 @@
 seed-productos.sql
 ```
 
-### 2. Backend
+### 2. Backend 
 
 ```bash
 cd backend-2026-1-er-cuatrimestre-main
