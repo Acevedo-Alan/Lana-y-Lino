@@ -238,3 +238,23 @@ img, svg, video { max-width: 100%; display: block; }
 
 /* ── Drawer ─────────────────────────────────────────────── */
 .mobile-drawer { width: min(82vw, 300px); }
+
+/* ── Footer glass — mobile ───────────────────────────────── */
+@media (max-width: 700px) {
+  .footer-inner {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 16px 12px 16px !important;
+  }
+  .footer-section { padding: 14px 14px; }
+  .footer-watermark { font-size: 5rem; bottom: -10px; right: -10px; }
+  .footer-about-inner { padding: 0 12px; }
+  .footer-about-text { display: none; }
+  .footer-bottom { padding: 10px 14px 14px; font-size: .66rem; }
+}
+
+@media (max-width: 480px) {
+  .footer-stat-label { display: none; }
+  .footer-about-stats { gap: 5px; }
+  .social-link { padding: 3px 8px; font-size: .7rem; }
+}

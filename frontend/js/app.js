@@ -2671,6 +2671,104 @@ const AeroBackground = {
   }
 };
 
+// ============================================================
+// FOOTER BUBBLES — small canvas inside footer
+// ============================================================
+const FooterBubbles = {
+  canvas: null,
+  ctx: null,
+  bubbles: [],
+  raf: null,
+  W: 0, H: 0,
+
+  init() {
+    this.canvas = document.getElementById('footer-bubbles');
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext('2d');
+    this._resize();
+    this._spawn();
+    window.addEventListener('resize', () => this._resize());
+    this._loop();
+  },
+
+  _resize() {
+    const footer = document.getElementById('main-footer');
+    if (!footer || !this.canvas) return;
+    this.W = this.canvas.width  = footer.offsetWidth;
+    this.H = this.canvas.height = footer.offsetHeight;
+  },
+
+  _spawn() {
+    this.bubbles = [];
+    const count = Math.floor(this.W / 40);
+    for (let i = 0; i < count; i++) {
+      this.bubbles.push(this._newBubble(true));
+    }
+  },
+
+  _newBubble(randomY = false) {
+    const r = 4 + Math.random() * 20;
+    return {
+      x:     Math.random() * this.W,
+      y:     randomY ? Math.random() * this.H : this.H + r,
+      r,
+      speed:  0.12 + Math.random() * 0.3,
+      drift:  (Math.random() - 0.5) * 0.25,
+      opacity: 0.06 + Math.random() * 0.14,
+      phase:  Math.random() * Math.PI * 2,
+      hue:    Math.random() > 0.5 ? '0,180,255' : '0,220,180',
+    };
+  },
+
+  _loop() {
+    this.raf = requestAnimationFrame(() => this._loop());
+    if (!this.ctx) return;
+    this.ctx.clearRect(0, 0, this.W, this.H);
+
+    for (let i = 0; i < this.bubbles.length; i++) {
+      const b = this.bubbles[i];
+      b.y -= b.speed;
+      b.x += b.drift + Math.sin(Date.now() * 0.0007 + b.phase) * 0.15;
+
+      if (b.y < -b.r * 2) {
+        this.bubbles[i] = this._newBubble(false);
+        continue;
+      }
+
+      const g = this.ctx.createRadialGradient(
+        b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.05,
+        b.x, b.y, b.r
+      );
+      g.addColorStop(0,   `rgba(255,255,255,${b.opacity * 0.85})`);
+      g.addColorStop(0.4, `rgba(${b.hue},${b.opacity * 0.5})`);
+      g.addColorStop(1,   `rgba(${b.hue},0)`);
+
+      this.ctx.beginPath();
+      this.ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = g;
+      this.ctx.fill();
+
+      // rim
+      this.ctx.beginPath();
+      this.ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      this.ctx.strokeStyle = `rgba(255,255,255,${b.opacity * 0.4})`;
+      this.ctx.lineWidth = 0.6;
+      this.ctx.stroke();
+
+      // inner shine
+      this.ctx.save();
+      this.ctx.translate(b.x - b.r * 0.28, b.y - b.r * 0.3);
+      this.ctx.rotate(-0.5);
+      this.ctx.scale(1, 0.55);
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, b.r * 0.35, 0, Math.PI * 2);
+      this.ctx.fillStyle = `rgba(255,255,255,${b.opacity * 0.5})`;
+      this.ctx.fill();
+      this.ctx.restore();
+    }
+  }
+};
+
 // ── INTERSECTION OBSERVER — scroll fade-in ──────────────────────────────────
 const ScrollReveal = {
   _io: null,
@@ -2710,9 +2808,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   Theme.init();
   Header.render();
-  // Load categories ONCE at boot, then it's always served from cache
   Header._loadCats();
   Router.go('catalog');
   ScrollReveal.init();
   AeroBackground.init();
+  FooterBubbles.init();
 });
