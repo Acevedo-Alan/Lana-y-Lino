@@ -239,22 +239,39 @@ img, svg, video { max-width: 100%; display: block; }
 /* ── Drawer ─────────────────────────────────────────────── */
 .mobile-drawer { width: min(82vw, 300px); }
 
-/* ── Footer glass — mobile ───────────────────────────────── */
-@media (max-width: 700px) {
-  .footer-inner {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-    padding: 16px 12px 16px !important;
+/* ── Footer — mobile ────────────────────────────────────── */
+@media (max-width: 900px) {
+  .footer-body {
+    flex-direction: column;
+    gap: 28px;
+    padding: 32px 20px 24px;
   }
-  .footer-section { padding: 14px 14px; }
-  .footer-watermark { font-size: 5rem; bottom: -10px; right: -10px; }
-  .footer-about-inner { padding: 0 12px; }
-  .footer-about-text { display: none; }
-  .footer-bottom { padding: 10px 14px 14px; font-size: .66rem; }
+  .footer-brand-col { flex: none; width: 100%; }
+  .footer-links-grid {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid rgba(100,180,255,0.1);
+    padding-top: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+  .footer-bottom { padding: 12px 20px 16px; }
+  .footer-watermark { font-size: 5rem; }
 }
 
-@media (max-width: 480px) {
-  .footer-stat-label { display: none; }
-  .footer-about-stats { gap: 5px; }
-  .social-link { padding: 3px 8px; font-size: .7rem; }
+@media (max-width: 600px) {
+  .footer-body { padding: 24px 14px 18px; gap: 20px; }
+  .footer-links-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .footer-link-col:last-child { grid-column: 1 / -1; }
+  .footer-brand-actions { flex-wrap: wrap; }
+  .footer-bottom { flex-direction: column; gap: 4px; text-align: center; }
+  .footer-bottom-right { display: none; }
+}
+
+@media (max-width: 400px) {
+  .footer-links-grid { grid-template-columns: 1fr 1fr; }
+  .footer-link { font-size: .78rem; }
+  .footer-link-title { font-size: .62rem; }
+  .footer-btn-primary, .footer-btn-ghost { font-size: .74rem; padding: 7px 12px; }
 }

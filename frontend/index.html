@@ -41,56 +41,84 @@
   <footer id="main-footer">
     <canvas class="footer-bubbles-canvas" id="footer-bubbles"></canvas>
     <div class="footer-watermark" aria-hidden="true">L&amp;L</div>
-    <!-- Sobre nosotros — compact inline row -->
-    <div class="footer-about">
-      <div class="footer-about-inner">
-        <div class="footer-about-logo">L&amp;L</div>
-        <p class="footer-about-text">
-          Nació en 2020 con una idea simple: indumentaria de calidad accesible para todos.
-          Inspirada en la estética digital de los 2000 — brillante, optimista y llena de vida.
-        </p>
-        <div class="footer-about-stats">
-          <div class="footer-stat"><span class="footer-stat-num">+500</span><span class="footer-stat-label">Clientes</span></div>
-          <div class="footer-stat"><span class="footer-stat-num">19</span><span class="footer-stat-label">Productos</span></div>
-          <div class="footer-stat"><span class="footer-stat-num">7</span><span class="footer-stat-label">Categorías</span></div>
+
+    <!-- ── MAIN FOOTER BODY ── -->
+    <div class="footer-body">
+
+      <!-- LEFT: Brand + description + actions -->
+      <div class="footer-brand-col">
+        <div class="footer-brand-logo">
+          <span class="footer-logo-text">Lana &amp; Lino</span>
+          <span class="footer-logo-badge">2026</span>
         </div>
+        <p class="footer-brand-desc">
+          Indumentaria de calidad inspirada en la estética digital de los 2000.
+          Brillante, translúcida y llena de vida.
+        </p>
+        <div class="footer-brand-actions">
+          <a href="#" class="footer-btn-primary" onclick="Router.go('catalog');return false;">
+            <i class="ph ph-storefront"></i> Ver tienda
+          </a>
+          <a href="#" class="footer-btn-ghost" onclick="Router.go('register');return false;">
+            <i class="ph ph-user-plus"></i> Registrarse
+          </a>
+        </div>
+        <div class="footer-social-row">
+          <a class="footer-social-pill" href="#" target="_blank" title="Instagram">
+            <i class="ph ph-instagram-logo"></i>
+          </a>
+          <a class="footer-social-pill" href="#" target="_blank" title="Facebook">
+            <i class="ph ph-facebook-logo"></i>
+          </a>
+          <a class="footer-social-pill" href="#" target="_blank" title="TikTok">
+            <i class="ph ph-tiktok-logo"></i>
+          </a>
+          <a class="footer-social-pill" href="https://wa.me/5491100000000" target="_blank" title="WhatsApp">
+            <i class="ph ph-whatsapp-logo"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT: 3 link columns -->
+      <div class="footer-links-grid">
+
+        <div class="footer-link-col">
+          <h5 class="footer-link-title">Tienda</h5>
+          <a class="footer-link" onclick="Router.go('catalog');return false;" href="#">Todos los productos</a>
+          <a class="footer-link" onclick="Router.go('catalog',{catName:'Remeras'});return false;" href="#">Remeras</a>
+          <a class="footer-link" onclick="Router.go('catalog',{catName:'Buzos'});return false;" href="#">Buzos</a>
+          <a class="footer-link" onclick="Router.go('catalog',{catName:'Camperas'});return false;" href="#">Camperas</a>
+          <a class="footer-link" onclick="Router.go('catalog',{catName:'Calzado'});return false;" href="#">Calzado</a>
+          <a class="footer-link" onclick="Router.go('catalog',{catName:'Accesorios'});return false;" href="#">Accesorios</a>
+        </div>
+
+        <div class="footer-link-col">
+          <h5 class="footer-link-title">Mi cuenta</h5>
+          <a class="footer-link" onclick="Router.go('login');return false;" href="#">Iniciar sesión</a>
+          <a class="footer-link" onclick="Router.go('register');return false;" href="#">Registrarse</a>
+          <a class="footer-link" onclick="Router.go('favorites');return false;" href="#">Favoritos</a>
+          <a class="footer-link" onclick="Router.go('cart');return false;" href="#">Carrito</a>
+          <a class="footer-link" onclick="Router.go('profile');return false;" href="#">Mi perfil</a>
+        </div>
+
+        <div class="footer-link-col">
+          <h5 class="footer-link-title">Contacto</h5>
+          <a class="footer-link" href="mailto:contacto@lanaylino.com.ar">contacto@lanaylino.com.ar</a>
+          <a class="footer-link" href="tel:+5491100000000">+54 9 11 0000-0000</a>
+          <a class="footer-link" href="https://wa.me/5491100000000" target="_blank">WhatsApp</a>
+          <h5 class="footer-link-title" style="margin-top:16px">Proyecto</h5>
+          <span class="footer-link-text">Programación Web — 2026</span>
+          <span class="footer-link-text">Acevedo Alan</span>
+          <span class="footer-link-text">Di Pascuale Agustina</span>
+        </div>
+
       </div>
     </div>
 
-    <div class="footer-inner">
-      <div class="footer-section">
-        <h4>Lana &amp; Lino</h4>
-        <p>Tu tienda de indumentaria online.<br/>Moda de calidad para todos los estilos.</p>
-        <p style="margin-top:10px;font-size:.78rem;opacity:.6;line-height:1.5">
-          Diseñado con la estética Frutiger Aero:<br/>
-          brillante, translúcido y lleno de vida.
-        </p>
-      </div>
-      <div class="footer-section">
-        <h4>Contacto</h4>
-        <a href="mailto:contacto@lanaylino.com.ar">contacto@lanaylino.com.ar</a>
-        <a href="tel:+5491100000000">+54 9 11 0000-0000</a>
-        <a href="https://wa.me/5491100000000" target="_blank">WhatsApp</a>
-        <div class="social-links" style="margin-top:10px">
-          <a class="social-link" href="#" target="_blank">&#128247; Instagram</a>
-          <a class="social-link" href="#" target="_blank">&#128077; Facebook</a>
-          <a class="social-link" href="#" target="_blank">&#127925; TikTok</a>
-        </div>
-      </div>
-      <div class="footer-section">
-        <h4>Desarrollado por</h4>
-        <p>Programacion Web — 2026</p>
-        <p style="margin-top:8px;font-size:.8rem;opacity:.7;line-height:1.7">
-          Integrantes del grupo:<br/>
-          &#128100; Acevedo Alan<br/>
-          &#128100; Di Pascuale Agustina
-        </p>
-      </div>
-    </div>
+    <!-- ── BOTTOM BAR ── -->
     <div class="footer-bottom">
-      &copy; 2026 Lana &amp; Lino &mdash; Todos los derechos reservados.
-      <span style="opacity:.4;margin:0 8px">|</span>
-      Hecho con &#10084; y estética Frutiger Aero
+      <span>&copy; 2026 Lana &amp; Lino &mdash; Todos los derechos reservados.</span>
+      <span class="footer-bottom-right">lanaylino.com.ar</span>
     </div>
   </footer>
   <div id="toast-container"></div>
