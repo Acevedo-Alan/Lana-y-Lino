@@ -1,7 +1,7 @@
 # Lana & Lino — E-Commerce
 
 > Tienda de indumentaria online con estética **Frutiger Aero** (Windows Vista / macOS Leopard era).  
-> Desarrollado como Trabajo Práctico de Programación II — 2026.
+> Desarrollado como Trabajo Práctico de Programación II - 2026.
 
 **Desarrollado por:** Acevedo Alan · Di Pascuale Agustina
 
@@ -26,7 +26,7 @@
 seed-productos.sql
 ```
 
-### 2. Backend
+### 2. Backend 
 
 ```bash
 cd backend-2026-1-er-cuatrimestre-main
