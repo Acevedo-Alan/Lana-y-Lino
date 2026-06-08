@@ -124,6 +124,8 @@ const Toast = {
   },
 
   show(msg, type = 'info', ms = 3400) {
+    if (type === 'error') Sound.play('error');
+    // success sound triggered directly at source (cart, payment) to avoid double-play
     const c = document.getElementById('toast-container');
     if (!c) return;
 
@@ -323,6 +325,7 @@ const Router = {
     app.innerHTML = '<div class="loading-container" style="min-height:60vh"><div class="spinner"></div><span>Cargando...</span></div>';
     app.classList.remove('page-enter');
     window.scrollTo({ top: 0, behavior: 'instant' });
+    Sound.play('navigate');
     // Update browser tab title
     document.title = this._titles[this.page] || 'Lana & Lino';
     // Clear search box and hide cat-bar when navigating away from catalog
@@ -417,6 +420,11 @@ const Header = {
               </svg>
             </button>
           </div>
+
+          <!-- Sound toggle -->
+          <button class="sound-btn sku-icon-btn" id="sound-btn" title="Sonidos">
+            <i class="ph ph-speaker-high"></i>
+          </button>
 
           <!-- Skeuomorphic theme toggle -->
           <button class="sku-icon-btn" id="theme-btn" title="Cambiar tema">
@@ -527,6 +535,7 @@ const Header = {
     };
     if (isAdmin) el('admin-btn') && (el('admin-btn').onclick = () => Router.go('admin'));
     el('hamburger-btn') && (el('hamburger-btn').onclick = () => this._openDrawer());
+    el('sound-btn')     && (el('sound-btn').onclick     = () => Sound.toggle());
     // Only re-render from cache — never fetch on every Header.render()
     if (this._catsCache) this._buildCatBar(this._catsCache);
     this._cartCount();
@@ -1595,7 +1604,7 @@ const Catalog = {
         const r = isFav ? await API.removeFavorite(u.id_usuario, pid) : await API.addFavorite(pid, u.id_usuario);
         if (r.codigo === 200) {
           if (isFav) { this.favs = this.favs.filter(f=>f!==pid); b.innerHTML='<i class="ph ph-heart"></i>'; b.classList.remove('active'); Toast.show('Eliminado de favoritos','info'); }
-          else       { this.favs.push(pid); b.innerHTML='<i class="ph ph-heart-fill fav-active"></i>'; b.classList.add('active'); Toast.show('Agregado a favoritos','success'); }
+          else       { this.favs.push(pid); b.innerHTML='<i class="ph ph-heart-fill fav-active"></i>'; b.classList.add('active'); Toast.show('Agregado a favoritos','success'); Sound.play('favorite'); }
           Header._favCount();
         }
       } catch(e) { Toast.show('Error al actualizar favoritos','error'); }
@@ -1779,6 +1788,7 @@ const Product = {
         }
         if (success > 0) {
           Toast.show(success === 1 ? 'Producto agregado al carrito' : `${success} unidades agregadas al carrito`, 'success');
+          Sound.play('cart');
           Header._cartCount();
           // Fly-to-cart animation using product image
           const productImg = document.querySelector('.product-detail-img img');
@@ -2061,6 +2071,7 @@ const Payment = {
       }
       const orderNum = 'LL-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900000)+100000);
       const orderDate = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
+      Sound.play('success');
       el('app').innerHTML = `
         <div class="page-section animate-in">
           <div class="card-aero payment-success">
@@ -2497,6 +2508,104 @@ const Admin = {
 // BOOT
 // ============================================================
 // ============================================================
+// SOUND SYSTEM — Web Audio API crystal tones
+// ============================================================
+const Sound = {
+  ctx: null,
+  enabled: true,
+
+  _ctx() {
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return this.ctx;
+  },
+
+  toggle() {
+    this.enabled = !this.enabled;
+    localStorage.setItem('ll_sound', this.enabled ? '1' : '0');
+    this._updateBtn();
+    if (this.enabled) this.play('toggle');
+  },
+
+  init() {
+    const saved = localStorage.getItem('ll_sound');
+    this.enabled = saved === null ? true : saved === '1';
+    this._updateBtn();
+  },
+
+  _updateBtn() {
+    const btn = document.getElementById('sound-btn');
+    if (!btn) return;
+    btn.classList.toggle('muted', !this.enabled);
+    btn.title = this.enabled ? 'Silenciar sonidos' : 'Activar sonidos';
+    btn.querySelector('i').className = this.enabled
+      ? 'ph ph-speaker-high'
+      : 'ph ph-speaker-slash';
+  },
+
+  // freq: Hz, dur: seconds, type: oscillator type, vol: 0-1
+  _tone(freq, dur, type = 'sine', vol = 0.18, delay = 0) {
+    if (!this.enabled) return;
+    try {
+      const ctx  = this._ctx();
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type      = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+      gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+      gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + dur + 0.05);
+    } catch(e) {}
+  },
+
+  play(event) {
+    if (!this.enabled) return;
+    switch(event) {
+      // Navigation — soft ascending chime
+      case 'navigate':
+        this._tone(880, 0.18, 'sine', 0.1);
+        this._tone(1100, 0.15, 'sine', 0.08, 0.1);
+        break;
+      // Add to cart — warm success ding
+      case 'cart':
+        this._tone(523, 0.12, 'sine', 0.15);
+        this._tone(659, 0.12, 'sine', 0.13, 0.08);
+        this._tone(784, 0.22, 'sine', 0.12, 0.16);
+        break;
+      // Favorite — soft ping
+      case 'favorite':
+        this._tone(1047, 0.08, 'sine', 0.1);
+        this._tone(1319, 0.18, 'sine', 0.09, 0.06);
+        break;
+      // Error — low thud
+      case 'error':
+        this._tone(220, 0.15, 'sine', 0.12);
+        this._tone(180, 0.25, 'sine', 0.1, 0.1);
+        break;
+      // Success / payment — full crystal chime
+      case 'success':
+        this._tone(523,  0.15, 'sine', 0.14);
+        this._tone(659,  0.15, 'sine', 0.12, 0.1);
+        this._tone(784,  0.15, 'sine', 0.12, 0.2);
+        this._tone(1047, 0.3,  'sine', 0.14, 0.3);
+        break;
+      // Toggle — quick blip
+      case 'toggle':
+        this._tone(660, 0.1, 'sine', 0.1);
+        break;
+      // Remove — descending
+      case 'remove':
+        this._tone(440, 0.1, 'sine', 0.1);
+        this._tone(330, 0.15, 'sine', 0.09, 0.08);
+        break;
+    }
+  }
+};
+
+// ============================================================
 // FRUTIGER AERO AMBIENT BACKGROUND — Canvas bubbles & rays
 // ============================================================
 const AeroBackground = {
@@ -2801,11 +2910,95 @@ Router._render = function() {
   setTimeout(() => ScrollReveal.observe(), 200);
 };
 
+// ============================================================
+// LOADING SCREEN
+// ============================================================
+const LoadingScreen = {
+  _hooked: false,
+
+  init() {
+    const loader = document.getElementById('ll-loader');
+    if (!loader) return;
+    this._startCanvas();
+    // Hook catalog render — hide loader after first render
+    if (!this._hooked) {
+      this._hooked = true;
+      const origRender = Catalog.render.bind(Catalog);
+      Catalog.render = async (...args) => {
+        const r = await origRender(...args);
+        LoadingScreen.hide();
+        Catalog.render = origRender;
+        return r;
+      };
+    }
+    // Fallback: always hide after 3.5s
+    setTimeout(() => this.hide(), 3500);
+  },
+
+  hide() {
+    const loader = document.getElementById('ll-loader');
+    if (!loader || loader.classList.contains('fade-out')) return;
+    loader.classList.add('fade-out');
+    setTimeout(() => loader.classList.add('hidden'), 700);
+  },
+
+  _startCanvas() {
+    const canvas = document.getElementById('loader-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const bubbles = Array.from({ length: 28 }, () => ({
+      x:       Math.random() * canvas.width,
+      y:       Math.random() * canvas.height,
+      r:       4 + Math.random() * 26,
+      speed:   0.2 + Math.random() * 0.5,
+      drift:   (Math.random() - 0.5) * 0.3,
+      opacity: 0.07 + Math.random() * 0.16,
+      hue:     Math.random() > 0.5 ? '0,180,255' : '0,220,160',
+      phase:   Math.random() * Math.PI * 2,
+    }));
+
+    const loop = () => {
+      const loader = document.getElementById('ll-loader');
+      if (!loader || loader.classList.contains('hidden')) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bubbles.forEach(b => {
+        b.y -= b.speed;
+        b.x += b.drift + Math.sin(Date.now() * 0.0008 + b.phase) * 0.2;
+        if (b.y < -b.r * 2) { b.y = canvas.height + b.r; b.x = Math.random() * canvas.width; }
+
+        const g = ctx.createRadialGradient(
+          b.x - b.r * .3, b.y - b.r * .3, b.r * .05, b.x, b.y, b.r);
+        g.addColorStop(0,   `rgba(255,255,255,${b.opacity * .9})`);
+        g.addColorStop(0.4, `rgba(${b.hue},${b.opacity * .5})`);
+        g.addColorStop(1,   `rgba(${b.hue},0)`);
+
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,255,255,${b.opacity * .35})`;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      });
+      requestAnimationFrame(loop);
+    };
+    loop();
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Sync dark class from FOUC-prevention early class
   if (document.documentElement.classList.contains('dark-early')) {
     document.body.classList.add('dark');
   }
+  LoadingScreen.init();
+  Sound.init();
   Theme.init();
   Header.render();
   Header._loadCats();
