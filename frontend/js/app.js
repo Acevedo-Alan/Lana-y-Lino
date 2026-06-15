@@ -2992,6 +2992,228 @@ const LoadingScreen = {
   }
 };
 
+// ============================================================
+// SCROLL TO TOP
+// ============================================================
+const ScrollTop = {
+  btn: null,
+  init() {
+    this.btn = el('scroll-top-btn');
+    if (!this.btn) return;
+    window.addEventListener('scroll', () => this._onScroll(), { passive: true });
+    this.btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  },
+  _onScroll() {
+    if (!this.btn) return;
+    if (window.scrollY > 320) {
+      this.btn.classList.add('visible');
+    } else {
+      this.btn.classList.remove('visible');
+    }
+  }
+};
+
+// ============================================================
+// REAL-TIME SEARCH — debounced live filter while typing
+// ============================================================
+const LiveSearch = {
+  _timer: null,
+  _indicator: null,
+
+  init() {
+    // We hook into the existing h-search after Header.render()
+    // by patching Header._refreshState
+    const origRefresh = Header._refreshState.bind(Header);
+    Header._refreshState = () => {
+      origRefresh();
+      this._wire();
+    };
+    const origRender = Header.render.bind(Header);
+    Header.render = (...args) => {
+      origRender(...args);
+      this._wire();
+    };
+  },
+
+  _wire() {
+    const input = el('h-search');
+    if (!input || input._liveWired) return;
+    input._liveWired = true;
+
+    // Add live indicator dot
+    const wrap = el('search-wrap-toggle');
+    if (wrap) {
+      let dot = wrap.querySelector('.search-live-indicator');
+      if (!dot) {
+        dot = document.createElement('span');
+        dot.className = 'search-live-indicator';
+        wrap.style.position = 'relative';
+        wrap.appendChild(dot);
+      }
+      this._indicator = dot;
+    }
+
+    input.addEventListener('input', () => {
+      clearTimeout(this._timer);
+      const q = input.value.trim();
+
+      // Show indicator when query is non-empty
+      if (this._indicator) {
+        this._indicator.classList.toggle('active', q.length > 0);
+      }
+
+      if (Router.page !== 'catalog') return;
+
+      this._timer = setTimeout(() => {
+        // Live filter: update catalog without a full Router.go()
+        // so we stay on catalog and keep existing filters
+        Router.params = { ...Router.params, search: q };
+        if (el('cat-title')) {
+          el('cat-title').textContent = q
+            ? 'Resultados: "' + q + '"'
+            : (Router.params.catName ? Router.params.catName : 'Todos los productos');
+        }
+        Catalog._draw(Catalog._filter(q));
+      }, 160);
+    });
+  }
+};
+
+// ============================================================
+// TILT 3D — product cards mouse interaction
+// ============================================================
+const Tilt3D = {
+  _MAX: 12,     // max degrees
+  _SHEEN: true, // enable sheen overlay
+
+  init() {
+    // Observe catalog renders and add tilt to new cards
+    const origDraw = Catalog._draw.bind(Catalog);
+    Catalog._draw = (...args) => {
+      origDraw(...args);
+      requestAnimationFrame(() => this._applyToGrid());
+    };
+    const origFeatured = Catalog._buildFeatured.bind(Catalog);
+    Catalog._buildFeatured = (...args) => {
+      origFeatured(...args);
+      requestAnimationFrame(() => this._applyToFeatured());
+    };
+  },
+
+  _applyToGrid() {
+    document.querySelectorAll('.product-card:not([data-tilt])').forEach(card => {
+      this._attach(card);
+    });
+  },
+
+  _applyToFeatured() {
+    document.querySelectorAll('.feat-card:not([data-tilt])').forEach(card => {
+      this._attach(card);
+    });
+  },
+
+  _attach(card) {
+    card.setAttribute('data-tilt', '1');
+
+    // Add sheen overlay
+    if (this._SHEEN) {
+      const sheen = document.createElement('div');
+      sheen.className = 'tilt-sheen';
+      card.appendChild(sheen);
+    }
+
+    card.addEventListener('mousemove', e => this._onMove(e, card), { passive: true });
+    card.addEventListener('mouseleave', () => this._onLeave(card), { passive: true });
+    card.addEventListener('mouseenter', () => this._onEnter(card), { passive: true });
+  },
+
+  _onEnter(card) {
+    card.style.transition = 'transform 0.15s ease, box-shadow 0.3s ease';
+  },
+
+  _onMove(e, card) {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width  / 2;
+    const cy = rect.top  + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width  / 2); // -1..1
+    const dy = (e.clientY - cy) / (rect.height / 2); // -1..1
+
+    const rotX = -dy * this._MAX;
+    const rotY =  dx * this._MAX;
+    const scale = 1.035;
+
+    card.style.transition = 'none';
+    card.style.transform =
+      `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${scale},${scale},${scale})`;
+
+    // Move sheen with mouse
+    const sheen = card.querySelector('.tilt-sheen');
+    if (sheen) {
+      const px = ((dx + 1) / 2 * 100).toFixed(1);
+      const py = ((dy + 1) / 2 * 100).toFixed(1);
+      sheen.style.background =
+        `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.28) 0%, transparent 65%)`;
+    }
+  },
+
+  _onLeave(card) {
+    card.style.transition = 'transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s ease';
+    card.style.transform = '';
+    const sheen = card.querySelector('.tilt-sheen');
+    if (sheen) sheen.style.background = '';
+  }
+};
+
+// ============================================================
+// PARALLAX — hero carousel layers on scroll
+// ============================================================
+const HeroParallax = {
+  _ticking: false,
+
+  init() {
+    window.addEventListener('scroll', () => this._onScroll(), { passive: true });
+  },
+
+  _onScroll() {
+    if (this._ticking) return;
+    this._ticking = true;
+    requestAnimationFrame(() => {
+      this._update();
+      this._ticking = false;
+    });
+  },
+
+  _update() {
+    const hero = el('hero-carousel');
+    if (!hero) return;
+    const rect   = hero.getBoundingClientRect();
+    // Only run when hero is at least partially visible
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+    const scrolled = -rect.top;  // positive = scrolled past top
+    const ratio    = scrolled / (hero.offsetHeight || 1);
+
+    // Hero content text — moves up slightly slower than scroll
+    document.querySelectorAll('.catalog-hero-content').forEach(el => {
+      el.style.transform = `translateY(${scrolled * 0.28}px)`;
+      el.style.opacity   = Math.max(0, 1 - ratio * 1.4);
+    });
+
+    // Hero deco SVG — moves up faster (foreground feel)
+    document.querySelectorAll('.catalog-hero-deco').forEach(el => {
+      el.style.transform = `translateY(${scrolled * 0.14}px)`;
+    });
+
+    // Hero track overall — slight slow-down parallax
+    const track = el('hero-track');
+    if (track) {
+      track.style.transform = `translateY(${scrolled * 0.08}px)`;
+    }
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Sync dark class from FOUC-prevention early class
   if (document.documentElement.classList.contains('dark-early')) {
@@ -3006,4 +3228,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollReveal.init();
   AeroBackground.init();
   FooterBubbles.init();
+  // New features
+  ScrollTop.init();
+  LiveSearch.init();
+  Tilt3D.init();
+  HeroParallax.init();
 });

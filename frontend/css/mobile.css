@@ -275,3 +275,18 @@ img, svg, video { max-width: 100%; display: block; }
   .footer-link-title { font-size: .62rem; }
   .footer-btn-primary, .footer-btn-ghost { font-size: .74rem; padding: 7px 12px; }
 }
+
+/* Scroll to top — mobile position */
+@media (max-width: 600px) {
+  #scroll-top-btn {
+    bottom: 20px;
+    right: 16px;
+    width: 42px;
+    height: 42px;
+  }
+  /* Disable tilt on touch devices — no hover */
+  .product-card[data-tilt],
+  .feat-card[data-tilt] {
+    transform-style: flat;
+  }
+}
