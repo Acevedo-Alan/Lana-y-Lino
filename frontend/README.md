@@ -1,7 +1,7 @@
 # 🌿 Lana & Lino — E-commerce SPA
 
-> Trabajo Práctico — Programación Web 2026  
-> Desarrollado por **Alan** y **Agustina Di Pascuale**
+> Trabajo Práctico — Programación II 2026  
+> Desarrollado por **Alan Acevedo** y **Agustina Di Pascuale**
 
 ---
 
