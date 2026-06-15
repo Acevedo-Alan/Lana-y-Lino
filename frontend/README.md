@@ -1,214 +1,148 @@
-# Lana & Lino Sitio E-Commerce
+# 🌿 Lana & Lino — E-commerce SPA
 
-> Tienda de indumentaria online con estética **Frutiger Aero** (Windows Vista / macOS Leopard era).  
-> Desarrollado como Trabajo Práctico de Programación II — 2026.
-
-**Desarrollado por:** Acevedo Alan · Di Pascuale Agustina
+> Trabajo Práctico — Programación Web 2026  
+> Desarrollado por **Alan** y **Agustina Di Pascuale**
 
 ---
 
-##  Instalación y uso:
+## ¿Qué es este proyecto?
 
-### Requisitos
+**Lana & Lino** es una tienda de indumentaria construida como una _Single Page Application_ (SPA) completamente en **HTML, CSS y Vanilla JavaScript puro**, sin ningún framework ni librería externa. La interfaz consume una API REST provista por la cátedra (Node.js + MySQL en `localhost:4000`).
 
-- Node.js 18+
-- MySQL / MariaDB
-- XAMPP, WAMP, o cualquier servidor local con MySQL
-
-### 1. Base de datos
-
-1. Crear la base de datos `lanaylino` en MySQL
-2. Importar el schema desde `Scripts/lanaylino.sql` (incluido en el backend)
-3. Importar el inventario de productos:
-
-```sql
--- En phpMyAdmin → lanaylino → SQL → pegar el contenido de:
-seed-productos.sql
-```
-
-### 2. Backend
-
-```bash
-cd backend-2026-1-er-cuatrimestre-main
-npm install
-npm run dev
-# Corre en http://localhost:4000
-```
-
-Configurar las variables de entorno en `.env`:
-
-```env
-HOST=localhost
-DATABASE=lanaylino
-USER=root
-PASSWORD=lanaylino
-SECRET=Programacion21erC2025
-```
-
-### 3. Frontend
-
-Abrir `index.html` con un servidor local. La forma más simple:
-
-**VS Code → Live Server** (clic derecho en `index.html` → *Open with Live Server*)
-
-O desde terminal:
-
-```bash
-cd lana-y-lino
-npx serve .
-# Abre http://localhost:3000
-```
-
-> ⚠️ No abrir `index.html` directamente como archivo — el browser bloquea las peticiones al backend por CORS.
+El diseño sigue la estética **Frutiger Aero**: glassmorphism, gradientes translúcidos, burbujas animadas, reflejos de cristal y una paleta de azules y verdes que evoca los wallpapers de Windows Vista (2004–2013).
 
 ---
 
-## 🔑 Acceso administrador (para el corrector)
+## Stack tecnológico
 
-Los usuarios se registran con rol `user` por defecto. Para probar el panel de administración:
-
-1. Registrarse normalmente en la web
-2. Ejecutar en MySQL:
-
-```sql
-UPDATE usuario SET rol = 'admin' WHERE email = 'tu@email.com';
-```
-
-3. Cerrar sesión e iniciar sesión nuevamente
-4. Aparecerá el botón **⚙️ Admin** en el header
+| Capa | Tecnología |
+|------|-----------|
+| Estructura | HTML5 semántico |
+| Estilos | CSS3 puro (sin preprocesadores) |
+| Lógica | Vanilla JavaScript ES2020+ |
+| Backend | API REST provista por la cátedra (Node.js) |
+| Base de datos | MySQL (seed de 19 productos en 7 categorías) |
+| Íconos | Phosphor Icons (CDN) |
 
 ---
 
-## 📁 Estructura del proyecto
+## Arquitectura del proyecto
 
 ```
 lana-y-lino/
-├── index.html              # Entrada SPA
-├── favicon.svg             # Favicon con iniciales L&L
-├── seed-productos.sql      # 19 productos temáticos + inventario
-│
+├── index.html          # Shell de la SPA — un único HTML
+├── favicon.svg         # Ícono Aero personalizado
 ├── css/
-│   ├── aero.css            # Variables Frutiger Aero, dark mode, utilidades
-│   ├── layout.css          # Header, footer, drawer mobile
-│   ├── catalog.css         # Catálogo, carrusel, reviews, secciones
-│   ├── pages.css           # Carrito, pago, auth, admin, perfil
-│   └── mobile.css          # Todos los breakpoints responsive
-│
+│   ├── aero.css        # Sistema de diseño Frutiger Aero + componentes
+│   ├── layout.css      # Header, footer, estructura de grilla
+│   ├── catalog.css     # Cards de productos, hero carousel, filtros
+│   ├── pages.css       # Páginas: detalle, carrito, checkout, perfil, admin
+│   └── mobile.css      # Media queries responsivas (punto único)
 └── js/
-    └── app.js              # App completa (~2700 líneas, Vanilla JS puro)
+    └── app.js          # Toda la lógica de la aplicación en un único bundle
 ```
 
----
+### Filosofía de arquitectura
 
-## ✨ Características
-
-### Diseño — Estética Frutiger Aero
-
-| Feature | Descripción |
-|---|---|
-| Glass morphism | Paneles translúcidos con `backdrop-filter: blur` en toda la UI |
-| Íconos skeuomórficos | SVG 3D handcrafted: carrito, perfil, corazón, lupa, luna/sol |
-| Cursor personalizado | Cursor SVG con glow Aero (normal + pointer) |
-| Animación de fondo | Canvas con burbujas flotantes y rayos de luz en tiempo real |
-| Wet floor reflection | Reflejo de espejo debajo de las tarjetas de producto |
-| Botón Aqua/Gel | Botón "Agregar al carrito" estilo macOS Aqua verde glossy |
-| Dark / Light mode | Toggle con transición suave, persiste en localStorage, sin FOUC |
-| Carrusel hero | 3 slides con SVG Aero: burbujas de agua, pasto, cristales, sol |
-| Notificaciones Aero | Toasts con burbujas flotantes animadas por tipo (success/error/info/warning) |
-| Scroll Reveal | Intersection Observer — elementos aparecen al entrar al viewport |
-
-### Navegación
-
-| Feature | Descripción |
-|---|---|
-| SPA sin frameworks | Router propio, navegación sin recargas |
-| Header consolidado | Categorías inline como pills Aero con underline animado |
-| Menú hamburguesa | Drawer lateral con swipe, categorías, búsqueda y acciones |
-| Barra marquee | Ticker con animación CSS infinita pausable al hover |
-| Categorías visuales | 3 bloques con foto real, gradiente y botón glass |
-| Scroll horizontal | "Más vendidos" con flechas skeuomórficas y touch swipe |
-| Título dinámico | `document.title` cambia según la página activa |
-| Historial de búsqueda | Dropdown con últimas 6 búsquedas, eliminación individual |
-| Breadcrumb | En detalle de producto: Inicio > Categoría > Nombre |
-
-### Catálogo y Productos
-
-| Feature | Descripción |
-|---|---|
-| Filtros | Por género, categoría y color (color se carga en background) |
-| Skeleton loading | 8 tarjetas fantasma con animación de pulso antes de cargar |
-| Fly-to-cart | Animación de imagen volando al ícono del carrito |
-| Lightbox | Zoom de imagen con overlay blur y cierre por Escape |
-| Cuotas | Calculadora con 1, 3, 6, 9 y 12 cuotas con tasas reales |
-| Stock visual | Badge "ÚLTIMAS UNIDADES" cuando stock ≤ 5, "Sin stock" cuando = 0 |
-| Selector de cantidad | +/− clampeado al stock disponible del talle |
-| Wet floor | Reflejo debajo de cada tarjeta |
-| Reviews | Carrusel horizontal de 8 reseñas con swipe y arrastre |
-
-### Carrito y Checkout
-
-| Feature | Descripción |
-|---|---|
-| Carrito persistente | Guardado en el backend por usuario |
-| Eliminar ítem | Elimina solo la primera ocurrencia (bug fix) |
-| Badge animado | Bounce al incrementar el contador |
-| Detector de tarjeta | Visa / Mastercard / Amex detectado por prefijo con SVG dinámico |
-| Validación Amex | Formato 4-6-5, 15 dígitos, CVV de 4 dígitos |
-| Pago exitoso | Número de orden único `LL-2026-XXXXXX`, resumen, burbujas verdes |
-
-### Usuarios y Roles
-
-| Rol | Capacidades |
-|---|---|
-| Sin login | Ver catálogo, buscar, filtrar |
-| Usuario | + Carrito, favoritos, perfil editable |
-| Administrador | + Panel admin: cargar productos, crear inventario, modificar stock, crear categorías |
-
-### Productos incluidos (seed)
-
-19 productos temáticos Frutiger Aero en 7 categorías:
-
-**Remeras** — Aero Glass, Liquid Sky, Orb Gradient, Nature Bloom  
-**Buzos** — Vista Premium, Aqua Fleece, Bubble Crew  
-**Camperas** — Glass Windbreaker, Aero Shell, Meadow Puffer  
-**Pantalones** — Cargo Aqua, Jean Slim Sky Wash, Jogger Orb  
-**Bermudas** — Splash, Vista Linen  
-**Calzado** — Zapatillas Aero Foam, Sandalia Glass Strap  
-**Accesorios** — Gorra Bubble Cap, Bolso Aero Tote  
+La aplicación no usa módulos ES ni bundlers. Todo el JS vive en `app.js` como **objetos literales** que actúan de módulos: `API`, `Router`, `Header`, `Catalog`, `Product`, `Cart`, `Payment`, `Favorites`, `Admin`, etc. Cada objeto expone un método `init()` o `render()` como punto de entrada.
 
 ---
 
-## 🛠️ Stack técnico
+## Módulos principales del sistema
 
-| Capa | Tecnología |
-|---|---|
-| Frontend | HTML5, CSS3, Vanilla JavaScript (ES6+) |
-| Backend | Node.js + Express (provisto por la cátedra) |
-| Base de datos | MySQL |
-| Íconos | Phosphor Icons (CDN) |
-| Fuentes | Nunito + Comfortaa (Google Fonts) |
-| Animaciones | Canvas API, CSS animations, Web Animations API |
-| Sin frameworks | ✅ Sin React, Vue, Angular ni ninguna librería JS |
+### `Router` — Navegación SPA sin recargas
+Gestiona la navegación entre páginas sin recargar el browser. Mantiene un estado `page` y `params`, y llama al `render()` del módulo correspondiente. También actualiza el título de la pestaña y ejecuta la animación de entrada.
 
----
+### `API` — Comunicación con el backend
+Centraliza todos los `fetch()` a la API REST. Maneja el token JWT de autenticación en el header `Authorization`, detecta tokens expirados en cualquier respuesta y redirige al login automáticamente.
 
-## 📱 Responsive
+### `Session` — Gestión de usuario
+Persiste el token y los datos del usuario logueado en `localStorage`. Expone métodos para iniciar y cerrar sesión.
 
-| Breakpoint | Comportamiento |
-|---|---|
-| > 900px | Header completo con categorías inline |
-| ≤ 900px | Header compacto, hamburger, buscador colapsable |
-| ≤ 700px | Grid 2 columnas, hero compacto, featured oculto |
-| ≤ 480px | Grid adaptable, drawer completo, formularios 1 columna |
+### `Catalog` — Catálogo de productos
+Renderiza el listado de productos con hero carousel, filtros por categoría, orden por precio, y búsqueda. Contiene `_filter()` para filtrar el array en memoria y `_draw()` para renderizar las cards en el DOM.
 
----
+### `Cart` — Carrito de compras
+Persiste el carrito en `localStorage`. Maneja agregar, editar y eliminar ítems, con el precio total calculado en tiempo real.
 
-## 🌐 Deploy
+### `Admin` — Panel de administración
+CRUD completo de productos con formulario de alta/edición/baja, protegido por rol de administrador verificado contra el backend.
 
-Ver sección de deploy para instrucciones de Railway (backend + DB) y Vercel (frontend).
+### `Sound` — Web Audio API
+Genera sonidos del sistema (navegación, añadir al carrito, éxito, error) sintetizados en el browser usando la **Web Audio API**, sin ningún archivo de audio externo.
 
-**Backend → Railway** · **Base de datos → Railway MySQL** · **Frontend → Vercel**
+### `AeroBackground` — Canvas animado
+Dibuja el fondo Frutiger Aero con burbujas que flotan usando `<canvas>` y `requestAnimationFrame`, calculando física simple de movimiento.
 
 ---
 
-*© 2026 Lana & Lino — Acevedo Alan · Di Pascuale Agustina*
+## Features implementadas
+
+### 🛍️ Core e-commerce
+- Catálogo con cards de productos, imágenes, precio, colores y stock
+- Filtros por categoría y búsqueda
+- Página de detalle de producto con selector de talle/color
+- Carrito persistente con edición de cantidades
+- Checkout con selector de cuotas y cálculo de interés
+- Sistema de favoritos
+- Registro, login y perfil de usuario
+- Panel de administración (CRUD de productos)
+
+### 🎨 UI/UX
+- Tema oscuro / claro con persistencia en `localStorage`
+- Animaciones de entrada en cada cambio de página
+- Toast notifications
+- Marquee ticker animado
+- Hero carousel con tres slides
+- Fly-to-cart animation al agregar productos
+- Scroll reveal en las secciones
+- Loading screen con orb Aero animado
+- Diseño completamente responsive
+
+### ✨ Features avanzadas (nuevas implementaciones)
+
+#### Tilt 3D en cards de productos
+Las cards del catálogo reaccionan al movimiento del mouse generando una inclinación 3D en tiempo real. Se calcula la posición relativa del cursor respecto al centro de cada card y se aplica `perspective` + `rotateX` + `rotateY` como CSS transform. Un overlay de brillo (sheen) sigue al mouse para reforzar el efecto de iluminación 3D. En mobile el efecto se desactiva automáticamente.
+
+#### Parallax en el hero carousel
+Al hacer scroll, las distintas capas del hero se desplazan a velocidades diferentes, generando la ilusión de profundidad. El texto se mueve al 28% de la velocidad de scroll, el SVG decorativo al 14%, y el fondo al 8%. Se usa el patrón `requestAnimationFrame + _ticking flag` para garantizar 60fps sin sobrecargar el hilo principal.
+
+#### Búsqueda en tiempo real con debounce
+El input de búsqueda del header filtra el catálogo mientras el usuario escribe, sin necesidad de presionar Enter. Se aplica debounce de 160ms para no re-renderizar en cada tecla. Un punto verde pulsante aparece mientras hay texto activo. El catálogo se actualiza directamente (sin navegar) manteniendo los filtros de categoría ya aplicados.
+
+#### Scroll to top
+Botón flotante en estilo orb Frutiger Aero que aparece al bajar más de 320px. Dispara un `scrollTo({ behavior: 'smooth' })` al hacer click. Tiene animación de aparición/desaparición con transición CSS y efecto spring (cubic-bezier).
+
+---
+
+## Decisiones técnicas destacadas
+
+**Un solo archivo JS** — Elegimos mantener todo en `app.js` para simplificar la entrega y evitar problemas de CORS con módulos ES en desarrollo local sin servidor.
+
+**Monkey-patching para extensibilidad** — Los módulos nuevos (Tilt3D, LiveSearch, HeroParallax) se enganchan a los módulos existentes sobreescribiendo sus métodos en runtime. Esto permite agregar comportamiento sin tocar el código original, aplicando el patrón Open/Closed.
+
+**CSS de un solo punto de verdad para mobile** — Todos los `@media` queries viven en `mobile.css`, evitando que las reglas responsivas estén dispersas en cuatro archivos distintos.
+
+**Passive event listeners** — Todos los listeners de `scroll` y `mousemove` usan `{ passive: true }` para no bloquear el hilo de composición del browser, manteniendo el scrolling fluido.
+
+**Guard flags** — Se usan atributos de datos (`data-tilt`) y propiedades personalizadas (`_liveWired`) como flags para evitar registrar event listeners duplicados cuando los componentes se re-renderizan.
+
+---
+
+## Cómo ejecutar
+
+1. Clonar/descomprimir el proyecto
+2. Levantar el backend de la cátedra en `localhost:4000`
+3. Abrir `index.html` en el browser (o usar Live Server en VS Code)
+
+> No requiere `npm install`, build steps ni configuración adicional.
+
+---
+
+## Capturas
+
+> _El proyecto puede ejecutarse localmente siguiendo los pasos de arriba._
+
+---
+
+*Trabajo Práctico — Programación Web 2026 — Universidad*

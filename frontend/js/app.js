@@ -2994,107 +2994,226 @@ const LoadingScreen = {
 
 // ============================================================
 // SCROLL TO TOP
+// ------------------------------------------------------------
+// Muestra un botón flotante (estilo orb Frutiger Aero) en la
+// esquina inferior derecha una vez que el usuario baja más de
+// 320px. Al hacer clic, hace scroll suave al tope de la página.
+//
+// Conceptos clave:
+//   • window.scrollY         → píxeles que el usuario bajó desde el top
+//   • { passive: true }      → le dice al browser que el listener
+//                              no va a llamar preventDefault(), lo que
+//                              permite que el scroll sea más fluido
+//   • classList.add/remove   → agrega/saca clases CSS en tiempo real
+//                              para activar la animación de aparición
+//   • window.scrollTo()      → mueve el scroll a una posición dada;
+//                              behavior:'smooth' anima el movimiento
 // ============================================================
 const ScrollTop = {
+  // Referencia al botón del DOM para no buscarlo en cada scroll
   btn: null,
+
+  /**
+   * init()
+   * Punto de entrada. Obtiene el botón del DOM y registra los
+   * event listeners necesarios.
+   */
   init() {
+    // el() es un helper del proyecto que hace document.getElementById()
     this.btn = el('scroll-top-btn');
-    if (!this.btn) return;
+    if (!this.btn) return; // Guard: si el HTML no tiene el botón, no hace nada
+
+    // Escucha el evento 'scroll' de la ventana completa.
+    // passive:true es una optimización de rendimiento: le indica al browser
+    // que no vamos a interrumpir el scroll con preventDefault().
     window.addEventListener('scroll', () => this._onScroll(), { passive: true });
+
+    // Al hacer click en el botón, vuelve al top con animación suave
     this.btn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   },
+
+  /**
+   * _onScroll()
+   * Se ejecuta en cada evento de scroll. Agrega o quita la clase
+   * 'visible' según cuánto bajó el usuario (umbral: 320px).
+   * La clase 'visible' activa la transición CSS del botón.
+   */
   _onScroll() {
     if (!this.btn) return;
     if (window.scrollY > 320) {
-      this.btn.classList.add('visible');
+      this.btn.classList.add('visible');    // aparece el botón
     } else {
-      this.btn.classList.remove('visible');
+      this.btn.classList.remove('visible'); // se oculta el botón
     }
   }
 };
 
 // ============================================================
-// REAL-TIME SEARCH — debounced live filter while typing
+// REAL-TIME SEARCH — búsqueda en vivo con debounce
+// ------------------------------------------------------------
+// Intercepta el input de búsqueda del header y filtra el
+// catálogo mientras el usuario escribe, sin necesidad de
+// presionar Enter ni recargar la página.
+//
+// Conceptos clave:
+//   • Monkey-patching  → técnica de sobreescribir métodos de un
+//                        objeto en tiempo de ejecución para
+//                        agregar comportamiento sin modificar el
+//                        código original
+//   • Debounce         → patrón que retrasa la ejecución de una
+//                        función hasta que el usuario deje de
+//                        escribir por X milisegundos (aquí 160ms),
+//                        evitando re-renders innecesarios
+//   • Guard flag       → propiedad _liveWired que evita que el
+//                        listener se registre dos veces si el
+//                        header se vuelve a renderizar
+//   • classList.toggle → agrega o quita una clase según un
+//                        valor booleano (segundo parámetro)
 // ============================================================
 const LiveSearch = {
+  // ID del timeout activo para el debounce
   _timer: null,
+  // Referencia al punto verde indicador de búsqueda activa
   _indicator: null,
 
+  /**
+   * init()
+   * Se engancha (monkey-patch) a Header.render() y
+   * Header._refreshState() para que cada vez que el header
+   * se re-renderice, se llame a _wire() y se registre el
+   * listener en el input recién creado.
+   */
   init() {
-    // We hook into the existing h-search after Header.render()
-    // by patching Header._refreshState
+    // Guardamos una referencia al método original antes de pisarlo
     const origRefresh = Header._refreshState.bind(Header);
+    // Sobreescribimos el método: primero hace lo original, luego _wire()
     Header._refreshState = () => {
       origRefresh();
       this._wire();
     };
+    // Mismo patrón para Header.render()
     const origRender = Header.render.bind(Header);
     Header.render = (...args) => {
       origRender(...args);
-      this._wire();
+      this._wire(); // ...rest params: acepta cualquier cantidad de argumentos
     };
   },
 
+  /**
+   * _wire()
+   * Busca el input #h-search en el DOM y le agrega el listener
+   * de búsqueda en tiempo real. Usa el flag _liveWired para no
+   * registrar el listener más de una vez.
+   */
   _wire() {
     const input = el('h-search');
+    // Guard: si el input no existe o ya fue cableado, no hacer nada
     if (!input || input._liveWired) return;
-    input._liveWired = true;
+    input._liveWired = true; // marcamos el input para no repetir
 
-    // Add live indicator dot
+    // Inyectar el punto verde indicador dentro del wrapper de búsqueda
     const wrap = el('search-wrap-toggle');
     if (wrap) {
       let dot = wrap.querySelector('.search-live-indicator');
       if (!dot) {
-        dot = document.createElement('span');
+        dot = document.createElement('span'); // creamos el nodo en JS
         dot.className = 'search-live-indicator';
-        wrap.style.position = 'relative';
+        wrap.style.position = 'relative'; // necesario para posicionar el dot
         wrap.appendChild(dot);
       }
       this._indicator = dot;
     }
 
+    // Escucha cada tecla que el usuario presiona
     input.addEventListener('input', () => {
+      // Cancelar el timer anterior (debounce): si el usuario sigue
+      // escribiendo, reiniciamos la cuenta regresiva
       clearTimeout(this._timer);
-      const q = input.value.trim();
+      const q = input.value.trim(); // texto sin espacios al inicio/fin
 
-      // Show indicator when query is non-empty
+      // Activar/desactivar el indicador verde según si hay texto
       if (this._indicator) {
+        // toggle(clase, condición): agrega la clase si condición es true
         this._indicator.classList.toggle('active', q.length > 0);
       }
 
+      // Solo filtrar si el usuario está en la página del catálogo
       if (Router.page !== 'catalog') return;
 
+      // Esperar 160ms antes de ejecutar el filtro (debounce)
+      // Si el usuario escribe otra tecla antes, clearTimeout cancela este
       this._timer = setTimeout(() => {
-        // Live filter: update catalog without a full Router.go()
-        // so we stay on catalog and keep existing filters
+        // Actualizar los parámetros del router sin navegar (no usa Router.go())
+        // El operador spread (...) copia los parámetros existentes y agrega/pisa 'search'
         Router.params = { ...Router.params, search: q };
+
+        // Actualizar el título del catálogo con el texto buscado
         if (el('cat-title')) {
           el('cat-title').textContent = q
             ? 'Resultados: "' + q + '"'
             : (Router.params.catName ? Router.params.catName : 'Todos los productos');
         }
+
+        // _filter(q) filtra el array de productos según el query
+        // _draw()    re-renderiza las cards con los productos filtrados
         Catalog._draw(Catalog._filter(q));
-      }, 160);
+      }, 160); // 160ms de debounce
     });
   }
 };
 
 // ============================================================
-// TILT 3D — product cards mouse interaction
+// TILT 3D — inclinación 3D en las cards de productos
+// ------------------------------------------------------------
+// Detecta la posición del mouse dentro de cada card y aplica
+// una transformación CSS 3D (rotateX + rotateY) proporcional
+// a la distancia desde el centro de la card, generando el
+// efecto de que la card "sigue" al cursor.
+//
+// Conceptos clave:
+//   • CSS Transform 3D  → perspective() establece la distancia
+//                         del ojo al plano Z=0. Cuanto menor,
+//                         más dramático el efecto.
+//                         rotateX gira en eje horizontal (arriba/abajo)
+//                         rotateY gira en eje vertical (izquierda/derecha)
+//   • getBoundingClientRect() → devuelve posición y tamaño del
+//                         elemento relativo al viewport (ventana)
+//   • Normalización     → convertimos coordenadas de píxeles a un
+//                         rango -1..1 para calcular la rotación
+//   • requestAnimationFrame → ejecuta código antes del próximo
+//                         repintado del browser; aquí se usa para
+//                         esperar a que el DOM tenga las cards
+//                         nuevas antes de aplicarles el tilt
+//   • data-tilt attr    → atributo HTML que usamos como flag para
+//                         no registrar listeners duplicados
+//   • cubic-bezier      → función de easing personalizada para la
+//                         animación de retorno (efecto "elástico")
 // ============================================================
 const Tilt3D = {
-  _MAX: 12,     // max degrees
-  _SHEEN: true, // enable sheen overlay
+  // Máxima inclinación en grados (±12°)
+  _MAX: 12,
+  // Activar el overlay de brillo (sheen) que sigue al mouse
+  _SHEEN: true,
 
+  /**
+   * init()
+   * Se engancha a Catalog._draw() y Catalog._buildFeatured()
+   * para aplicar el tilt a cada lote de cards nuevas.
+   */
   init() {
-    // Observe catalog renders and add tilt to new cards
+    // Monkey-patch de _draw: después de renderizar las cards del grid,
+    // esperamos un frame para que el DOM esté listo y aplicamos el tilt
     const origDraw = Catalog._draw.bind(Catalog);
     Catalog._draw = (...args) => {
       origDraw(...args);
+      // requestAnimationFrame: ejecuta el callback justo antes del
+      // próximo repintado, garantizando que las cards ya están en el DOM
       requestAnimationFrame(() => this._applyToGrid());
     };
+
+    // Mismo patrón para las cards destacadas (featured section)
     const origFeatured = Catalog._buildFeatured.bind(Catalog);
     Catalog._buildFeatured = (...args) => {
       origFeatured(...args);
@@ -3102,111 +3221,221 @@ const Tilt3D = {
     };
   },
 
+  /**
+   * _applyToGrid()
+   * Selecciona todas las cards del grid que todavía no tienen
+   * el atributo data-tilt y les aplica el efecto.
+   */
   _applyToGrid() {
+    // :not([data-tilt]) → selector CSS que excluye las cards que
+    // ya fueron procesadas (evita registrar listeners duplicados)
     document.querySelectorAll('.product-card:not([data-tilt])').forEach(card => {
       this._attach(card);
     });
   },
 
+  /**
+   * _applyToFeatured()
+   * Igual que _applyToGrid pero para las cards destacadas.
+   */
   _applyToFeatured() {
     document.querySelectorAll('.feat-card:not([data-tilt])').forEach(card => {
       this._attach(card);
     });
   },
 
+  /**
+   * _attach(card)
+   * Registra todos los event listeners en una card individual
+   * y le agrega el overlay de sheen (brillo).
+   * @param {HTMLElement} card - elemento de la card a procesar
+   */
   _attach(card) {
+    // Marcar la card para no procesarla de nuevo
     card.setAttribute('data-tilt', '1');
 
-    // Add sheen overlay
+    // Crear e insertar el overlay de brillo si está habilitado
     if (this._SHEEN) {
       const sheen = document.createElement('div');
-      sheen.className = 'tilt-sheen';
+      sheen.className = 'tilt-sheen'; // estilo en aero.css
       card.appendChild(sheen);
     }
 
+    // mousemove: calcular y aplicar la rotación mientras el mouse se mueve
     card.addEventListener('mousemove', e => this._onMove(e, card), { passive: true });
+    // mouseleave: restaurar la card a su estado original
     card.addEventListener('mouseleave', () => this._onLeave(card), { passive: true });
+    // mouseenter: habilitar transition suave al entrar
     card.addEventListener('mouseenter', () => this._onEnter(card), { passive: true });
   },
 
+  /**
+   * _onEnter(card)
+   * Al entrar el mouse, activa una transición CSS corta para
+   * que el inicio del tilt se vea suave (no abrupto).
+   */
   _onEnter(card) {
     card.style.transition = 'transform 0.15s ease, box-shadow 0.3s ease';
   },
 
+  /**
+   * _onMove(e, card)
+   * Calcula la rotación 3D en función de la posición del mouse
+   * relativa al centro de la card y aplica el transform.
+   * @param {MouseEvent} e    - evento del mouse
+   * @param {HTMLElement} card - la card sobre la que se mueve
+   */
   _onMove(e, card) {
+    // getBoundingClientRect(): posición y tamaño del elemento en el viewport
     const rect = card.getBoundingClientRect();
+
+    // Calcular el centro de la card en coordenadas del viewport
     const cx = rect.left + rect.width  / 2;
     const cy = rect.top  + rect.height / 2;
-    const dx = (e.clientX - cx) / (rect.width  / 2); // -1..1
-    const dy = (e.clientY - cy) / (rect.height / 2); // -1..1
 
+    // Normalizar la posición del mouse a un rango -1..1
+    // dx=-1: mouse en el borde izquierdo, dx=1: borde derecho
+    const dx = (e.clientX - cx) / (rect.width  / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+
+    // Calcular ángulos de rotación:
+    // rotX: eje X (inclina arriba/abajo). Negamos dy para que
+    //       la card se incline "hacia" el mouse (efecto natural)
     const rotX = -dy * this._MAX;
+    // rotY: eje Y (inclina izquierda/derecha)
     const rotY =  dx * this._MAX;
+    // Escala ligera para dar sensación de elevación
     const scale = 1.035;
 
+    // Durante el movimiento: sin transition para respuesta inmediata
     card.style.transition = 'none';
+    // Aplicar la transformación 3D completa
+    // perspective(700px): distancia "ojo-pantalla" → más bajo = más dramático
     card.style.transform =
       `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${scale},${scale},${scale})`;
 
-    // Move sheen with mouse
+    // Mover el brillo (sheen) para que siga al mouse
     const sheen = card.querySelector('.tilt-sheen');
     if (sheen) {
+      // Convertir dx/dy de -1..1 a porcentaje 0..100 para posicionar el gradiente
       const px = ((dx + 1) / 2 * 100).toFixed(1);
       const py = ((dy + 1) / 2 * 100).toFixed(1);
+      // radial-gradient centrado donde está el mouse → efecto de luz
       sheen.style.background =
         `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.28) 0%, transparent 65%)`;
     }
   },
 
+  /**
+   * _onLeave(card)
+   * Al salir el mouse, restaura la card a su posición original
+   * con una animación elástica usando cubic-bezier.
+   */
   _onLeave(card) {
+    // cubic-bezier(0.23,1,0.32,1): curva easeOutExpo, da sensación
+    // de que la card "cae" suavemente de vuelta a su lugar
     card.style.transition = 'transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s ease';
-    card.style.transform = '';
+    card.style.transform = ''; // string vacío → browser aplica el valor CSS original
     const sheen = card.querySelector('.tilt-sheen');
-    if (sheen) sheen.style.background = '';
+    if (sheen) sheen.style.background = ''; // resetear el brillo
   }
 };
 
 // ============================================================
-// PARALLAX — hero carousel layers on scroll
+// PARALLAX — efecto de profundidad en el hero carousel
+// ------------------------------------------------------------
+// A medida que el usuario hace scroll, mueve distintas capas
+// del hero a velocidades diferentes. Las capas de fondo se
+// mueven más lento que la velocidad de scroll real, creando
+// la ilusión de profundidad (efecto parallax).
+//
+// Conceptos clave:
+//   • Parallax         → ilusión óptica: objetos más lejanos
+//                        se mueven más lento que los cercanos
+//   • requestAnimationFrame (rAF) → hook del browser que llama
+//                        al callback justo antes del próximo
+//                        repintado. Usar rAF en scroll evita
+//                        re-renders innecesarios entre frames.
+//   • _ticking flag    → patrón "rAF throttle": si ya hay un
+//                        rAF pendiente, ignoramos los eventos
+//                        de scroll hasta que se ejecute
+//   • getBoundingClientRect() → posición del hero relativa al
+//                        viewport, actualizada en cada frame
+//   • translateY()     → mueve elementos verticalmente sin
+//                        afectar el flujo del documento
+//   • Math.max(0, x)   → clamp: garantiza que opacity no sea
+//                        negativa (mínimo 0)
+//   • { passive: true }→ optimización de rendimiento en scroll
 // ============================================================
 const HeroParallax = {
+  // Flag para evitar múltiples rAF simultáneos (throttle)
   _ticking: false,
 
+  /**
+   * init()
+   * Registra el listener de scroll con passive:true.
+   */
   init() {
     window.addEventListener('scroll', () => this._onScroll(), { passive: true });
   },
 
+  /**
+   * _onScroll()
+   * Patrón rAF throttle: si ya hay un frame pendiente (_ticking=true),
+   * descarta el evento. Así solo procesamos un scroll por frame
+   * del browser (máx ~60 veces por segundo), lo que mantiene la
+   * animación fluida sin sobrecargar el hilo principal.
+   */
   _onScroll() {
-    if (this._ticking) return;
+    if (this._ticking) return; // ya hay un rAF pendiente, ignorar
     this._ticking = true;
     requestAnimationFrame(() => {
       this._update();
-      this._ticking = false;
+      this._ticking = false; // liberar el flag al terminar el frame
     });
   },
 
+  /**
+   * _update()
+   * Calcula el desplazamiento de cada capa en función de cuánto
+   * scroll ocurrió relativo al hero, y aplica translateY a cada capa.
+   * Se ejecuta máximo una vez por frame del browser.
+   */
   _update() {
     const hero = el('hero-carousel');
-    if (!hero) return;
-    const rect   = hero.getBoundingClientRect();
-    // Only run when hero is at least partially visible
+    if (!hero) return; // guard: si no hay hero (otras páginas), no hacer nada
+
+    // getBoundingClientRect(): posición actual del hero en el viewport
+    // rect.top es negativo cuando el hero está parcialmente fuera por arriba
+    const rect = hero.getBoundingClientRect();
+
+    // Optimización: si el hero no es visible, no hacer cálculos ni DOM writes
     if (rect.bottom < 0 || rect.top > window.innerHeight) return;
 
-    const scrolled = -rect.top;  // positive = scrolled past top
-    const ratio    = scrolled / (hero.offsetHeight || 1);
+    // scrolled: cuántos px se scrolleó dentro del hero
+    // Cuando rect.top es 0 → scrolled = 0 (hero en su posición original)
+    // Cuando rect.top es -200px → scrolled = 200 (se scrolleó 200px)
+    const scrolled = -rect.top;
 
-    // Hero content text — moves up slightly slower than scroll
+    // ratio: qué fracción del hero ya pasó (0 = sin scroll, 1 = hero completamente fuera)
+    const ratio = scrolled / (hero.offsetHeight || 1);
+
+    // CAPA 1: texto del hero — se mueve a 28% de la velocidad de scroll
+    // Efecto: el texto parece "flotar" mientras el usuario baja.
+    // La opacidad se desvanece progresivamente: Math.max garantiza mínimo 0
     document.querySelectorAll('.catalog-hero-content').forEach(el => {
       el.style.transform = `translateY(${scrolled * 0.28}px)`;
       el.style.opacity   = Math.max(0, 1 - ratio * 1.4);
     });
 
-    // Hero deco SVG — moves up faster (foreground feel)
+    // CAPA 2: SVG decorativo — se mueve a 14% de la velocidad
+    // Más lento que el texto → sensación de estar "más al fondo"
     document.querySelectorAll('.catalog-hero-deco').forEach(el => {
       el.style.transform = `translateY(${scrolled * 0.14}px)`;
     });
 
-    // Hero track overall — slight slow-down parallax
+    // CAPA 3: track del carousel (fondo) — velocidad más lenta: 8%
+    // Es la capa "más lejana", se mueve poquísimo → máxima sensación de profundidad
     const track = el('hero-track');
     if (track) {
       track.style.transform = `translateY(${scrolled * 0.08}px)`;
