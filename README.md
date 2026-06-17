@@ -207,4 +207,4 @@ lana-y-lino/
 
 ---
 
-*© 2026 Lana & Lino — Acevedo Alan · Di Pascuale Agustina*
+*© 2026 Lana & Lino — Acevedo Alan · Di Pasquale Agustina*
