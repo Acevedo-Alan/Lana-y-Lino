@@ -5,11 +5,27 @@
 
 /* ── GLOBAL — applies at all sizes ──────────────────────── */
 html, body {
-  overflow-x: hidden;
+  width: 100%;
   max-width: 100%;
+  overflow-x: hidden;
 }
 *, *::before, *::after { box-sizing: border-box; }
 img, svg, video { max-width: 100%; display: block; }
+
+/* Prevent content from spilling outside the viewport */
+#app,
+.catalog-page,
+.product-detail-page,
+.cart-page,
+.payment-page,
+.auth-page,
+.admin-page,
+.profile-page,
+.favorites-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 /* Stacking fix — canvas never bleeds over cards */
 #app, #main-footer { position: relative; z-index: 1; isolation: isolate; }
@@ -43,17 +59,44 @@ img, svg, video { max-width: 100%; display: block; }
 @media (max-width: 700px) {
 
   /* ── Hero carousel ── */
-  .hero-carousel { border-radius: var(--radius-lg); overflow: hidden; }
-  .hero-track    { overflow: hidden; }
+  .hero-carousel {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 180px !important;
+    height: auto !important;
+    margin: 0 0 14px !important;
+    border-radius: var(--radius-lg);
+    overflow: visible !important;
+  }
+  .hero-track {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 180px !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
 
   .hero-slide {
-    min-height: 160px !important;
+    display: flex !important;
+    visibility: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 180px !important;
+    height: 100% !important;
     overflow: hidden;
-    position: relative !important;
+    position: absolute !important;
+    inset: 0 !important;
   }
   .hero-slide.active {
-    display: block !important;
-    position: relative !important;
+    display: flex !important;
+    visibility: visible !important;
+    position: absolute !important;
+    inset: 0 !important;
   }
   /* Deco fills entire slide as background */
   .hero-slide .catalog-hero-deco {
@@ -77,6 +120,7 @@ img, svg, video { max-width: 100%; display: block; }
     z-index: 2 !important;
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     padding: 18px 16px 42px !important;
     box-sizing: border-box !important;
   }
@@ -104,21 +148,35 @@ img, svg, video { max-width: 100%; display: block; }
   /* ── Category visual grid — 2 cols always ── */
   .cat-visual-grid {
     display: grid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     grid-template-columns: 1fr 1fr !important;
     height: auto !important;
     gap: 8px;
     margin-bottom: 14px;
+    overflow: hidden;
   }
-  .cat-vc-1, .cat-vc-3   { height: 100px !important; }
-  .cat-vc-2               { grid-column: 1 / -1 !important; height: 110px !important; }
+  .cat-vc-1, .cat-vc-3,  .cat-vc-2   { height: 100px !important; }         
   .cat-vc-sub, .cat-vc-btn { display: none; }
   .cat-vc-label           { font-size: .88rem; }
 
   /* ── Products grid — always 2 per row on mobile ── */
   .products-grid {
     display: grid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
+  }
+  .product-card {
+    min-width: 0;
+    width: 100%;
+  }
+  .product-card-img {
+    width: 100%;
+    max-width: 100%;
   }
   .product-card-desc   { display: none; }
   .product-card-name   { font-size: .85rem; }

@@ -152,6 +152,8 @@
 .product-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
@@ -178,9 +180,12 @@
 }
 
 .product-card-img img {
+  display: block;
   width: 100%;
   height: 100%;
+  max-width: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
 }
 
@@ -759,6 +764,10 @@ body.dark .catalog-hero-title {
   margin-bottom: 28px;
   border-radius: var(--radius-xl);
   overflow: hidden;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  flex: 0 0 auto;
   box-shadow: var(--card-shadow), var(--glass-inner);
 }
 
@@ -766,23 +775,38 @@ body.dark .catalog-hero-title {
 .hero-track {
   position: relative;
   width: 100%;
+  height: 100%;
+  min-height: 220px;
+  overflow: hidden;
 }
 
 /* Each slide */
 .hero-slide {
-  display: none;
-  position: relative;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   min-height: 220px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-}
-
-.hero-slide.active {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  opacity: 0;
+  transform: translateX(0) scale(0.99);
+  pointer-events: none;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-slide.active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
 }
 
 /* Slide 1: sky/nature (existing catalog-hero styles apply) */
@@ -1330,14 +1354,22 @@ body.dark .marquee-wrap {
    ============================================ */
 .cat-visual-grid {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr) minmax(0, 1fr);
   gap: 14px;
   margin-bottom: 28px;
   height: 200px;
+  align-items: stretch;
 }
 
 .cat-visual-card {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  align-self: stretch;
+  justify-self: stretch;
+  display: block;
   border-radius: var(--radius-xl);
   overflow: hidden;
   cursor: pointer;
@@ -1355,26 +1387,46 @@ body.dark .marquee-wrap {
 /* Background fills — Aero photo-like gradients */
 .cat-vc-bg {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
   transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
 }
 
 .cat-visual-card:hover .cat-vc-bg { transform: scale(1.06); }
 
+.cat-vc-1 .cat-vc-bg,
+.cat-vc-2 .cat-vc-bg,
+.cat-vc-3 .cat-vc-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .cat-vc-1 .cat-vc-bg {
-  background:
+  background-image:
     linear-gradient(160deg, rgba(0,180,240,0.45) 0%, rgba(0,100,200,0.3) 100%),
-    url('https://i.pinimg.com/1200x/36/d8/66/36d8667aa7ec103ce5ac483018d4c1d8.jpg') center/cover no-repeat;
+    url('https://i.pinimg.com/1200x/36/d8/66/36d8667aa7ec103ce5ac483018d4c1d8.jpg');
 }
 .cat-vc-2 .cat-vc-bg {
-  background:
+  background-image:
     linear-gradient(160deg, rgba(0,80,180,0.4) 0%, rgba(0,160,100,0.35) 100%),
-    url('https://cdn.shopify.com/s/files/1/0560/2138/5274/files/nostalgicspaceLSstripe1.webp?v=1757465576') center/cover no-repeat;
+    url('https://cdn.shopify.com/s/files/1/0560/2138/5274/files/nostalgicspaceLSstripe1.webp?v=1757465576');
 }
 .cat-vc-3 .cat-vc-bg {
-  background:
+  background-image:
     linear-gradient(160deg, rgba(0,160,220,0.4) 0%, rgba(0,80,160,0.3) 100%),
-    url('https://i.pinimg.com/736x/06/2c/d2/062cd21967f3544ae0eee73cbb260b7b.jpg') center/cover no-repeat;
+    url('https://i.pinimg.com/736x/06/2c/d2/062cd21967f3544ae0eee73cbb260b7b.jpg');
 }
 
 /* Aero glass overlay gradient at bottom */
