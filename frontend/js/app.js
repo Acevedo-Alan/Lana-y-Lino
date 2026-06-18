@@ -789,7 +789,7 @@ const Header = {
       try {
         const r = await API.getCategories();
         if (r.codigo === 200 && r.payload && r.payload.length) {
-          cats = r.payload.map(cat => cat.nombre);
+          cats = [...new Set(r.payload.map(cat => cat.nombre))];
         }
       } catch(e) {}
     }
@@ -1661,7 +1661,10 @@ const Product = {
           </div>
           <div class="product-detail-info glass-strong" style="border-radius:var(--radius-xl)">
             <div class="product-detail-category">${esc(first.categoria||'')}</div>
-            <h1 class="product-detail-name">${esc(first.producto)}</h1>
+            <div class="product-detail-title-row">
+              <h1 class="product-detail-name">${esc(first.producto)}</h1>
+              ${Session.isAdmin() ? `<button class="product-edit-btn sku-icon-btn" id="pd-edit-btn" title="Editar producto" aria-label="Editar producto"><i class="ph ph-pencil-simple"></i></button>` : ''}
+            </div>
             <p class="product-detail-desc">${esc(first.descripcion||'')}</p>
             <div class="product-detail-price">${price(first.precio)}</div>
             <div>
@@ -1715,6 +1718,14 @@ const Product = {
     // Breadcrumb navigation
     el('bc-home') && (el('bc-home').onclick = () => Router.go('catalog'));
     el('bc-cat')  && (el('bc-cat').onclick  = () => Router.go('catalog', { catName: first.categoria }));
+    el('pd-edit-btn') && (el('pd-edit-btn').onclick = () => {
+      Router.go('admin');
+      setTimeout(() => {
+        const tab = document.querySelector('[data-tab="edit"]');
+        if (tab) tab.click();
+        Admin._loadEdit(parseInt(id));
+      }, 120);
+    });
 
     // Lightbox
     el('pd-img-wrap') && (el('pd-img-wrap').onclick = () => {

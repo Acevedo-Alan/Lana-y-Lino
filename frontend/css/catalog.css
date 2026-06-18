@@ -413,6 +413,12 @@
 }
 
 /* Big editorial product name */
+.product-detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .product-detail-name {
   font-family: 'Comfortaa', cursive;
   font-size: 2.4rem;
@@ -420,6 +426,45 @@
   color: var(--text-primary);
   line-height: 1.15;
   letter-spacing: -0.02em;
+}
+
+.product-edit-btn {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.94) 0%,
+    rgba(220,245,255,0.82) 42%,
+    rgba(145,220,255,0.78) 58%,
+    rgba(65,160,235,0.82) 100%);
+  border: 1px solid rgba(255,255,255,0.72);
+  border-radius: 14px;
+  color: #0f5da3;
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.88),
+    inset 0 -2px 6px rgba(0,90,170,0.08),
+    0 8px 18px rgba(18,90,150,0.18);
+  filter: drop-shadow(0 6px 12px rgba(18,90,150,0.18));
+}
+
+.product-edit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.68), transparent);
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
+}
+
+.product-edit-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.product-edit-btn:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* Big editorial price */
