@@ -1319,17 +1319,17 @@ body.dark .marquee-wrap {
 .cat-vc-1 .cat-vc-bg {
   background:
     linear-gradient(160deg, rgba(0,180,240,0.45) 0%, rgba(0,100,200,0.3) 100%),
-    url('https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=75') center/cover no-repeat;
+    url('https://i.pinimg.com/1200x/36/d8/66/36d8667aa7ec103ce5ac483018d4c1d8.jpg') center/cover no-repeat;
 }
 .cat-vc-2 .cat-vc-bg {
   background:
     linear-gradient(160deg, rgba(0,80,180,0.4) 0%, rgba(0,160,100,0.35) 100%),
-    url('https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=75') center/cover no-repeat;
+    url('https://cdn.shopify.com/s/files/1/0560/2138/5274/files/nostalgicspaceLSstripe1.webp?v=1757465576') center/cover no-repeat;
 }
 .cat-vc-3 .cat-vc-bg {
   background:
     linear-gradient(160deg, rgba(0,160,220,0.4) 0%, rgba(0,80,160,0.3) 100%),
-    url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=75') center/cover no-repeat;
+    url('https://i.pinimg.com/736x/06/2c/d2/062cd21967f3544ae0eee73cbb260b7b.jpg') center/cover no-repeat;
 }
 
 /* Aero glass overlay gradient at bottom */
