@@ -145,4 +145,4 @@ Botón flotante en estilo orb Frutiger Aero que aparece al bajar más de 320px. 
 
 ---
 
-*Trabajo Práctico — Programación Web 2026 — Universidad*
+*Trabajo Práctico — Programación II 2026 — IES*
