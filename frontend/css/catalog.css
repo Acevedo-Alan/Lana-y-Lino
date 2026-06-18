@@ -941,6 +941,41 @@ body.dark .hero-arrow {
   color: #c8e8ff;
 }
 
+/* Dark mode contrast for hero slide text */
+body.dark .hero-slide,
+html.dark .hero-slide {
+  color: var(--text-light, #eef7ff);
+}
+
+body.dark .hero-slide .catalog-hero-content,
+html.dark .hero-slide .catalog-hero-content {
+  color: var(--text-light, #eef7ff);
+}
+
+body.dark .hero-slide h1,
+body.dark .hero-slide h2,
+body.dark .hero-slide p,
+body.dark .hero-slide span,
+body.dark .hero-slide .catalog-hero-eyebrow,
+body.dark .hero-slide .catalog-hero-sub,
+body.dark .hero-slide .hero-pill,
+html.dark .hero-slide h1,
+html.dark .hero-slide h2,
+html.dark .hero-slide p,
+html.dark .hero-slide span,
+html.dark .hero-slide .catalog-hero-eyebrow,
+html.dark .hero-slide .catalog-hero-sub,
+html.dark .hero-slide .hero-pill {
+  color: inherit;
+}
+
+body.dark .hero-slide .catalog-hero-title,
+html.dark .hero-slide .catalog-hero-title {
+  color: var(--text-light, #eef7ff);
+  -webkit-text-fill-color: var(--text-light, #eef7ff);
+  background: none;
+}
+
 /* ── Dot indicators ─────────────────────── */
 .hero-dots {
   position: absolute;
