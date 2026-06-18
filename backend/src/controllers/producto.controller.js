@@ -383,11 +383,62 @@ const obtenerProductosCarrito = async (req, res) => {
 
 
 
+// ============================================================
+// FUNCION NUEVA — modificarProducto
+// Agregada para permitir editar nombre, descripcion, precio,
+// genero, categoria e imagen de un producto ya existente.
+// No modifica ninguna funcion previa del controller.
+// Sigue el mismo patron de verificarToken que cargarProducto.
+// ============================================================
+const modificarProducto = async (req, res) => {
+    try{
+        const resultadoVerificar = verificarToken(req);
+        if(resultadoVerificar.estado == false){
+            return res.send({codigo: -1, mensaje: resultadoVerificar.error})
+        }
+        const { id } = req.params;
+        const{
+            nombre,
+            descripcion,
+            precio,
+            genero,
+            id_categoria,
+            imagen
+        } = req.body
+        const producto = {
+            nombre,
+            descripcion,
+            precio,
+            genero,
+            id_categoria,
+            imagen
+        }
+        const connection = await getConnection();
+        const response = await connection.query("UPDATE producto set ? where id_producto = ?", [producto, id]);
+        if(response && response.affectedRows > 0){
+            res.json({
+                codigo: 200,
+                mensaje: "Producto modificado",
+                payload: [{ idProducto: id }]
+            });
+        }
+        else{
+            res.json({codigo: -1, mensaje: "Error modificando producto", payload: []});
+        }
+    }
+    catch(error){
+        res.status(500);
+        res.send(error.message)
+    }
+}
+
+
 export const methods = {
     fetchProductos,
     obtenerProductos,
     crearCategoria,
     cargarProducto,
+    modificarProducto,
     obtenerCategorias,
     obtenerDatosProducto,
     modificarStock,

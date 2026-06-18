@@ -5,6 +5,8 @@
 
 'use strict';
 
+// Cambiar esta URL por la de tu backend desplegado en Railway/Render.
+// Ejemplo: 'https://lana-lino-api.up.railway.app/api'
 const API_BASE = 'http://localhost:4000/api';
 
 // ============================================================
@@ -54,6 +56,7 @@ const API = {
   createProduct:(data)            => API._req('POST', '/cargarProducto',       data),
   createInventory:(data)          => API._req('POST', '/crearInventario',      data),
   updateStock: (id_inv, stock)    => API._req('PUT',  '/modificarStock',       { id_inventario: id_inv, stock }),
+  updateProduct: (id, data)       => API._req('PUT',  '/modificarProducto/' + id, data),
   // Categories
   getCategories:()                => API._req('GET',  '/obtenerCategorias',    null),
   createCategory:(nombre)         => API._req('POST', '/crearCategoria',       { nombre }),
@@ -2246,8 +2249,6 @@ const AuthPages = {
         const saveBtn = el('save-prof');
         const newPw = el('pf-pw').value;
         const emailVal = el('pf-email') && el('pf-email').value.trim();
-        const empty = fields.some(([k]) => !el('pf-'+k).value.trim());
-if (empty) { Toast.show('Completa todos los campos','error'); return; }
         if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { Toast.show('El email no tiene un formato valido','error'); return; }
         const data = { rol: ud.rol, password: newPw||ud.password };
         fields.forEach(([k])=>{ data[k]=el('pf-'+k) ? el('pf-'+k).value.trim() : ud[k]; });
@@ -2380,7 +2381,17 @@ const Admin = {
   },
   async _create() {
     let cats=[];
-    try{const r=await API.getCategories();if(r.codigo===200)cats=r.payload;}catch(e){}
+    try{
+  const r=await API.getCategories();
+  if(r.codigo===200){
+    const seen=new Set();
+    cats=r.payload.filter(c=>{
+      if(seen.has(c.nombre)) return false;
+      seen.add(c.nombre);
+      return true;
+    });
+  }
+}catch(e){}
     setHTML('admin-panel',`
       <div class="admin-panel glass-strong animate-in">
         <h3>Nuevo Producto</h3>
@@ -2462,13 +2473,49 @@ const Admin = {
   },
   async _loadEdit(id) {
     let cats=[],inv=[];
-    try{const r=await API.getCategories();if(r.codigo===200)cats=r.payload;}catch(e){}
+    try{
+      const r=await API.getCategories();
+      if(r.codigo===200){
+        // Dedup por nombre: el backend puede traer categorias repetidas
+        const seen=new Set();
+        cats=r.payload.filter(c=>{
+          if(seen.has(c.nombre)) return false;
+          seen.add(c.nombre);
+          return true;
+        });
+      }
+    }catch(e){}
     try{const r=await API.getProduct(id);if(r.codigo===200)inv=r.payload;}catch(e){}
     if(!inv.length){Toast.show('No se pudo cargar el producto','error');return;}
     const p=inv[0];
     setHTML('as-form',`
       <div style="margin-top:16px;padding:20px;background:rgba(0,120,212,.05);border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
         <h3 style="margin-bottom:14px">Editando: ${esc(p.producto)}</h3>
+
+        <div style="font-size:.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Datos del producto</div>
+        <div class="form-row">
+          <div class="form-group"><label>Nombre *</label><input class="input-aero" id="ep-n" value="${esc(p.producto)}"/></div>
+          <div class="form-group"><label>Categoria *</label>
+            <select class="input-aero" id="ep-c">${cats.map(c=>`<option value="${c.id_categoria}" ${c.id_categoria===p.idCategoria?'selected':''}>${esc(c.nombre)}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="form-group"><label>Descripcion</label><input class="input-aero" id="ep-d" value="${esc(p.descripcion||'')}"/></div>
+        <div class="form-row">
+          <div class="form-group"><label>Genero *</label>
+            <select class="input-aero" id="ep-g">
+              <option value="masculino" ${p.genero==='masculino'?'selected':''}>Masculino</option>
+              <option value="femenino" ${p.genero==='femenino'?'selected':''}>Femenino</option>
+              <option value="unisex" ${p.genero==='unisex'?'selected':''}>Unisex</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Precio *</label><input class="input-aero" id="ep-p" type="number" value="${p.precio}"/></div>
+        </div>
+        <div class="form-group"><label>URL de imagen</label><input class="input-aero" id="ep-i" value="${esc(p.ulrImagen||'')}"/></div>
+        <button class="btn-aero btn-success" id="ep-save"><i class="ph ph-floppy-disk"></i> Guardar datos del producto</button>
+        <div id="ep-result" style="margin-top:8px"></div>
+
+        <hr style="margin:20px 0;border-color:var(--glass-border)"/>
+
         ${inv.length?`<div style="margin-bottom:16px"><div style="font-size:.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Stock por talle/color</div>${inv.map(it=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="min-width:100px;font-weight:700;font-size:.85rem">${esc(it.talle)} / ${esc(it.color)}</span><input class="input-aero" type="number" value="${it.stock}" min="0" data-iid="${it.idInventario}" style="width:90px"/></div>`).join('')}</div>`:''}
         <div style="display:flex;gap:10px;margin-top:8px">
           <button class="btn-aero btn-success" id="es-save"><i class="ph ph-floppy-disk"></i> Guardar stock</button>
@@ -2476,6 +2523,25 @@ const Admin = {
         </div>
         <div id="es-result" style="margin-top:8px"></div>
       </div>`);
+    // Guardar datos del producto (nombre, desc, genero, precio, categoria, imagen)
+    el('ep-save').onclick = async () => {
+      const data = {
+        nombre: el('ep-n').value.trim(),
+        descripcion: el('ep-d').value.trim(),
+        genero: el('ep-g').value,
+        precio: parseFloat(el('ep-p').value) || 0,
+        id_categoria: parseInt(el('ep-c').value),
+        imagen: el('ep-i').value.trim()
+      };
+      if (!data.nombre || !data.id_categoria || !data.precio) { Toast.show('Completa los campos obligatorios','error'); return; }
+      el('ep-save').disabled=true; el('ep-save').innerHTML='<i class="ph ph-circle-notch ph-spin"></i> Guardando...';
+      try {
+        const r = await API.updateProduct(id, data);
+        if (r.codigo===200) { Toast.show('Producto actualizado','success'); }
+        else { Toast.show(r.mensaje||'Error','error'); }
+      } catch(e) { Toast.show('Error de conexion','error'); }
+      el('ep-save').disabled=false; el('ep-save').innerHTML='<i class="ph ph-floppy-disk"></i> Guardar datos del producto';
+    };
     el('es-save').onclick = async () => {
       el('es-save').disabled=true; el('es-save').textContent='Guardando...';
       try {

@@ -10,6 +10,7 @@ router.post("/cargarProducto", productoController.cargarProducto)
 router.get("/obtenerCategorias",productoController.obtenerCategorias)
 router.get("/obtenerDatosProducto/:id",productoController.obtenerDatosProducto)
 router.put("/modificarStock",productoController.modificarStock)
+router.put("/modificarProducto/:id",productoController.modificarProducto)
 router.post("/crearInventario",productoController.crearInventario)
 router.post("/agregarFavorito",productoController.agregarFavorito)
 router.get("/obtenerFavoritos/:id",productoController.obtenerFavoritos);
