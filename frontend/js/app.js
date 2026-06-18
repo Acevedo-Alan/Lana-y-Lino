@@ -2246,6 +2246,8 @@ const AuthPages = {
         const saveBtn = el('save-prof');
         const newPw = el('pf-pw').value;
         const emailVal = el('pf-email') && el('pf-email').value.trim();
+        const empty = fields.some(([k]) => !el('pf-'+k).value.trim());
+if (empty) { Toast.show('Completa todos los campos','error'); return; }
         if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { Toast.show('El email no tiene un formato valido','error'); return; }
         const data = { rol: ud.rol, password: newPw||ud.password };
         fields.forEach(([k])=>{ data[k]=el('pf-'+k) ? el('pf-'+k).value.trim() : ud[k]; });
